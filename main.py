@@ -18,7 +18,7 @@ screen.fill(WHITE)
 
 class Grass() :
     def __init__(self) :
-        self.size = 1105
+        self.size = 1100
         self.image = pygame.image.load('images/tuilles_de_terrain/Herbe.png')
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
@@ -34,7 +34,7 @@ class Grass() :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
 
-    def droite(self) : 
+    def droite(self) :
         for Image in self.images :
             self.replacer(Image)
             Image[0] -= SPEED
@@ -59,16 +59,15 @@ class Grass() :
             screen.blit(self.image, (Image[0], Image[1]))
     
     def replacer(self, Image) :
-        '''Bon c'est cette fonction qui pose problème. Elle doit refaire le pavage quand il n'y a plus d'herbe.'''
-        if (Image[0] < -self.size) :
-            Image[0] = 2*self.size
-        elif (Image[0] > x) :
-            Image[0] -= 2*self.size
-        if (Image[1] < -self.size) :
-            Image[1] = 2*self.size
-        elif (Image[1] > y) :
-            Image[1] -= 2*self.size
-        return [Image[0], Image[1]]
+        '''Fonction du pavege de l'herbe.'''
+        if Image[0] < -2*self.size :
+            Image[0] = self.size
+        elif Image[0] > 2*self.size :
+            Image[0] = -self.size
+        if Image[1] < -2*self.size :
+            Image[1] = self.size
+        elif Image[1] > 2*self.size :
+            Image[1] = -self.size
         pass
 
 def main() :
