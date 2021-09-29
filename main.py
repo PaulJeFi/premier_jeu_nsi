@@ -1,5 +1,6 @@
 import pygame
 import sys
+import math
 
 pygame.init()
 
@@ -15,6 +16,10 @@ screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('images/personages/Humain_type1.png').convert())
 screen.fill(WHITE)
+
+def convert_degrees(angle) :
+    '''Convertit un angle en radians en degrés.'''
+    return angle*180/math.pi
 
 class Grass() :
     def __init__(self) :
@@ -70,8 +75,31 @@ class Grass() :
             Image[1] = -self.size
         pass
 
+class Hero() :
+    def __init__(self) :
+        self.image = pygame.image.load('images/personages/Humain_type1.png')
+        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.pv = 100
+        self.angle = 90
+        self.size = 100
+        self.rotated = pygame.image.load('images/personages/Humain_type1.png')
+    
+    def display(self) :
+        screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
+
+    def change(self, mousepos) :
+        '''Tourne le perso pour qu'il ragarde la souris.'''
+        if mousepos[0]-x/2 != 0 :
+            self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
+            self.angle = convert_degrees(self.angle)
+            if mousepos[0] < x/2 :
+                self.rotated = pygame.transform.rotate(self.image, 180-self.angle)
+            else :
+                self.rotated = pygame.transform.rotate(self.image, -self.angle)
+
 def main() :
     grass = Grass()
+    hero = Hero()
     while True :
         screen.fill(WHITE)
         for event in pygame.event.get() :
@@ -87,7 +115,9 @@ def main() :
             grass.gauche()
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
             grass.droite()
+        hero.change(pygame.mouse.get_pos())
         grass.display()
+        hero.display()
         pygame.display.flip()
 
 
