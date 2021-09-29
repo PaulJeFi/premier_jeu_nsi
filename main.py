@@ -111,7 +111,7 @@ class Arme() :
     def __init__(self) :
         # taille = 1105 x 682
         self.image = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
-        self.size = [1105/6, 682/6]
+        self.size = [1105/8, 682/8]
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
         self.rotated = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
     
@@ -120,8 +120,8 @@ class Arme() :
     
     def rotate(self, angle) :
         self.rotated = pygame.transform.rotate(self.image, angle)
-        self.x = (x/2)+math.sin(convert_radians(angle))*100
-        self.y = (y/2)+math.cos(convert_radians(angle))*100
+        self.x = (x)+math.sin(convert_radians(angle))*100+50
+        self.y = (y)+math.cos(convert_radians(angle))*100-10
         
 
 def main() :
