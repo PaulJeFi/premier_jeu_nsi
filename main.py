@@ -34,38 +34,41 @@ class Grass() :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
 
-    def droite(self) :        
+    def droite(self) : 
         for Image in self.images :
-            if self.not_in_screen(Image) :
-                Image = self.replacer(Image)
+            self.replacer(Image)
             Image[0] -= SPEED
     
-    def haut(self) :        
+    def haut(self) :
         for Image in self.images :
-            if self.not_in_screen(Image) :
-                Image = self.replacer(Image)
+            self.replacer(Image)
             Image[1] -= SPEED
 
-    def gauche(self) :        
+    def gauche(self) :
         for Image in self.images :
-            if self.not_in_screen(Image) :
-                Image = self.replacer(Image)
+            self.replacer(Image)
             Image[0] += SPEED
     
-    def bas(self) :        
+    def bas(self) :
         for Image in self.images :
-            if self.not_in_screen(Image) :
-                Image = self.replacer(Image)
+            self.replacer(Image)
             Image[1] += SPEED
 
     def display(self) :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
     
-    def not_in_screen(self, Image) :
-        return False
-        # Conpléter.
     def replacer(self, Image) :
+        '''Bon c'est cette fonction qui pose problème. Elle doit refaire le pavage quand il n'y a plus d'herbe.'''
+        if (Image[0] < -self.size) :
+            Image[0] = 2*self.size
+        elif (Image[0] > x) :
+            Image[0] -= 2*self.size
+        if (Image[1] < -self.size) :
+            Image[1] = 2*self.size
+        elif (Image[1] > y) :
+            Image[1] -= 2*self.size
+        return [Image[0], Image[1]]
         pass
 
 def main() :
