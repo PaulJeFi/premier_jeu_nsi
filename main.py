@@ -21,6 +21,10 @@ def convert_degrees(angle) :
     '''Convertit un angle en radians en degrés.'''
     return angle*180/math.pi
 
+def convert_radians(angle) :
+    '''Convertit un angle en degrés en radians.'''
+    return angle*math.pi/180
+
 class Grass() :
     def __init__(self) :
         self.size = 1100
@@ -77,6 +81,8 @@ class Grass() :
 
 class Hero() :
     def __init__(self) :
+        self.x = x/2
+        self.y = (y/2)+100
         self.arme = Arme()
         self.image = pygame.image.load('images/personages/Humain_type_1.png')
         self.size = 100
@@ -105,15 +111,18 @@ class Arme() :
     def __init__(self) :
         # taille = 1105 x 682
         self.image = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
-        self.size = [1105/2, 682/2]
+        self.size = [1105/6, 682/6]
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
         self.rotated = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
     
     def display(self) :
-        screen.blit(self.rotated, (x/2-self.size[0]/2, y/2-self.size[1]/2))
+        screen.blit(self.rotated, (int(self.x/2-self.size[0]/2), int(self.y/2-self.size[1]/2)))
     
     def rotate(self, angle) :
         self.rotated = pygame.transform.rotate(self.image, angle)
+        self.x = (x/2)+math.sin(convert_radians(angle))*100
+        self.y = (y/2)+math.cos(convert_radians(angle))*100
+        
 
 def main() :
     grass = Grass()
