@@ -77,15 +77,17 @@ class Grass() :
 
 class Hero() :
     def __init__(self) :
+        self.arme = Arme()
         self.image = pygame.image.load('images/personages/Humain_type_1.png')
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.size = 100
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.pv = 100
         self.angle = 90
-        self.size = 150
         self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
     
     def display(self) :
         screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
+        self.arme.display()
 
     def change(self, mousepos) :
         '''Tourne le perso pour qu'il ragarde la souris.'''
@@ -93,9 +95,25 @@ class Hero() :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
             self.angle = convert_degrees(self.angle)
             if mousepos[0] < x/2 :
-                self.rotated = pygame.transform.rotate(self.image, 180-self.angle)
+                self.angle = 180-self.angle
             else :
-                self.rotated = pygame.transform.rotate(self.image, -self.angle)
+                self.angle = -self.angle
+            self.rotated = pygame.transform.rotate(self.image, self.angle)
+            self.arme.rotate(self.angle)
+
+class Arme() :
+    def __init__(self) :
+        # taille = 1105 x 682
+        self.image = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
+        self.size = [1105/2, 682/2]
+        self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
+        self.rotated = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
+    
+    def display(self) :
+        screen.blit(self.rotated, (x/2-self.size[0]/2, y/2-self.size[1]/2))
+    
+    def rotate(self, angle) :
+        self.rotated = pygame.transform.rotate(self.image, angle)
 
 def main() :
     grass = Grass()
