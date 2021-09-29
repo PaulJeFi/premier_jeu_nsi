@@ -14,7 +14,7 @@ SPEED = 5
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('images/personages/Humain_type1.png').convert())
+pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 
 def convert_degrees(angle) :
@@ -77,12 +77,12 @@ class Grass() :
 
 class Hero() :
     def __init__(self) :
-        self.image = pygame.image.load('images/personages/Humain_type1.png')
+        self.image = pygame.image.load('images/personages/Humain_type_1.png')
         self.image = pygame.transform.scale(self.image, (150, 150))
         self.pv = 100
         self.angle = 90
         self.size = 150
-        self.rotated = pygame.image.load('images/personages/Humain_type1.png')
+        self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
     
     def display(self) :
         screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
