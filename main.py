@@ -19,7 +19,7 @@ screen.fill(WHITE)
 class Grass() :
     def __init__(self) :
         self.size = 1100
-        self.image = pygame.image.load('images/tuilles_de_terrain/Herbe.png')
+        self.image = pygame.image.load('images/tuilles_de_terrain/grass.png')
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
         self.image_3 = [self.size, self.size]
