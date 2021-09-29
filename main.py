@@ -40,19 +40,54 @@ class Grass() :
                 Image = self.replacer(Image)
             Image[0] -= SPEED
     
+    def haut(self) :        
+        for Image in self.images :
+            if self.not_in_screen(Image) :
+                Image = self.replacer(Image)
+            Image[1] -= SPEED
+
+    def gauche(self) :        
+        for Image in self.images :
+            if self.not_in_screen(Image) :
+                Image = self.replacer(Image)
+            Image[0] += SPEED
+    
+    def bas(self) :        
+        for Image in self.images :
+            if self.not_in_screen(Image) :
+                Image = self.replacer(Image)
+            Image[1] += SPEED
+
     def display(self) :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
     
-    def not_in_screen(Image) :
-        pass
-    def replacer(Image) :
+    def not_in_screen(self, Image) :
+        return False
+        # Conpléter.
+    def replacer(self, Image) :
         pass
 
-while True :
-    screen.fill(WHITE)
-    pygame.display.flip()
-    for event in pygame.event.get() :
-                if event.type == pygame.QUIT :
-                    pygame.quit()
-                    sys.exit()
+def main() :
+    grass = Grass()
+    while True :
+        screen.fill(WHITE)
+        for event in pygame.event.get() :
+                    if event.type == pygame.QUIT :
+                        pygame.quit()
+                        sys.exit()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP] or pressed[pygame.K_z] :
+            grass.bas()
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
+            grass.haut()
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
+            grass.gauche()
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
+            grass.droite()
+        grass.display()
+        pygame.display.flip()
+
+
+if __name__ == '__main__' :
+    main()
