@@ -78,10 +78,10 @@ class Grass() :
 class Hero() :
     def __init__(self) :
         self.image = pygame.image.load('images/personages/Humain_type1.png')
-        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.image = pygame.transform.scale(self.image, (150, 150))
         self.pv = 100
         self.angle = 90
-        self.size = 100
+        self.size = 150
         self.rotated = pygame.image.load('images/personages/Humain_type1.png')
     
     def display(self) :
