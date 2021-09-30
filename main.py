@@ -10,7 +10,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-SPEED = 5
+
+SPEED = 4
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -25,10 +26,32 @@ def convert_radians(angle) :
     '''Convertit un angle en degrés en radians.'''
     return angle*math.pi/180
 
+class Score_actuel() :
+    def __init__(self) :
+        self.score = 0
+        self.niveau = 1
+        self.points = 0
+        self.score += self.points
+        if self.points != 0 :
+            self.points = 0
+        self.b_image = pygame.image.load('images/autres/Brouillard_V2.png')
+        self.b_size_x = 1080+4240//self.niveau
+        self.b_size_y = 720+2480//self.niveau
+        self.b_image = self.b_image = pygame.transform.scale(self.b_image,(self.b_size_x,self.b_size_y))
+        self.rect = self.b_image.get_rect()
+        self.rect.x = (1080-self.b_size_x)/2
+        self.rect.y = (720-self.b_size_y)/2
+        if self.score//(1000*self.niveau) >= self.niveau :
+            self.niveau = self.score//(1000*self.niveau)
+        
+    def display(self) :
+        screen.blit(self.b_image, self.rect)
+
 class Grass() :
     def __init__(self) :
-        self.size = 1100
-        self.image = pygame.image.load('images/tuilles_de_terrain/grass.png')
+        self.size = 1600
+        self.image = pygame.image.load('images/tuilles_de_terrain/Herbe_V2.png')
+        self.image = self.image = pygame.transform.scale(self.image,(self.size+SPEED,self.size+SPEED))
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
         self.image_3 = [self.size, self.size]
@@ -127,6 +150,7 @@ class Arme() :
 def main() :
     grass = Grass()
     hero = Hero()
+    score = Score_actuel()
     while True :
         screen.fill(WHITE)
         for event in pygame.event.get() :
@@ -145,6 +169,7 @@ def main() :
         hero.change(pygame.mouse.get_pos())
         grass.display()
         hero.display()
+        score.display()
         pygame.display.flip()
 
 
