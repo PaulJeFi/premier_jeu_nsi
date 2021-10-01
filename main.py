@@ -4,6 +4,7 @@ import math
 import random
 
 pygame.init()
+pygame.mouse.set_visible(False)
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -18,6 +19,13 @@ screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
+
+
+def curseur() :
+    pos = pygame.mouse.get_pos()
+    image = pygame.image.load('images/curseur/croix.png')
+    image = pygame.transform.scale(image,(30, 30))
+    screen.blit(image, pos)
 
 def convert_degrees(angle) :
     '''Convertit un angle en radians en degrés.'''
@@ -227,6 +235,7 @@ def main() :
         soin.display()
         hero.display()
         score.display()
+        curseur()
         pygame.display.flip()
 
 
