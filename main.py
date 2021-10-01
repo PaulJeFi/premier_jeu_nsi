@@ -5,6 +5,12 @@ import random
 
 pygame.init()
 pygame.mouse.set_visible(False)
+'''pygame.cursors.arrow
+pygame.cursors.diamond
+pygame.cursors.broken_x
+pygame.cursors.tri_left
+pygame.cursors.tri_right'''
+#pygame.mouse.set_cursor(pygame.cursors.arrow)
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -23,9 +29,10 @@ screen.fill(WHITE)
 
 def curseur() :
     pos = pygame.mouse.get_pos()
+    size = (30, 30)
     image = pygame.image.load('images/curseur/croix.png')
-    image = pygame.transform.scale(image,(30, 30))
-    screen.blit(image, pos)
+    image = pygame.transform.scale(image,(size[0], size[1]))
+    screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 
 def convert_degrees(angle) :
     '''Convertit un angle en radians en degrés.'''
