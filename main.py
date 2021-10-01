@@ -1,6 +1,7 @@
 import pygame
 import sys
 import math
+import random
 
 pygame.init()
 
@@ -26,6 +27,10 @@ def convert_radians(angle) :
     '''Convertit un angle en degrés en radians.'''
     return angle*math.pi/180
 
+def draw_rect(position, size, color) :
+	'''Permet de tracer un rectangle'''
+	pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
+
 class Score_actuel() :
     def __init__(self) :
         self.score = 0
@@ -46,6 +51,9 @@ class Score_actuel() :
         
     def display(self) :
         screen.blit(self.b_image, self.rect)
+    
+    def add(self, score) :
+        self.score += score
 
 class Grass() :
     def __init__(self) :
@@ -115,6 +123,9 @@ class Hero() :
         self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
     
     def display(self) :
+        draw_rect((50, 50), (200, 50), BLACK)
+        draw_rect((55, 55), (200-10, 50-10), RED)
+        draw_rect((55, 55), (int((200-10)*(self.pv/100)), 50-10), GREEN)
         screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
         self.arme.display()
 
@@ -129,6 +140,44 @@ class Hero() :
                 self.angle = -self.angle
             self.rotated = pygame.transform.rotate(self.image, self.angle)
             self.arme.rotate(self.angle)
+
+    def get_rect(self) :
+        return pygame.Rect(self.x, self.y, self.size, self.size)
+
+class Soin() :
+    def __init__(self) :
+        self.x, self.y = random.randint(0, x), random.randint(0, y)
+        self.image = pygame.image.load('images/objets/Pack de soin.png')
+        self.size = (50, 50)
+        self.image = pygame.transform.scale(self.image, self.size)
+    
+    def droite(self) :
+        self.x -= SPEED
+    
+    def haut(self) :
+        self.y -= SPEED
+
+    def gauche(self) :
+        self.x += SPEED
+    
+    def bas(self) :
+        self.y += SPEED
+
+    def replace(self) :
+        if (self.x+self.size[0] < 0) or (self.x > x) or (self.y+self.size[1] < 0) or (self.y > y) :
+            self.x, self.y = random.randint(0, x), random.randint(0, y)
+
+    def display(self) :
+        self.replace()
+        screen.blit(self.image, (self.x, self.y))
+
+    def get_rect(self) :
+        return pygame.Rect(self.x, self.y, *self.size)
+
+    def touch_hero(self, hero) :
+        if self.get_rect().colliderect(hero.get_rect()) :
+            return True
+        print(False)
 
 class Arme() :
     def __init__(self) :
@@ -151,6 +200,7 @@ def main() :
     grass = Grass()
     hero = Hero()
     score = Score_actuel()
+    soin = Soin()
     while True :
         screen.fill(WHITE)
         for event in pygame.event.get() :
@@ -160,14 +210,21 @@ def main() :
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP] or pressed[pygame.K_z] :
             grass.bas()
+            soin.bas()
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
             grass.haut()
+            soin.haut()
         if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
             grass.gauche()
+            soin.gauche()
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
             grass.droite()
+            soin.droite()
+        if soin.touch_hero(hero) :
+            print("Yeah")
         hero.change(pygame.mouse.get_pos())
         grass.display()
+        soin.display()
         hero.display()
         score.display()
         pygame.display.flip()
