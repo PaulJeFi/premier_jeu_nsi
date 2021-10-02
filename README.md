@@ -20,6 +20,7 @@ Je propose d'ajouter cette section pour inclure ce qui a été modifié.
  - j'ai fini pour l'animation de l'herbe. Je pense qu'il faudra changer l'image de l'herbe, le rendu est un peu dégueu.
  - j'ai (Térence) ajouté la majorité des images de ce projet.
  - (Paul) : Ajout de la barre de score et des trousses de soins. La détection de la collision entre le joueur et la trousse n'est pas fonctionnelle.
+ - Ajout (Paul) d'une base d'intro, pour faire patienter pendant le chargement du jeu, que peut devenir lon avec l'initialisation des polices et des sons.
 ---
 
 Idées et concepts pour le jeu :
