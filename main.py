@@ -49,7 +49,7 @@ def draw_rect(position, size, color) :
 class Score_actuel() :
     def __init__(self) :
         self.score = 0
-        self.niveau = 1
+        self.niveau = 5
         self.points = 0
         self.score += self.points
         if self.points != 0 :
@@ -240,8 +240,8 @@ def main() :
         hero.change(pygame.mouse.get_pos())
         grass.display()
         soin.display()
-        hero.display()
         score.display()
+        hero.display()
         curseur()
         pygame.display.flip()
 
