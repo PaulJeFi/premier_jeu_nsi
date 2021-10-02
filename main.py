@@ -19,7 +19,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 
-SPEED = 4
+SPEED = 10
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -189,10 +189,10 @@ class Soin() :
     def get_rect(self) :
         return pygame.Rect(self.x, self.y, *self.size)
 
-    def touch_hero(self, hero) :
-        if self.get_rect().colliderect(hero.get_rect()) :
-            return True
-        print(False)
+    def prendre(self):
+        if 500 < self.x and self.x < 580:
+            if 320 < self.y and self.y < 400:
+                return True
 
 class Arme() :
     def __init__(self) :
@@ -235,9 +235,8 @@ def main() :
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
             grass.droite()
             soin.droite()
-        if soin.touch_hero(hero) :
-            print("Yeah")
-            if hero.pv  <= 100 :
+        if soin.prendre() :
+            if hero.pv  <= 90 :
                 hero.pv += 10
             else :
                 hero.pv = 100
