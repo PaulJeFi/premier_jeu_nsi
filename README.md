@@ -19,7 +19,7 @@ Je propose d'ajouter cette section pour inclure ce qui a été modifié.
  - j'ai (Paul) créé un fichier main.py dans lequel je commence à créer l'arrière-plan.
  - j'ai fini pour l'animation de l'herbe. Je pense qu'il faudra changer l'image de l'herbe, le rendu est un peu dégueu.
  - j'ai (Térence) ajouté la majorité des images de ce projet.
-_ (Paul) : Ajout de la barre de score et des trousses de soins. La détection de la collision entre le joueur et la trousse n'est pas fonctionnelle.
+ - (Paul) : Ajout de la barre de score et des trousses de soins. La détection de la collision entre le joueur et la trousse n'est pas fonctionnelle.
 ---
 
 Idées et concepts pour le jeu :
