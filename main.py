@@ -19,7 +19,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 
-SPEED = 4
+SPEED = 10
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -237,7 +237,7 @@ def main() :
             soin.droite()
         if soin.touch_hero(hero) :
             print("Yeah")
-            if hero.pv  <= 100 :
+            if hero.pv  <= 90 :
                 hero.pv += 10
             else :
                 hero.pv = 100
