@@ -20,12 +20,13 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 
-SPEED = 10
+SPEED = 0.4
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
+clock = pygame.time.Clock()
 
 
 def curseur() :
@@ -75,7 +76,7 @@ class Grass() :
     def __init__(self) :
         self.size = 1600
         self.image = pygame.image.load('images/tuilles_de_terrain/Herbe_V2.png')
-        self.image = self.image = pygame.transform.scale(self.image,(self.size+SPEED,self.size+SPEED))
+        self.image = self.image = pygame.transform.scale(self.image, (int(self.size+SPEED), int(self.size+SPEED)))
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
         self.image_3 = [self.size, self.size]
@@ -90,25 +91,25 @@ class Grass() :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
 
-    def droite(self) :
+    def droite(self, dt) :
         for Image in self.images :
             self.replacer(Image)
-            Image[0] -= SPEED
+            Image[0] -= SPEED*dt
     
-    def haut(self) :
+    def haut(self, dt) :
         for Image in self.images :
             self.replacer(Image)
-            Image[1] -= SPEED
+            Image[1] -= SPEED*dt
 
-    def gauche(self) :
+    def gauche(self, dt) :
         for Image in self.images :
             self.replacer(Image)
-            Image[0] += SPEED
+            Image[0] += SPEED*dt
     
-    def bas(self) :
+    def bas(self, dt) :
         for Image in self.images :
             self.replacer(Image)
-            Image[1] += SPEED
+            Image[1] += SPEED*dt
 
     def display(self) :
         for Image in self.images :
@@ -167,17 +168,17 @@ class Soin() :
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
     
-    def droite(self) :
-        self.x -= SPEED
+    def droite(self, dt) :
+        self.x -= SPEED*dt
     
-    def haut(self) :
-        self.y -= SPEED
+    def haut(self, dt) :
+        self.y -= SPEED*dt
 
-    def gauche(self) :
-        self.x += SPEED
+    def gauche(self, dt) :
+        self.x += SPEED*dt
     
-    def bas(self) :
-        self.y += SPEED
+    def bas(self, dt) :
+        self.y += SPEED*dt
 
     def replace(self) :
         if (self.x+self.size[0] < 0) or (self.x > x) or (self.y+self.size[1] < 0) or (self.y > y) :
@@ -218,6 +219,7 @@ def main() :
     score = Score_actuel()
     soin = Soin()
     while True :
+        dt = clock.tick(15)
         screen.fill(WHITE)
         for event in pygame.event.get() :
                     if event.type == pygame.QUIT :
@@ -225,17 +227,17 @@ def main() :
                         sys.exit()
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP] or pressed[pygame.K_z] :
-            grass.bas()
-            soin.bas()
+            grass.bas(dt)
+            soin.bas(dt)
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
-            grass.haut()
-            soin.haut()
+            grass.haut(dt)
+            soin.haut(dt)
         if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
-            grass.gauche()
-            soin.gauche()
+            grass.gauche(dt)
+            soin.gauche(dt)
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
-            grass.droite()
-            soin.droite()
+            grass.droite(dt)
+            soin.droite(dt)
         if soin.prendre() :
             if hero.pv  <= 90 :
                 hero.pv += 10
