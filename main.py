@@ -237,6 +237,10 @@ def main() :
             soin.droite()
         if soin.touch_hero(hero) :
             print("Yeah")
+            if hero.pv  <= 100 :
+                hero.pv += 10
+            else :
+                hero.pv = 100
         hero.change(pygame.mouse.get_pos())
         grass.display()
         soin.display()
