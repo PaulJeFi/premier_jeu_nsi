@@ -262,7 +262,7 @@ def main() :
     score = Score_actuel()
     soin = Soin()
     while True :
-        dt = clock.tick(144)
+        dt = clock.tick(144) # IMPORTANT : FPS max
         screen.fill(WHITE)
         for event in pygame.event.get() :
                     if event.type == pygame.QUIT :
