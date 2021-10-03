@@ -18,6 +18,7 @@ pygame.cursors.tri_right'''
 #pygame.mouse.set_cursor(pygame.cursors.arrow)
 
 BLACK = (0, 0, 0)
+GRAY = (20, 20, 20)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -36,7 +37,7 @@ clock = pygame.time.Clock()
 def curseur() :
     pos = pygame.mouse.get_pos()
     size = (30, 30)
-    image = pygame.image.load('images/curseur/croix.png')
+    image = pygame.image.load('images\curseur\Croix_avec_carre.png')
     image = pygame.transform.scale(image,(size[0], size[1]))
     screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 
@@ -178,14 +179,25 @@ class Hero() :
         self.image = pygame.image.load('images/personages/Humain_type_1.png')
         self.size = 100
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.max_pv = 100
         self.pv = 100
         self.angle = 90
         self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
     
+    def pv_check(self) :
+        if self.pv > self.max_pv :
+            self.pv = self.max_pv
+        elif self.pv < 0 :
+            self.pv = 0
+
     def display(self) :
-        draw_rect((50, 50), (200, 50), BLACK)
-        draw_rect((55, 55), (200-10, 50-10), RED)
-        draw_rect((55, 55), (int((200-10)*(self.pv/100)), 50-10), GREEN)
+        if self.pv > 0 :
+            HP_GREEN = (200-((self.pv)/self.max_pv*200), (self.pv)/self.max_pv*255, 0)
+        else :
+            HP_GREEN = (200, 0, 0)
+        draw_rect((25, 25), (300, 25), BLACK)
+        draw_rect((27, 27), (296, 21), GRAY)
+        draw_rect((27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
         screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
         self.arme.display()
 
@@ -290,6 +302,7 @@ def main() :
                     hero.pv = 100
                 else :
                     hero.pv = 100
+            hero.pv_check()
             hero.change(pygame.mouse.get_pos())
             hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemies
         grass.display()
@@ -299,7 +312,6 @@ def main() :
         marche_arret.display()
         curseur()
         pygame.display.flip()
-
 
 if __name__ == '__main__' :
     main()
