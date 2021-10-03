@@ -1,8 +1,8 @@
+import intro
 from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from pygame.event import wait
 from pygame.mixer import pause, unpause
-import intro
 import pygame
 import sys
 import math
@@ -37,7 +37,7 @@ clock = pygame.time.Clock()
 def curseur() :
     pos = pygame.mouse.get_pos()
     size = (30, 30)
-    image = pygame.image.load('images\curseur\Croix_avec_carre.png')
+    image = pygame.image.load('images/curseur/Croix_avec_carre.png')
     image = pygame.transform.scale(image,(size[0], size[1]))
     screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 
@@ -56,7 +56,7 @@ def draw_rect(position, size, color) :
 class Marche_Arret() :
     def __init__(self) :
         self.status = True
-        self.image = pygame.image.load('images\interface\Bouton_pause_stop.png')
+        self.image = pygame.image.load('images/interface/Bouton_pause_stop.png')
         self.size = 50
         self.image = pygame.transform.scale(self.image,(self.size,self.size))
         self.rect = self.image.get_rect()
@@ -71,15 +71,15 @@ class Marche_Arret() :
         pos = pygame.mouse.get_pos()
         if pos[0] > x - self.size*2 and pos[1] < self.size*2 :
             if self.status == True :
-                self.image = pygame.image.load('images\interface\Bouton_pause_stop_lumineux.png')
+                self.image = pygame.image.load('images/interface/Bouton_pause_stop_lumineux.png')
             else :
-                self.image = pygame.image.load('images\interface\Bouton_pause_marche_lumineux.png')
+                self.image = pygame.image.load('images/interface/Bouton_pause_marche_lumineux.png')
             return True
         else :
             if self.status == True :
-                self.image = pygame.image.load('images\interface\Bouton_pause_stop.png')
+                self.image = pygame.image.load('images/interface/Bouton_pause_stop.png')
             else :
-                self.image = pygame.image.load('images\interface\Bouton_pause_marche.png')
+                self.image = pygame.image.load('images/interface/Bouton_pause_marche.png')
             return False
 
     def game_state(self) :
@@ -302,6 +302,7 @@ def main() :
                     hero.pv = 100
                 else :
                     hero.pv = 100
+                soin = Soin()
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
             hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemies
