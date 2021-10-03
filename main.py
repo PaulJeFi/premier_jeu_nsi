@@ -120,7 +120,7 @@ class Grass() :
     def __init__(self) :
         self.size = 1600
         self.image = pygame.image.load('images/tuilles_de_terrain/Herbe_V2.png')
-        self.image = self.image = pygame.transform.scale(self.image, (int(self.size+SPEED), int(self.size+SPEED)))
+        self.image = self.image = pygame.transform.scale(self.image, (int(1.5*self.size+SPEED), int(1.5*self.size+SPEED)))
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
         self.image_3 = [self.size, self.size]
