@@ -5,7 +5,7 @@ class Zombies ():
     """ intialisation de classe : image, pv et taille """
     def __init__(self) :
        image = pygame.image.load('images\personages\Zombie_type_1.png') 
-       image = pygame.transform.scale(image, (100, 100)
+       image = pygame.transform.scale(image, (100, 100))
        screen.blit(int(pos[0]-size[0]/2), int(pos[1]-size[1]/2))) 
        self.size = 100
        self.x = 0
@@ -24,7 +24,7 @@ class Zombies ():
         self.x = 0
         self.y = 0
         self.spawn = image()
-        self.spawn = (x, y)
+        self.spawn = (self.x, self.y)
 
     def deplacement (self) :
         if self.x > 540 and self.y > 360 :
@@ -34,4 +34,8 @@ class Zombies ():
             self.x -= 2 
             self.y -= 1
 
-        
+    def degatZomb (self) :
+        if """ le zombie est touché """ :
+            self.pv -= 10
+    
+    
