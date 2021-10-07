@@ -223,7 +223,9 @@ class Hero() :
     def display(self) :
         '''Affichage de soi-même et de la bare de pv'''
         if self.pv > 0 : # <-- La division par 0 cause une ERREUR
-            HP_GREEN = (200-((self.pv)/self.max_pv*200), (self.pv)/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
+            HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
+        else :
+            HP_GREEN = (200, 0, 0)
         draw_rect((25, 25), (300, 25), BLACK)
         draw_rect((27, 27), (296, 21), GRAY)
         draw_rect((27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
