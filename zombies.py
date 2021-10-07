@@ -1,4 +1,24 @@
 import pygame
+from main import Grass
+import sys
+
+pygame.init()
+BLACK = (0, 0, 0)
+GRAY = (20, 20, 20)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+
+# Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
+SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
+x, y = 1080, 720
+screen = pygame.display.set_mode((x, y))
+pygame.display.set_caption("Friends Royal")
+pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
+screen.fill(WHITE)
+clock = pygame.time.Clock()
+
 
 class Zombies ():
 
@@ -38,4 +58,27 @@ class Zombies ():
         if """ le zombie est touché """ :
             self.pv -= 10
     
-    
+def main() :
+    '''Fonction principale'''
+    grass = Grass()
+    while True : # False = le jeu s'arrête
+        dt = clock.tick(144) # IMPORTANT : FPS du jeu
+        screen.fill(WHITE)
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP] or pressed[pygame.K_z] :
+            grass.bas(dt)
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
+            grass.haut(dt)
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
+            grass.gauche(dt)
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
+            grass.droite(dt)
+        # Affiche ton sprite ici.
+        pygame.display.flip()
+
+if __name__ == '__main__' :
+    main()

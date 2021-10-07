@@ -325,9 +325,9 @@ def main() :
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
         for event in pygame.event.get() :
-                    if event.type == pygame.QUIT :
-                        pygame.quit()
-                        sys.exit()
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
         marche_arret.on_off() # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
