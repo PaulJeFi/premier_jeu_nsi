@@ -1,3 +1,9 @@
+'''
+Partie principale du script
+Les autre fichiers sont des éléments externes au gameplay principal ou des scripts en cours de dévelopement
+'''
+
+# Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
 import intro
 from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
@@ -15,8 +21,9 @@ pygame.cursors.diamond
 pygame.cursors.broken_x
 pygame.cursors.tri_left
 pygame.cursors.tri_right'''
-#pygame.mouse.set_cursor(pygame.cursors.arrow)
+#pygame.mouse.set_cursor(pygame.cursors.arrow)   <--   Paul, peut-on suprimer cette ligne et celles du dessus ?
 
+# Définition de certaines couleurs
 BLACK = (0, 0, 0)
 GRAY = (20, 20, 20)
 WHITE = (255, 255, 255)
@@ -24,8 +31,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-
-SPEED = 0.4
+# Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
+SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -35,6 +42,7 @@ clock = pygame.time.Clock()
 
 
 def curseur() :
+    '''Affichage du curseur personnalisé'''
     pos = pygame.mouse.get_pos()
     size = (30, 30)
     image = pygame.image.load('images/curseur/Croix_avec_carre.png')
@@ -54,8 +62,11 @@ def draw_rect(position, size, color) :
 	pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
 
 class Marche_Arret() :
+    '''Classe du bouton pause/marche'''
+
     def __init__(self) :
-        self.status = True
+        '''Appel initial de la classe'''
+        self.status = True # <-- True pour MARCHE ; False pour PAUSE
         self.image = pygame.image.load('images/interface/Bouton_pause_stop.png')
         self.size = 50
         self.image = pygame.transform.scale(self.image,(self.size,self.size))
@@ -64,6 +75,7 @@ class Marche_Arret() :
         self.rect.y = 0
 
     def display(self) :
+        '''Affichage de soi-même'''
         screen.blit(self.image, self.rect)
     
     def highlight(self) :
@@ -97,9 +109,12 @@ class Marche_Arret() :
                 pygame.time.wait(100)
         
 class Score_actuel() :
+    '''Classe pour le score, mais aussi pour la dificulté et le brouillard (qui augmentent en fonction du score)'''
+
     def __init__(self) :
+        '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 5
+        self.niveau = 5 # <-- Plus cette valeur est élevé, plus le brouillard est intense, et donc plus le champs de vision et réduit
         self.b_image = pygame.image.load('images/autres/Brouillard_V2.png')
         self.b_size_x = 1080+4240//self.niveau
         self.b_size_y = 720+2480//self.niveau
@@ -107,17 +122,25 @@ class Score_actuel() :
         self.rect = self.b_image.get_rect()
         self.rect.x = (1080-self.b_size_x)/2
         self.rect.y = (720-self.b_size_y)/2
-        if self.score//(1000*self.niveau) >= self.niveau :
-            self.niveau = self.score//(1000*self.niveau)
         
     def display(self) :
+        '''Affichage de soi-même'''
         screen.blit(self.b_image, self.rect)
     
     def add(self, score) :
+        '''Permet d'actualiser le score, le brouillard et la difficulté'''
         self.score += score
+        if self.score//(1000*self.niveau) >= self.niveau :
+            self.niveau = self.score//(1000*self.niveau)
+            self.b_size_x = 1080+4240//self.niveau
+            self.b_size_y = 720+2480//self.niveau
+            self.b_image = self.b_image = pygame.transform.scale(self.b_image,(self.b_size_x,self.b_size_y))
 
 class Grass() :
+    '''Classe permettant de remplir l'arrière plan avec des tuilles d'herbe'''
+
     def __init__(self) :
+        '''Appel initial de la classe'''
         self.size = 1600
         self.image = pygame.image.load('images/tuilles_de_terrain/Herbe_V2.png')
         self.image = self.image = pygame.transform.scale(self.image, (int(1.5*self.size+SPEED), int(1.5*self.size+SPEED)))
@@ -134,6 +157,8 @@ class Grass() :
         self.image_5, self.image_6, self.image_7, self.image_8, self.image_9]
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
+
+    '''Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement'''
 
     def droite(self, dt) :
         for Image in self.images :
@@ -156,6 +181,7 @@ class Grass() :
             Image[1] += SPEED*dt
 
     def display(self) :
+        '''Affichage de soi-même'''
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
     
@@ -172,7 +198,10 @@ class Grass() :
         pass
 
 class Hero() :
+    '''Classe du personnage'''
+
     def __init__(self) :
+        '''Appel initial de la classe'''
         self.x = x/2
         self.y = (y/2)+100
         self.arme = Arme()
@@ -185,16 +214,16 @@ class Hero() :
         self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
     
     def pv_check(self) :
+        '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; slef.max_pv ]'''
         if self.pv > self.max_pv :
             self.pv = self.max_pv
         elif self.pv < 0 :
             self.pv = 0
 
     def display(self) :
-        if self.pv > 0 :
-            HP_GREEN = (200-((self.pv)/self.max_pv*200), (self.pv)/self.max_pv*255, 0)
-        else :
-            HP_GREEN = (200, 0, 0)
+        '''Affichage de soi-même et de la bare de pv'''
+        if self.pv > 0 : # <-- La division par 0 cause une ERREUR
+            HP_GREEN = (200-((self.pv)/self.max_pv*200), (self.pv)/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
         draw_rect((25, 25), (300, 25), BLACK)
         draw_rect((27, 27), (296, 21), GRAY)
         draw_rect((27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
@@ -202,7 +231,7 @@ class Hero() :
         self.arme.display()
 
     def change(self, mousepos) :
-        '''Tourne le perso pour qu'il ragarde la souris.'''
+        '''Tourne le personnage pour qu'il ragarde la souris'''
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
             self.angle = convert_degrees(self.angle)
@@ -214,15 +243,22 @@ class Hero() :
             self.arme.rotate(self.angle)
 
     def get_rect(self) :
+        '''Donne les infos du rectangle du personnage (abscisse, ordonnée, largeur, longueur)'''
         return pygame.Rect(self.x, self.y, self.size, self.size)
 
 class Soin() :
+    '''Classe de la trousse de premiers secours'''
+
     def __init__(self) :
+        '''Appel initial de la classe'''
         self.x, self.y = random.randint(0, x), random.randint(0, y)
         self.image = pygame.image.load('images/objets/Pack de soin.png')
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
     
+    '''Permet l'illusion de mouvement'''
+    # PS : il faudrait faire un groupe de sprite et appliquer ces methodes au groupe
+
     def droite(self, dt) :
         self.x -= SPEED*dt
     
@@ -240,19 +276,26 @@ class Soin() :
             self.x, self.y = random.randint(0, x), random.randint(0, y)
 
     def display(self) :
+        '''Affichage de soi-même'''
         self.replace()
         screen.blit(self.image, (self.x, self.y))
 
     def get_rect(self) :
+        '''Donne les infos du rectangle de la trousse de premiers secours (abscisse, ordonnée, longueur)'''
         return pygame.Rect(self.x, self.y, *self.size)
 
     def prendre(self):
+        '''Interraction avec la trousse de premiers secours'''
         if 500 < self.x and self.x < 580:
             if 320 < self.y and self.y < 400:
                 return True
 
 class Arme() :
+    '''Classe des armes'''
+    # PS : va bientôt disparaitre car la classe héro va fusionner avec celle ci
+
     def __init__(self) :
+        '''Appel initial de la classe'''
         # taille = 1105 x 682
         self.image = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
         self.size = [1105/8, 682/8]
@@ -260,28 +303,32 @@ class Arme() :
         self.rotated = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
     
     def display(self) :
+        '''Affichage de soi-même'''
         screen.blit(self.rotated, (int(self.x/2-self.size[0]/2), int(self.y/2-self.size[1]/2)))
     
     def rotate(self, angle) :
+        '''Rotation de soi-même pour regarder vers la souris'''
         self.rotated = pygame.transform.rotate(self.image, angle)
         self.x = (x)+math.sin(convert_radians(angle))*100+50
         self.y = (y)+math.cos(convert_radians(angle))*100-10
         
 def main() :
+    '''Fonction principale'''
     marche_arret = Marche_Arret()
     grass = Grass()
     hero = Hero()
     score = Score_actuel()
     soin = Soin()
-    while True :
-        dt = clock.tick(144) # IMPORTANT : FPS max
+    while True : # False = le jeu s'arrête
+        dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
         for event in pygame.event.get() :
                     if event.type == pygame.QUIT :
                         pygame.quit()
                         sys.exit()
-        marche_arret.on_off()
-        if marche_arret.game_state() :
+        marche_arret.on_off() # Permet de savoir si le jeu est OUI ou NON en PAUSE
+        if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
+            '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(dt)
@@ -295,7 +342,7 @@ def main() :
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(dt)
                 soin.droite(dt)
-            if soin.prendre() :
+            if soin.prendre() : # Ineterraction avec la trousse de premiers secours
                 if hero.pv  < 65 :
                     hero.pv += 35
                 elif hero.pv < 100 :
@@ -306,6 +353,7 @@ def main() :
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
             hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemies
+        '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
         score.display()
