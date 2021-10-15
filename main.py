@@ -36,7 +36,7 @@ SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   --> 
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
+pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
@@ -45,7 +45,7 @@ def curseur() :
     '''Affichage du curseur personnalisé'''
     pos = pygame.mouse.get_pos()
     size = (30, 30)
-    image = pygame.image.load('images/curseur/Croix_avec_carre.png')
+    image = pygame.image.load('./images/curseur/Croix_avec_carre.png')
     image = pygame.transform.scale(image,(size[0], size[1]))
     screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 
@@ -67,7 +67,7 @@ class Marche_Arret() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.status = True # <-- True pour MARCHE ; False pour PAUSE
-        self.image = pygame.image.load('images/interface/Bouton_pause_stop.png')
+        self.image = pygame.image.load('./images/interface/Bouton_pause_stop.png')
         self.size = 50
         self.image = pygame.transform.scale(self.image,(self.size,self.size))
         self.rect = self.image.get_rect()
@@ -83,15 +83,15 @@ class Marche_Arret() :
         pos = pygame.mouse.get_pos()
         if pos[0] > x - self.size*2 and pos[1] < self.size*2 :
             if self.status == True :
-                self.image = pygame.image.load('images/interface/Bouton_pause_stop_lumineux.png')
+                self.image = pygame.image.load('./images/interface/Bouton_pause_stop_lumineux.png')
             else :
-                self.image = pygame.image.load('images/interface/Bouton_pause_marche_lumineux.png')
+                self.image = pygame.image.load('./images/interface/Bouton_pause_marche_lumineux.png')
             return True
         else :
             if self.status == True :
-                self.image = pygame.image.load('images/interface/Bouton_pause_stop.png')
+                self.image = pygame.image.load('./images/interface/Bouton_pause_stop.png')
             else :
-                self.image = pygame.image.load('images/interface/Bouton_pause_marche.png')
+                self.image = pygame.image.load('./images/interface/Bouton_pause_marche.png')
             return False
 
     def game_state(self) :
@@ -115,7 +115,7 @@ class Score_actuel() :
         '''Appel initial de la classe'''
         self.score = 0
         self.niveau = 5 # <-- Plus cette valeur est élevé, plus le brouillard est intense, et donc plus le champs de vision et réduit
-        self.b_image = pygame.image.load('images/autres/Brouillard_V2.png')
+        self.b_image = pygame.image.load('./images/autres/Brouillard_V2.png')
         self.b_size_x = 1080+4240//self.niveau
         self.b_size_y = 720+2480//self.niveau
         self.b_image = self.b_image = pygame.transform.scale(self.b_image,(self.b_size_x,self.b_size_y))
@@ -142,7 +142,7 @@ class Grass() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.size = 1600
-        self.image = pygame.image.load('images/tuilles_de_terrain/Herbe_V2.png')
+        self.image = pygame.image.load('./images/tuilles_de_terrain/Herbe_V2.png')
         self.image = self.image = pygame.transform.scale(self.image, (int(1.5*self.size+SPEED), int(1.5*self.size+SPEED)))
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
@@ -205,13 +205,13 @@ class Hero() :
         self.x = x/2
         self.y = (y/2)+100
         self.arme = Arme()
-        self.image = pygame.image.load('images/personages/Humain_type_1.png')
+        self.image = pygame.image.load('./images/personages/Humain_type_1.png')
         self.size = 100
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.max_pv = 100
         self.pv = 100
         self.angle = 90
-        self.rotated = pygame.image.load('images/personages/Humain_type_1.png')
+        self.rotated = pygame.image.load('./images/personages/Humain_type_1.png')
     
     def pv_check(self) :
         '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; slef.max_pv ]'''
@@ -254,7 +254,7 @@ class Soin() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.x, self.y = random.randint(0, x), random.randint(0, y)
-        self.image = pygame.image.load('images/objets/Pack de soin.png')
+        self.image = pygame.image.load('./images/objets/Pack de soin.png')
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
     
@@ -299,10 +299,10 @@ class Arme() :
     def __init__(self) :
         '''Appel initial de la classe'''
         # taille = 1105 x 682
-        self.image = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
+        self.image = pygame.image.load('./images/armes/Mitraillette/Mitraillette_frame1.png')
         self.size = [1105/8, 682/8]
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
-        self.rotated = pygame.image.load('images/armes/Mitraillette/Mitraillette_frame1.png')
+        self.rotated = pygame.image.load('./images/armes/Mitraillette/Mitraillette_frame1.png')
     
     def display(self) :
         '''Affichage de soi-même'''

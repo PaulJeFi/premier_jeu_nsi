@@ -15,7 +15,7 @@ SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   --> 
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('images/personages/Humain_type_1.png').convert())
+pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
@@ -24,26 +24,27 @@ class Zombies ():
 
     """ intialisation de classe : image, pv et taille """
     def __init__(self) :
-       image = pygame.image.load('images\personages\Zombie_type_1.png') 
+       image = pygame.image.load('./images/personages/Zombie_type_1.png') 
        image = pygame.transform.scale(image, (100, 100))
-       screen.blit(int(pos[0]-size[0]/2), int(pos[1]-size[1]/2))) 
-       self.size = 100
        self.x = 0
        self.y = 0
+       self.pos = [self.x, self.y]
+       self.size = 100
+       screen.blit(int(self.pos[0]-self.size[0]/2), int(self.pos[1]-self.size[1]/2))
        self.pv = 30
        self.pv_maxi = 30
-       self.rotated = pygame.image.load('images\personages\Zombie_type_1.png')
+       self.rotated = pygame.image.load('./images/personages/Zombie_type_1.png')
 
     def nbrPV (self) : 
-        if self.pv > self.pv_maxi:
+        if self.pv > self.pv_maxi :
             self.pv = self.pv_maxi
-        else self.pv < 0 :
+        elif self.pv < 0 :
             self.pv = 0
 
     def spawn(self) :
         self.x = 0
         self.y = 0
-        self.spawn = image()
+        #self.spawn = image() # <------------ là j'ai pas compris
         self.spawn = (self.x, self.y)
 
     def deplacement (self) :
