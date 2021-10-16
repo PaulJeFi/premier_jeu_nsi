@@ -58,8 +58,8 @@ def convert_radians(angle) :
     return angle*math.pi/180
 
 def draw_rect(position, size, color) :
-	'''Permet de tracer un rectangle'''
-	pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
+    '''Permet de tracer un rectangle'''
+    pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
 
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
