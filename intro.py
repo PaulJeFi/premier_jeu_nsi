@@ -39,7 +39,7 @@ def draw_rect(position, size, color) :
 	pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
 
 text_intro1 = ["Vous travailliez comme d'habitude dans votre boutique de machines à laver, quand votre ", "collègue ouvre le frigo assoiffé, et boit une bouteille de lessive, la confondant avec ", "du lait. "]
-text_intro2 = ["Vous le voyez se transformer sous vos yeux en zombie,  et très vite il contamine toute ", "la ville. Étant le seul survivant, vous décidez de quitter la ville. "]
+text_intro2 = ["Vous le voyez se transformer sous vos yeux en zombie, et très vite il contamine toute ", "la ville. Étant le seul survivant, vous décidez de quitter la ville. "]
 text_intro3 = ["Dans votre fuite, vous passez devant l'armurerie désertée, et vous prenez quelques ", "armes au cas où. La nuit commence à tomber et vous êtes presque arrivé à la forêt, ", "avec une seule idée en tête, survire… "]
 
 class Intro() :
