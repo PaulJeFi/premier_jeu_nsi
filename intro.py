@@ -63,7 +63,7 @@ class Intro() :
         elif self.text == text_intro3 :
             self.is_finished = True
 
-    def dislpay(self) :
+    def display(self) :
         screen.blit(self.image, (0, 0))
         draw_rect((0, 720-150), (1080, 150), BROWN)
         draw_rect((10, 720-135), (1080-20, 135-15), BLACK)
@@ -105,7 +105,7 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-        intro.dislpay()
+        intro.display()
         pygame.display.flip()
         if intro.is_finished :
             break
