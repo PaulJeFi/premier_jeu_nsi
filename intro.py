@@ -105,7 +105,11 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_SPACE] :
+            break
         intro.display()
+        text('[espace]: passer l\'intro', WHITE, (750, 720-150+90))
         pygame.display.flip()
         if intro.is_finished :
             break
