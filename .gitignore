@@ -1,4 +1,4 @@
 # Fichiers CPython
 __pycache__/
 # Fichiers MAC OSX
-.DS_Store/
+.DS_Store
