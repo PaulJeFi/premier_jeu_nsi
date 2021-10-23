@@ -1,5 +1,5 @@
 import pygame
-from main import Grass
+from main import Grass, deplace
 import sys
 
 pygame.init()
@@ -20,17 +20,17 @@ screen.fill(WHITE)
 clock = pygame.time.Clock()
 
 
-class Zombies ():
+class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
     def __init__(self) :
-       image = pygame.image.load('./images/personages/Zombie_type_1.png') 
-       image = pygame.transform.scale(image, (100, 100))
+       self.image = pygame.image.load('./images/personages/Zombie_type_1.png') 
+       self.image = pygame.transform.scale(self.image, (100, 100))
        self.x = 0
        self.y = 0
        self.pos = [self.x, self.y]
        self.size = 100
-       screen.blit(int(self.pos[0]-self.size[0]/2), int(self.pos[1]-self.size[1]/2))
+       screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
        self.pv = 30
        self.pv_maxi = 30
        self.rotated = pygame.image.load('./images/personages/Zombie_type_1.png')
@@ -57,11 +57,15 @@ class Zombies ():
 
     def degatZomb (self) :
         if """ le zombie est touché """ :
-            self.pv -= 10
+            self.pv -= 1
+    
+    def display(self) :
+        screen.blit(self.rotated, (self.x, self.y))
     
 def main() :
     '''Fonction principale'''
     grass = Grass()
+    zombie = Zombies()
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -72,13 +76,19 @@ def main() :
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP] or pressed[pygame.K_z] :
             grass.bas(dt)
+            zombie.bas(dt)
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
             grass.haut(dt)
+            zombie.haut(dt)
         if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
             grass.gauche(dt)
+            zombie.gauche(dt)
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
             grass.droite(dt)
+            zombie.droite(dt)
         # Affiche ton sprite ici.
+        grass.display()
+        zombie.display()
         pygame.display.flip()
 
 if __name__ == '__main__' :

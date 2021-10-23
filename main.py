@@ -14,15 +14,6 @@ import sys
 import math
 import random
 
-pygame.init()
-pygame.mouse.set_visible(False)
-'''pygame.cursors.arrow
-pygame.cursors.diamond
-pygame.cursors.broken_x
-pygame.cursors.tri_left
-pygame.cursors.tri_right'''
-#pygame.mouse.set_cursor(pygame.cursors.arrow)   <--   Paul, peut-on suprimer cette ligne et celles du dessus ?
-
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
 GRAY = (20, 20, 20)
@@ -33,13 +24,15 @@ BLUE = (0, 0, 255)
 
 # Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
-x, y = 1080, 720
+# Initialisation de Pygame
+x, y = 1080, 720 # dimensions de l'écran, en pixels
+pygame.init()
+pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
-
 
 def curseur() :
     '''Affichage du curseur personnalisé'''
@@ -144,6 +137,7 @@ class Grass() :
         self.size = 1600
         self.image = pygame.image.load('./images/tuilles_de_terrain/Herbe_V2.png')
         self.image = self.image = pygame.transform.scale(self.image, (int(1.5*self.size+SPEED), int(1.5*self.size+SPEED)))
+        # Placer tous les pavés de terrains à leurs emplacement initial
         self.image_1 = [0, 0]
         self.image_2 = [0, self.size]
         self.image_3 = [self.size, self.size]
@@ -153,6 +147,7 @@ class Grass() :
         self.image_7 = [-self.size, -self.size]
         self.image_8 = [-self.size, 0]
         self.image_9 = [-self.size, self.size]
+        # Et un conteneur qui les contient tous...
         self.images = [self.image_1, self.image_2, self.image_3, self.image_4,
         self.image_5, self.image_6, self.image_7, self.image_8, self.image_9]
         for Image in self.images :
@@ -186,7 +181,7 @@ class Grass() :
             screen.blit(self.image, (Image[0], Image[1]))
     
     def replacer(self, Image) :
-        '''Fonction du pavege de l'herbe.'''
+        '''Fonction du pavege de l'herbe. Permet de replacer un pavé si il est inutile à l'affichage'''
         if Image[0] < -2*self.size :
             Image[0] = self.size
         elif Image[0] > 2*self.size :
@@ -195,7 +190,6 @@ class Grass() :
             Image[1] = self.size
         elif Image[1] > 2*self.size :
             Image[1] = -self.size
-        pass
 
 class Hero() :
     '''Classe du personnage'''
@@ -248,19 +242,8 @@ class Hero() :
         '''Donne les infos du rectangle du personnage (abscisse, ordonnée, largeur, longueur)'''
         return pygame.Rect(self.x, self.y, self.size, self.size)
 
-class Soin() :
-    '''Classe de la trousse de premiers secours'''
-
-    def __init__(self) :
-        '''Appel initial de la classe'''
-        self.x, self.y = random.randint(0, x), random.randint(0, y)
-        self.image = pygame.image.load('./images/objets/Pack de soin.png')
-        self.size = (50, 50)
-        self.image = pygame.transform.scale(self.image, self.size)
-    
-    '''Permet l'illusion de mouvement'''
-    # PS : il faudrait faire un groupe de sprite et appliquer ces methodes au groupe
-
+class deplace() :
+    '''Classe de base pour le déplacement. Est wrappé par d'audres classes.'''
     def droite(self, dt) :
         self.x -= SPEED*dt
     
@@ -272,6 +255,16 @@ class Soin() :
     
     def bas(self, dt) :
         self.y += SPEED*dt
+
+class Soin(deplace) :
+    '''Classe de la trousse de premiers secours'''
+
+    def __init__(self) :
+        '''Appel initial de la classe'''
+        self.x, self.y = random.randint(0, x), random.randint(0, y)
+        self.image = pygame.image.load('./images/objets/Pack de soin.png')
+        self.size = (50, 50)
+        self.image = pygame.transform.scale(self.image, self.size)
 
     def replace(self) :
         if (self.x+self.size[0] < 0) or (self.x > x) or (self.y+self.size[1] < 0) or (self.y > y) :
