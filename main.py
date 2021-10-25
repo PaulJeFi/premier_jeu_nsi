@@ -181,7 +181,7 @@ class Grass() :
             screen.blit(self.image, (Image[0], Image[1]))
     
     def replacer(self, Image) :
-        '''Fonction du pavege de l'herbe. Permet de replacer un pavé si il est inutile à l'affichage'''
+        '''Fonction du pavage de l'herbe. Permet de replacer un pavé si il est inutile à l'affichage'''
         if Image[0] < -2*self.size :
             Image[0] = self.size
         elif Image[0] > 2*self.size :

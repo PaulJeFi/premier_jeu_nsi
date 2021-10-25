@@ -1,7 +1,8 @@
 import pygame
-from main import Grass, deplace, convert_degrees, convert_radians
+from main import Grass, deplace, convert_degrees, convert_radians, SPEED
 import sys
 import math
+import time
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -25,18 +26,19 @@ class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
     def __init__(self) :
-       self.image = pygame.image.load('./images/personages/Zombie_type_1.png') 
-       self.image = pygame.transform.scale(self.image, (100, 100))
-       self.image = pygame.transform.rotate(self.image, 180)
-       self.x = 0
-       self.y = 0
-       self.pos = [self.x, self.y]
-       self.size = 100
-       screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
-       self.pv = 30
-       self.pv_maxi = 30
-       self.rotated = self.image
-       self.angle = 0
+        self.size = 100
+        self.image = pygame.image.load('./images/personages/Zombie_type_1.png') 
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.image = pygame.transform.rotate(self.image, 180)
+        self.x = x/2-100
+        self.y = y/2-100
+        self.pos = [self.x, self.y]
+        self.size = 100
+        screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
+        self.pv = 30
+        self.pv_maxi = 30
+        self.rotated = self.image
+        self.angle = 0
 
     def nbrPV (self) : 
         if self.pv > self.pv_maxi :
@@ -66,7 +68,7 @@ class Zombies(deplace) :
         Un code naïf serait le suivant :
 
         if self.x > x/2 :
-            self.x -=1
+            self.x -= 1
         elif self.x < x/2 :
             self.x += 1
         if self.y > y/2 :
@@ -78,7 +80,12 @@ class Zombies(deplace) :
         centre, mais vers les axes centraux, donc au final vers le centre.
         If faut donc utiliser des VECTEURS.
         '''
-        pass
+        l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
+        self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
+        self.x -= SPEED * self.vect[0]
+        self.y -= SPEED * self.vect[1]
+        #pygame.draw.line(screen, WHITE, (self.x, self.y), (self.x+self.vect[0], self.y+self.vect[1]))
+        '''line(surface, color, start_pos, end_pos, width)'''
 
     def degatZomb (self) :
         if """ le zombie est touché """ :
@@ -87,7 +94,7 @@ class Zombies(deplace) :
     def display(self) :
         self.deplacement()
         self.change()
-        screen.blit(self.rotated, (self.x, self.y))
+        screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
 
     def change(self) :
         '''Tourne le zombie pour qu'il ragarde le centre'''
@@ -128,6 +135,8 @@ def main() :
         grass.display()
         zombie.display()
         pygame.display.flip()
+        print(zombie.x, zombie.y)
 
 if __name__ == '__main__' :
     main()
+
