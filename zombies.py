@@ -1,8 +1,9 @@
 import pygame
-from main import Grass, deplace, convert_degrees, convert_radians, SPEED
+from main import Grass, deplace, convert_degrees, convert_radians
 import sys
 import math
 import time
+import random
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -13,7 +14,6 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
-SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -25,13 +25,13 @@ clock = pygame.time.Clock()
 class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
-    def __init__(self) :
+    def __init__(self, type=1) :
         self.size = 100
-        self.image = pygame.image.load('./images/personages/Zombie_type_1.png') 
+        self.SPEED = 0.25
+        self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image = pygame.transform.rotate(self.image, 180)
-        self.x = x/2-100
-        self.y = y/2-100
+        self.spawn()
         self.pos = [self.x, self.y]
         self.size = 100
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
@@ -47,12 +47,22 @@ class Zombies(deplace) :
             self.pv = 0
 
     def spawn(self) :
-        self.x = 0
-        self.y = 0
-        #self.spawn = image() # <------------ là j'ai pas compris
-        self.spawn = (self.x, self.y)
+        '''Fait naître les Zombies par la grâce de Térence. N'oublions pas sa supériorité totale.'''
+        def spawn_x(the_x) :
+            '''Faut pas le dire à Mr Mandic...'''
+            the_x = random.randint(-1*x, 2*x)
+            if 0-self.size <= the_x <= x+self.size :
+                the_x = spawn_x(the_x)
+            return the_x
+        def spawn_y(the_y=0) :
+            '''Faut pas le dire à Mr Mandic...'''
+            the_y = random.randint(-1*y, 2*y)
+            if 0-self.size <= the_y <= y+self.size :
+                the_y = spawn_y(the_y)
+            return the_y
+        self.x, self.y = spawn_x(self), spawn_y(self)
 
-    def deplacement (self) :
+    def deplacement (self, dt) :
         '''Le déplacement de l'IA'''
         #############################################
         # Old code d'Anatole. J'ai pas tout compris.#
@@ -82,8 +92,8 @@ class Zombies(deplace) :
         '''
         l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
         self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
-        self.x -= SPEED * self.vect[0]
-        self.y -= SPEED * self.vect[1]
+        self.x -= dt*self.SPEED * self.vect[0]
+        self.y -= dt*self.SPEED * self.vect[1]
         #pygame.draw.line(screen, WHITE, (self.x, self.y), (self.x+self.vect[0], self.y+self.vect[1]))
         '''line(surface, color, start_pos, end_pos, width)'''
 
@@ -91,8 +101,8 @@ class Zombies(deplace) :
         if """ le zombie est touché """ :
             self.pv -= 1
     
-    def display(self) :
-        self.deplacement()
+    def display(self, dt) :
+        self.deplacement(dt)
         self.change()
         screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
 
@@ -107,10 +117,40 @@ class Zombies(deplace) :
                 self.angle = -self.angle
             self.rotated = pygame.transform.rotate(self.image, self.angle)
 
+class Construct_Zombies() :
+    '''Cette classe permet de gérer un ensemble de zombies'''
+    def __init__(self, number=10) :
+        self.zombies = [Zombies(1) for i in range(number)]
+
+    def __add__(self, num) :
+        for i in range(num) :
+            self.zombies.append(Zombies())
+
+    def display(self, dt) :
+        for zomb in self.zombies :
+            zomb.display(dt)
+
+    def haut(self, dt) :
+        for zomb in self.zombies :
+            zomb.haut(dt)
+
+    def bas(self, dt) :
+        for zomb in self.zombies :
+            zomb.bas(dt)
+
+    def gauche(self, dt) :
+        for zomb in self.zombies :
+            zomb.gauche(dt)
+
+    def droite(self, dt) :
+        for zomb in self.zombies :
+            zomb.droite(dt)
+    
+
 def main() :
     '''Fonction principale'''
     grass = Grass()
-    zombie = Zombies()
+    zombies = Construct_Zombies()
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -121,21 +161,21 @@ def main() :
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_UP] or pressed[pygame.K_z] :
             grass.bas(dt)
-            zombie.bas(dt)
+            zombies.bas(dt)
         if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
             grass.haut(dt)
-            zombie.haut(dt)
+            zombies.haut(dt)
         if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
             grass.gauche(dt)
-            zombie.gauche(dt)
+            zombies.gauche(dt)
         if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
             grass.droite(dt)
-            zombie.droite(dt)
+            zombies.droite(dt)
         # Affiche ton sprite ici.
         grass.display()
-        zombie.display()
+        zombies.display(dt)
         pygame.display.flip()
-        print(zombie.x, zombie.y)
+        #zombies.zombies.append(Zombies(3))
 
 if __name__ == '__main__' :
     main()
