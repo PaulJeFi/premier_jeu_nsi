@@ -1,5 +1,5 @@
 import pygame
-from main import Grass, deplace, convert_degrees, convert_radians
+from main import Grass, deplace, convert_degrees, convert_radians, collisions
 import sys
 import math
 import time
@@ -21,7 +21,6 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
-
 class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
@@ -39,6 +38,7 @@ class Zombies(deplace) :
         self.pv_maxi = 30
         self.rotated = self.image
         self.angle = 0
+        self.rect = self.image.get_rect()
 
     def nbrPV (self) : 
         if self.pv > self.pv_maxi :
@@ -93,9 +93,21 @@ class Zombies(deplace) :
         l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
         self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
         self.x -= dt*self.SPEED * self.vect[0]
+        if collisions(self, Construct_Zombies().zombies) :
+            print("bruh x")
+            self.x += dt*self.SPEED * self.vect[0]
         self.y -= dt*self.SPEED * self.vect[1]
+        if collisions(self, Construct_Zombies().zombies) :
+            print("bruh y")
+            self.x += dt*self.SPEED * self.vect[0]
         #pygame.draw.line(screen, WHITE, (self.x, self.y), (self.x+self.vect[0], self.y+self.vect[1]))
         '''line(surface, color, start_pos, end_pos, width)'''
+
+    def deplacement_inverse(self, dt):
+        l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
+        self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
+        self.x += dt*self.SPEED * self.vect[0]
+        self.y += dt*self.SPEED * self.vect[0]
 
     def degatZomb (self) :
         if """ le zombie est touché """ :
@@ -118,17 +130,25 @@ class Zombies(deplace) :
             self.rotated = pygame.transform.rotate(self.image, self.angle)
 
 class Construct_Zombies() :
+
     '''Cette classe permet de gérer un ensemble de zombies'''
     def __init__(self, number=10) :
         self.zombies = [Zombies(1) for i in range(number)]
+        self.zombie = Zombies(1)
+        self.groupe = pygame.sprite.Group()
 
     def __add__(self, num) :
+        self.groupe.clear()
         for i in range(num) :
             self.zombies.append(Zombies())
+            self.groupe.add(self.zombie)
 
     def display(self, dt) :
         for zomb in self.zombies :
-            zomb.display(dt)
+            self.groupe.remove(zomb)
+            if not collisions(zomb, self.groupe) :
+                zomb.display(dt)
+            self.groupe.add(zomb)
 
     def haut(self, dt) :
         for zomb in self.zombies :

@@ -54,6 +54,10 @@ def draw_rect(position, size, color) :
     '''Permet de tracer un rectangle'''
     pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
 
+def collisions(sprite, groupe_de_sprite):
+    '''Permet de vérifier si il y a colision entre un objet et un groupe d'objet'''
+    return pygame.sprite.spritecollide(sprite, groupe_de_sprite, False, pygame.sprite.collide_mask)
+
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
 
