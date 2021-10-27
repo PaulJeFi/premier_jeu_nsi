@@ -3,6 +3,7 @@ import math
 import pygame
 
 SPEED = 0.4
+v2 = math.sqrt(2)
 
 def Q_rsqrt(number):
     '''FISR : Fast Invert Square Root

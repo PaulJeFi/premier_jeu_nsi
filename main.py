@@ -4,7 +4,7 @@ Les autre fichiers sont des éléments externes au gameplay principal ou des scr
 '''
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
-import intro
+import loadding
 from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from pygame.event import wait

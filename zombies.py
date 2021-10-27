@@ -3,7 +3,7 @@ from main import Grass
 import sys
 import math
 import random
-from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions
+from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -39,6 +39,12 @@ class Zombies(deplace) :
         self.rotated = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
+    
+    def change_to_type(self, type) :
+        if type in [1, 2, 3] :
+            self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
+            self.image = pygame.transform.scale(self.image, (self.size, self.size))
+            self.image = pygame.transform.rotate(self.image, 180)
 
     def nbrPV (self) : 
         if self.pv > self.pv_maxi :
@@ -102,8 +108,8 @@ class Zombies(deplace) :
         '''
         un_sur_l = Q_rsqrt((self.x - x/2)**2 + (self.y - y/2)**2)
         self.vect = [un_sur_l * (self.x - x/2), un_sur_l * (self.y - y/2)]
-        self.x -= self.SPEED * self.vect[0]
-        self.y -= self.SPEED * self.vect[1]
+        self.x -= dt*self.SPEED * self.vect[0]
+        self.y -= dt*self.SPEED * self.vect[1]
 
     def deplacement_inverse(self, dt):
         l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
@@ -138,14 +144,28 @@ class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
     def __init__(self, number=10) :
-        self.zombies = [Zombies(1) for i in range(number)]
-        self.rects = [zombie.get_rect() for zombie in self.zombies]
+        self.zombies = []
+        for i in range(number) :
+            self.zombies.append(self.do_again(1))
+        #self.zombies = [self.do_again(1) for i in range(number)]
+            
+    def do_again(self, type) :
+        zombie = Zombies(type)
+        for zomb in self.zombies :
+            if self.is_next(zombie, zomb) :
+                zombie = self.do_again(type)
+        return zombie
+    
+    def is_next(self, zomb, zombi) :
+        size = Zombies().size
+        longueur_max = size*v2 # la distance maximale d'éligibilité
+        if math.sqrt((zomb.x-zombi.x)**2+(zomb.y-zombi.y)**2) <= longueur_max :
+            return True
+        else :
+            return False
 
-    def __add__(self, num) :
-        self.groupe.clear()
-        for i in range(num) :
-            self.zombies.append(Zombies())
-            self.groupe.add(self.zombie)
+    def add(self, type) :
+        self.zombies.append(self.do_again(type))#.change_to_type(type))
 
     def display(self, dt) :
         for zomb in self.zombies :
@@ -155,9 +175,9 @@ class Construct_Zombies() :
                 if zomb is zombi :
                     continue
                 elif zomb.get_rect().colliderect(zombi.get_rect()) and zombi != zomb :
+                #elif self.is_next(zomb, zombi) :
                     zomb.x, zomb.y = the_x, the_y
                     break
-            
 
     def haut(self, dt) :
         for zomb in self.zombies :
@@ -204,8 +224,7 @@ def main() :
         grass.display()
         zombies.display(dt)
         pygame.display.flip()
-        #zombies.zombies.append(Zombies(3))
-        print(dt)
+        #zombies.add(3)
 
 if __name__ == '__main__' :
     main()
