@@ -1,8 +1,9 @@
 import pygame
-from main import Grass, deplace, convert_degrees, convert_radians, collisions
+from main import Grass
 import sys
 import math
 import random
+from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -88,9 +89,19 @@ class Zombies(deplace) :
         Mais le problème est que le zombie ne se déplace pas DIRECTEMENT vers le
         centre, mais vers les axes centraux, donc au final vers le centre.
         If faut donc utiliser des VECTEURS.
-        '''
+        On peut alors utiliser le code suivant :
+
         l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
         self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
+        self.x -= self.SPEED * self.vect[0]
+        self.y -= self.SPEED * self.vect[1]
+
+        Mais ce code, bien qu'il soit FONCTIONNEL, est tès LENT. En effet, les
+        racines et les divisions sont des opérations lentes par les ordinateurs.
+        Donc on fait comme suit :
+        '''
+        un_sur_l = Q_rsqrt((self.x - x/2)**2 + (self.y - y/2)**2)
+        self.vect = [un_sur_l * (self.x - x/2), un_sur_l * (self.y - y/2)]
         self.x -= self.SPEED * self.vect[0]
         self.y -= self.SPEED * self.vect[1]
 
@@ -194,6 +205,7 @@ def main() :
         zombies.display(dt)
         pygame.display.flip()
         #zombies.zombies.append(Zombies(3))
+        print(dt)
 
 if __name__ == '__main__' :
     main()

@@ -4,3 +4,4 @@
   - Des comentaires ont étés ajoutés, la structure générale des fichiers a été modifiés (dans l'ordre : imports, constantes, initialisation de Pygame, classes et fonctions, code principal).
   - Le fichier ```Zombies.py``` est maintenant fonctionnel mais ne sert encore à rien.
   - Ajout d'un fichier ```.gitignore``` pour ignorer les modifications aux dossiers ```__pycache__``` (fichiés pré-compilés Python) et ```.DS_Store``` (des fichiers utilisés par Apple dans le Finder (équivalent de l'Explorateur de fichiers sous Window), qui ne servent pas à l'utilisateur).
+  - Les fonctions ont été regroupées dans un nouveau fichier, ```functions.py```, dans lequel a notamment été déplacée la classe ```deplace```.

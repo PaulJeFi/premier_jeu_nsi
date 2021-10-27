@@ -13,6 +13,7 @@ import pygame
 import sys
 import math
 import random
+from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -33,30 +34,6 @@ pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
-
-def curseur() :
-    '''Affichage du curseur personnalisé'''
-    pos = pygame.mouse.get_pos()
-    size = (30, 30)
-    image = pygame.image.load('./images/curseur/Croix_avec_carre.png')
-    image = pygame.transform.scale(image,(size[0], size[1]))
-    screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
-
-def convert_degrees(angle) :
-    '''Convertit un angle en radians en degrés.'''
-    return angle*180/math.pi
-
-def convert_radians(angle) :
-    '''Convertit un angle en degrés en radians.'''
-    return angle*math.pi/180
-
-def draw_rect(position, size, color) :
-    '''Permet de tracer un rectangle'''
-    pygame.draw.rect(screen, color, (position[0], position[1], size[0], size[1]))
-
-def collisions(sprite, groupe_de_sprite):
-    '''Permet de vérifier si il y a colision entre un objet et un groupe d'objet'''
-    return pygame.sprite.spritecollide(sprite, groupe_de_sprite, False, pygame.sprite.collide_mask)
 
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
@@ -224,9 +201,9 @@ class Hero() :
             HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
         else :
             HP_GREEN = (200, 0, 0)
-        draw_rect((25, 25), (300, 25), BLACK)
-        draw_rect((27, 27), (296, 21), GRAY)
-        draw_rect((27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
+        draw_rect(screen, (25, 25), (300, 25), BLACK)
+        draw_rect(screen, (27, 27), (296, 21), GRAY)
+        draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
         screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
         self.arme.display()
 
@@ -245,20 +222,6 @@ class Hero() :
     def get_rect(self) :
         '''Donne les infos du rectangle du personnage (abscisse, ordonnée, largeur, longueur)'''
         return pygame.Rect(self.x, self.y, self.size, self.size)
-
-class deplace() :
-    '''Classe de base pour le déplacement. Est wrappé par d'audres classes.'''
-    def droite(self, dt) :
-        self.x -= SPEED*dt
-    
-    def haut(self, dt) :
-        self.y -= SPEED*dt
-
-    def gauche(self, dt) :
-        self.x += SPEED*dt
-    
-    def bas(self, dt) :
-        self.y += SPEED*dt
 
 class Soin(deplace) :
     '''Classe de la trousse de premiers secours'''
@@ -358,7 +321,7 @@ def main() :
         score.display()
         hero.display()
         marche_arret.display()
-        curseur()
+        curseur(screen)
         pygame.display.flip()
 
 if __name__ == '__main__' :
