@@ -68,6 +68,9 @@ class Zombies(deplace) :
             return the_y
         self.x, self.y = spawn_x(self), spawn_y(self)
 
+        
+
+
     def deplacement (self, dt) :
         '''Le déplacement de l'IA'''
         #############################################
@@ -139,6 +142,16 @@ class Zombies(deplace) :
     
     def get_rect(self) :
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
+
+    def barreVie(self, surface) :
+        #je définie la couleur de la barre
+        bar_color = RED
+        # position, largueur et epaisseur
+        position_barre = [self.x, self.y, self.pv, 10]
+        # je dessine la barre de vie
+        pygame.draw.rect(surface, bar_color, position_barre)
+
+
 
 class Construct_Zombies() :
 
