@@ -65,5 +65,5 @@ Idées et concepts pour le jeu :
      - Les ennemis spéciaux dropent plus d'argent
  - Quelque chose qui rendrait le jeu VRAIMENT SYMPA ça serait une ambiance de plus en plus horeur au fur et à mesure que la dificulté augmente.
     
-     - Creer des animations en debuts et fin de jeu differents en fonction des du niveaux difficulté du jeu.
-     - Ajouter des sons reagissant avec les actions dans le jeu 
+     - Creer des animations en débuts et fin de jeu differents en fonction des du niveaux difficulté du jeu.
+     - Ajouter des sons réagissant avec les actions dans le jeu 

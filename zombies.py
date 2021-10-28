@@ -34,8 +34,8 @@ class Zombies(deplace) :
         self.pos = [self.x, self.y]
         self.size = 100
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
-        self.pv = 30
-        self.pv_maxi = 30
+        self.pv = 3
+        self.pv_maxi = 3
         self.rotated = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
@@ -85,6 +85,7 @@ class Zombies(deplace) :
         
         '''
         Un code naïf serait le suivant :
+        Merci paul :(
 
         if self.x > x/2 :
             self.x -= 1
@@ -120,10 +121,12 @@ class Zombies(deplace) :
         self.x += dt*self.SPEED * self.vect[0]
         self.y += dt*self.SPEED * self.vect[0]
 
-    def degatZomb (self) :
-        if """ le zombie est touché """ :
-            self.pv -= 1
-    
+    def degatZomb (self, comptePTvie) :
+        #definition des degats
+        self.pv -= 1
+        
+
+
     def display(self, dt) :
         self.deplacement(dt)
         self.change()
@@ -144,12 +147,29 @@ class Zombies(deplace) :
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
     def barreVie(self, surface) :
-        #je définie la couleur de la barre
+        #définition couleur de la barre
         bar_color = RED
         # position, largueur et epaisseur
-        position_barre = [self.x, self.y, self.pv, 10]
-        # je dessine la barre de vie
+        position_barre = [self.x, self.y, self.pv, 3]
+        # dessin la barre de vie
         pygame.draw.rect(surface, bar_color, position_barre)
+
+    "pour actualiser la barre de vie en fonction des degats reçus"
+    def actuBarreVie(self, surface):
+        #définition de la seconde couleur de la barre
+        secondCouleurBarre = GRAY
+        # definition de la position seconde couleur
+        position_barre_actualise = [self.x, self.y, self.pv_maxi, 3]
+        #dessin nouvelle barre
+        pygame.draw.rect(surface, secondCouleurBarre, position_barre_actualise)
+"""
+def mort(self) : 
+    #pv du zombie à 0
+    if self.pv == 0:
+        #disparition du zombie 
+        
+        #disparition de la barre de vie 
+"""
 
 
 
