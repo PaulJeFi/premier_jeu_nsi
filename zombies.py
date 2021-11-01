@@ -147,7 +147,7 @@ class Zombies(deplace) :
         '''Affiche la barre de pv des zombies'''
         draw_rect(screen, (self.x-(20+15), self.y-(15+30)), (100, 20), BLACK)
         draw_rect(screen, (self.x-(20+10), self.y-(15+25)), (self.pv*(100-10)/self.pv_maxi, 20-10), RED)
-        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)))
+        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)+1))
 
 class Construct_Zombies() :
 
