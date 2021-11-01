@@ -3,7 +3,7 @@ from main import Grass
 import sys
 import math
 import random
-from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2
+from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -20,6 +20,8 @@ pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
+pygame.font.init()
+myfont = pygame.font.SysFont('couriernewbold', 15)
 
 class Zombies(deplace) :
 
@@ -68,9 +70,6 @@ class Zombies(deplace) :
             return the_y
         self.x, self.y = spawn_x(self), spawn_y(self)
 
-        
-
-
     def deplacement (self, dt) :
         '''Le déplacement de l'IA'''
         #############################################
@@ -85,7 +84,6 @@ class Zombies(deplace) :
         
         '''
         Un code naïf serait le suivant :
-        Merci paul :(
 
         if self.x > x/2 :
             self.x -= 1
@@ -121,16 +119,15 @@ class Zombies(deplace) :
         self.x += dt*self.SPEED * self.vect[0]
         self.y += dt*self.SPEED * self.vect[0]
 
-    def degatZomb (self, comptePTvie) :
-        #definition des degats
+    def degatZomb(self) :
+        # Si le zombie est touché
         self.pv -= 1
-        
-
-
+    
     def display(self, dt) :
         self.deplacement(dt)
         self.change()
         screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
+        self.barreVie()
 
     def change(self) :
         '''Tourne le zombie pour qu'il ragarde le centre'''
@@ -146,32 +143,11 @@ class Zombies(deplace) :
     def get_rect(self) :
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
-    def barreVie(self, surface) :
-        #définition couleur de la barre
-        bar_color = RED
-        # position, largueur et epaisseur
-        position_barre = [self.x, self.y, self.pv, 3]
-        # dessin la barre de vie
-        pygame.draw.rect(surface, bar_color, position_barre)
-
-    "pour actualiser la barre de vie en fonction des degats reçus"
-    def actuBarreVie(self, surface):
-        #définition de la seconde couleur de la barre
-        secondCouleurBarre = GRAY
-        # definition de la position seconde couleur
-        position_barre_actualise = [self.x, self.y, self.pv_maxi, 3]
-        #dessin nouvelle barre
-        pygame.draw.rect(surface, secondCouleurBarre, position_barre_actualise)
-"""
-def mort(self) : 
-    #pv du zombie à 0
-    if self.pv == 0:
-        #disparition du zombie 
-        
-        #disparition de la barre de vie 
-"""
-
-
+    def barreVie(self) :
+        '''Affiche la barre de pv des zombies'''
+        draw_rect(screen, (self.x-(20+15), self.y-(15+30)), (100, 20), BLACK)
+        draw_rect(screen, (self.x-(20+10), self.y-(15+25)), (self.pv*(100-10)/self.pv_maxi, 20-10), RED)
+        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)))
 
 class Construct_Zombies() :
 
