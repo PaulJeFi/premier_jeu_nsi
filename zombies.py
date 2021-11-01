@@ -36,8 +36,8 @@ class Zombies(deplace) :
         self.pos = [self.x, self.y]
         self.size = 100
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
-        self.pv = 3
-        self.pv_maxi = 3
+        self.pv_maxi = 100
+        self.pv = self.pv_maxi
         self.rotated = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
@@ -55,7 +55,7 @@ class Zombies(deplace) :
             self.pv = 0
 
     def spawn(self) :
-        '''Fait naître les Zombies par la grâce de Térence. N'oublions pas sa supériorité totale.'''
+        '''Fait naître les Zombies par la grâce de [REDACTED]. N'oublions pas sa supériorité totale.'''
         def spawn_x(the_x) :
             '''Faut pas le dire à Mr Mandic...'''
             the_x = random.randint(-1*x, 2*x)
@@ -144,16 +144,30 @@ class Zombies(deplace) :
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
     def barreVie(self) :
-        '''Affiche la barre de pv des zombies'''
+        # Couleur des barres + deffinition du texte
+        if self.pv > 0:
+            couleur_pv = (255-self.pv/self.pv_maxi*200, self.pv/self.pv_maxi*200, 0)
+        else:
+            couleur_pv = RED
+        valeur_pv = f"{str(round(self.pv))} / {str(self.pv_maxi)}"
+        # Dessiner la bare de vie
+        draw_rect(screen, (self.x-(32), self.y-(32)), (94, 14), BLACK)
+        draw_rect(screen, (self.x-(32), self.y-(42)), (round(len(valeur_pv)*6)-5, 11), BLACK) # Barre noire suplémentaire
+        draw_rect(screen, (self.x-(30), self.y-(30)), (self.pv*(100-10)/self.pv_maxi, 20-10), couleur_pv)
+        text(screen, myfont, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
+        # Test de la barre de vie en foction des pv restants
+        self.pv -= random.randrange(0, 2, 1)/10
+        '''Affiche la barre de pv des zombies
         draw_rect(screen, (self.x-(20+15), self.y-(15+30)), (100, 20), BLACK)
         draw_rect(screen, (self.x-(20+10), self.y-(15+25)), (self.pv*(100-10)/self.pv_maxi, 20-10), RED)
-        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)+1))
+        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)+1))'''
 
 class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
-    def __init__(self, number=10) :
+    def __init__(self, number=3) :
         self.zombies = []
+        self.respawn_cooldown = 350
         for i in range(number) :
             self.zombies.append(self.do_again(1))
         #self.zombies = [self.do_again(1) for i in range(number)]
@@ -177,7 +191,11 @@ class Construct_Zombies() :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
     def display(self, dt) :
+        self.respawn()
+        ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
+            ID += 1 # Chaque ID doit être différentes
+            self.mourir(zomb, ID)
             the_x, the_y = zomb.x, zomb.y
             zomb.display(dt)
             for zombi in self.zombies :
@@ -187,6 +205,19 @@ class Construct_Zombies() :
                 #elif self.is_next(zomb, zombi) :
                     zomb.x, zomb.y = the_x, the_y
                     break
+
+    def mourir(self, zomb, ID) :
+        '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
+        if zomb.pv <= 0 :
+            self.zombies.pop(ID)
+            
+    def respawn(self):
+        '''Lorsque le compteur respawn_cooldown atteint 0, on spawn un zombie'''
+        if self.respawn_cooldown <= 0 :
+            self.zombies.append(self.do_again(1))
+            self.respawn_cooldown = 350
+        else :
+            self.respawn_cooldown -= 1
 
     def haut(self, dt) :
         for zomb in self.zombies :

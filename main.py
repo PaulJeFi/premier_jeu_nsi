@@ -85,30 +85,26 @@ class Marche_Arret() :
 class Score_actuel() :
     '''Classe pour le score, mais aussi pour la dificulté et le brouillard (qui augmentent en fonction du score)'''
 
+    # CETTE CLASSE RALENTIE UN PEU LE JEU
+
     def __init__(self) :
         '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 5 # <-- Plus cette valeur est élevé, plus le brouillard est intense, et donc plus le champs de vision et réduit
-        self.b_image = pygame.image.load('./images/autres/Brouillard_V2.png')
-        self.b_size_x = 1080+4240//self.niveau
-        self.b_size_y = 720+2480//self.niveau
-        self.b_image = self.b_image = pygame.transform.scale(self.b_image,(self.b_size_x,self.b_size_y))
-        self.rect = self.b_image.get_rect()
-        self.rect.x = (1080-self.b_size_x)/2
-        self.rect.y = (720-self.b_size_y)/2
-        
+        self.niveau = 9 # <-- Plus cette valeur est faible, plus le champs de vision et réduit (de 9 à 1)
+
     def display(self) :
         '''Affichage de soi-même'''
+        self.b_image = pygame.image.load(f'./images/autres/Brouillard{self.niveau}.png')
+        self.rect = self.b_image.get_rect()
         screen.blit(self.b_image, self.rect)
+        self.add(10) # TEST evolution brouillard : A SUPRIMER !
     
     def add(self, score) :
         '''Permet d'actualiser le score, le brouillard et la difficulté'''
         self.score += score
-        if self.score//(1000*self.niveau) >= self.niveau :
-            self.niveau = self.score//(1000*self.niveau)
-            self.b_size_x = 1080+4240//self.niveau
-            self.b_size_y = 720+2480//self.niveau
-            self.b_image = self.b_image = pygame.transform.scale(self.b_image,(self.b_size_x,self.b_size_y))
+        if self.score+self.niveau*1000 >= 10000 and self.niveau != 1 :
+            self.niveau -= 1
+
 
 class Grass() :
     '''Classe permettant de remplir l'arrière plan avec des tuilles d'herbe'''
@@ -196,7 +192,12 @@ class Hero() :
             self.pv = 0
 
     def display(self) :
-        '''Affichage de soi-même et de la bare de pv'''
+        '''Affichage de soi-même'''
+        screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
+        self.arme.display()
+
+    def GUI_display(self):
+        '''Affichage de la barre de pv'''
         if self.pv > 0 : # <-- La division par 0 cause une ERREUR
             HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
         else :
@@ -204,8 +205,6 @@ class Hero() :
         draw_rect(screen, (25, 25), (300, 25), BLACK)
         draw_rect(screen, (27, 27), (296, 21), GRAY)
         draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
-        screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
-        self.arme.display()
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -318,8 +317,9 @@ def main() :
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        score.display()
         hero.display()
+        score.display()
+        hero.GUI_display()
         marche_arret.display()
         curseur(screen)
         pygame.display.flip()
