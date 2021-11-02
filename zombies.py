@@ -1,9 +1,10 @@
 import pygame
-from main import Grass
+if __name__ == '__main__' :
+    from main import Grass
 import sys
 import math
 import random
-from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text
+from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text, sound
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -218,6 +219,15 @@ class Construct_Zombies() :
             self.respawn_cooldown = 350
         else :
             self.respawn_cooldown -= 1
+        
+    def touch_hero(self, hero: pygame.Rect) -> bool :
+        '''Si les zombies touchent le héro.'''
+        for zombie in self.zombies :
+            if zombie.get_rect().colliderect(hero) :
+                break
+        else :
+            return False
+        return True
 
     def haut(self, dt) :
         for zomb in self.zombies :

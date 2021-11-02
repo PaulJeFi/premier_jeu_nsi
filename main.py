@@ -14,6 +14,7 @@ import sys
 import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
+from zombies import Construct_Zombies
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -97,7 +98,7 @@ class Score_actuel() :
         self.b_image = pygame.image.load(f'./images/autres/Brouillard{self.niveau}.png')
         self.rect = self.b_image.get_rect()
         screen.blit(self.b_image, self.rect)
-        self.add(10) # TEST evolution brouillard : A SUPRIMER !
+        self.add(0) # TEST evolution brouillard : A SUPRIMER !
     
     def add(self, score) :
         '''Permet d'actualiser le score, le brouillard et la difficulté'''
@@ -280,6 +281,7 @@ def main() :
     hero = Hero()
     score = Score_actuel()
     soin = Soin()
+    zombies = Construct_Zombies()
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -294,15 +296,19 @@ def main() :
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(dt)
                 soin.bas(dt)
+                zombies.bas(dt)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(dt)
                 soin.haut(dt)
+                zombies.haut(dt)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(dt)
                 soin.gauche(dt)
+                zombies.gauche(dt)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(dt)
                 soin.droite(dt)
+                zombies.droite(dt)
             if soin.prendre() : # Ineterraction avec la trousse de premiers secours
                 if hero.pv  < 65 :
                     hero.pv += 35
@@ -311,12 +317,15 @@ def main() :
                 else :
                     hero.pv = 100
                 soin = Soin()
+            if zombies.touch_hero(hero.get_rect()) : # À améliorer, la détection de collisins est bizarre
+                hero.pv -= 0.5
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
-            hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemies
+            #hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemis
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
+        zombies.display(dt)
         hero.display()
         score.display()
         hero.GUI_display()

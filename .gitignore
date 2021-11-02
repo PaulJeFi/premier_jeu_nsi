@@ -2,3 +2,5 @@
 __pycache__/
 # Fichiers MAC OSX
 .DS_Store
+# Fichiers de configuration VS Code
+.vscode
