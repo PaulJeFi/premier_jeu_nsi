@@ -48,6 +48,9 @@ class Marche_Arret() :
         self.rect = self.image.get_rect()
         self.rect.x = x - self.size*2
         self.rect.y = 0
+        self.base_cooldown = 100 # permet d'éviter le lag losrque l'on met le jeu en pause/marche
+        self.cooldown = self.base_cooldown
+        self.can_switch = True # True pour on peut mettre le jeu en pause/marche via le bouton pause
 
     def display(self) :
         '''Affichage de soi-même'''
@@ -71,17 +74,20 @@ class Marche_Arret() :
 
     def game_state(self) :
         '''Pause ou Marche'''
+        if self.cooldown != self.base_cooldown :
+            self.cooldown += 1
+        self.can_switch = self.cooldown == self.base_cooldown
         return self.status
 
     def on_off(self) :
         '''Le setup qui permet de faire pause'''
-        if self.highlight() :
+        if self.highlight() and self.can_switch :
             if self.status == True and pygame.mouse.get_pressed()[0] :
+                self.cooldown = 0
                 self.status = False
-                pygame.time.wait(100)
             elif self.status == False and pygame.mouse.get_pressed()[0] :
+                self.cooldown = 0
                 self.status = True
-                pygame.time.wait(100)
         
 class Score_actuel() :
     '''Classe pour le score, mais aussi pour la dificulté et le brouillard (qui augmentent en fonction du score)'''
@@ -174,12 +180,13 @@ class Hero() :
 
     def __init__(self) :
         '''Appel initial de la classe'''
-        self.x = x/2
-        self.y = (y/2)+100
         self.arme = Arme()
         self.image = pygame.image.load('./images/personages/Humain_type_1.png')
         self.size = 100
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.x = x/2 - self.size//2
+        self.y = y/2 - self.size//2
+        self.rect = self.image.get_rect()
         self.max_pv = 100
         self.pv = 100
         self.angle = 90
@@ -194,7 +201,7 @@ class Hero() :
 
     def display(self) :
         '''Affichage de soi-même'''
-        screen.blit(self.rotated, (x/2-self.size/2, y/2-self.size/2))
+        screen.blit(self.rotated, (self.x, self.y))
         self.arme.display()
 
     def GUI_display(self):
@@ -217,6 +224,7 @@ class Hero() :
             else :
                 self.angle = -self.angle
             self.rotated = pygame.transform.rotate(self.image, self.angle)
+            self.rect = self.image.get_rect(center=self.rect.center)
             self.arme.rotate(self.angle)
 
     def get_rect(self) :
@@ -234,23 +242,34 @@ class Soin(deplace) :
         self.image = pygame.transform.scale(self.image, self.size)
 
     def replace(self) :
-        if (self.x+self.size[0] < 0) or (self.x > x) or (self.y+self.size[1] < 0) or (self.y > y) :
-            self.x, self.y = random.randint(0, x), random.randint(0, y)
+        position = random.randint(1,5)
+        if position == 1 :
+            self.x, self.y = -x, random.randint(-y, 2*y)
+        elif position == 2 :
+            self.x, self.y = random.randint(-x, 2*x), -y
+        elif position == 3 :
+            self.x, self.y = 2*x, random.randint(-y, 2*y)
+        else :
+            self.x, self.y = random.randint(-x, 2*x), 2*y
 
     def display(self) :
         '''Affichage de soi-même'''
-        self.replace()
+        if (self.x+self.size[0] < -x) or (self.x > 2*x) or (self.y+self.size[1] < -y) or (self.y > 2*y) :
+            self.replace()
         screen.blit(self.image, (self.x, self.y))
 
-    def get_rect(self) :
-        '''Donne les infos du rectangle de la trousse de premiers secours (abscisse, ordonnée, longueur)'''
-        return pygame.Rect(self.x, self.y, *self.size)
+    '''def get_rect(self) :
+        # Donne les infos du rectangle de la trousse de premiers secours (abscisse, ordonnée, longueur)
+        return pygame.Rect(self.x, self.y, *self.size)'''
 
-    def prendre(self):
+    def prendre(self, hero) :
         '''Interraction avec la trousse de premiers secours'''
-        if 500 < self.x and self.x < 580:
-            if 320 < self.y and self.y < 400:
-                return True
+        if self.x > x/2 - hero.size//2 and self.x < x/2 + hero.size//2 and self.y > y/2 - hero.size//2 and self.y < y/2 + hero.size//2 and hero.pv != hero.max_pv :
+            self.replace()
+            if hero.pv < hero.max_pv - 35 :
+                hero.pv += 35
+            else :
+                hero.pv = hero.max_pv
 
 class Arme() :
     '''Classe des armes'''
@@ -309,25 +328,17 @@ def main() :
                 grass.droite(dt)
                 soin.droite(dt)
                 zombies.droite(dt)
-            if soin.prendre() : # Ineterraction avec la trousse de premiers secours
-                if hero.pv  < 65 :
-                    hero.pv += 35
-                elif hero.pv < 100 :
-                    hero.pv = 100
-                else :
-                    hero.pv = 100
-                soin = Soin()
-            if zombies.touch_hero(hero.get_rect()) : # À améliorer, la détection de collisins est bizarre
+            if zombies.touch_hero(hero.get_rect()) :
                 hero.pv -= 0.5
+            soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
-            #hero.pv -= 0.05 # Test de la bare de PV du héro, vu qu'il n'y a pas d'ennemis
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        zombies.display(dt)
+        zombies.display(dt, marche_arret.game_state())
         hero.display()
-        score.display()
+        #score.display()   <--   Le brouillard fait tout rammer...
         hero.GUI_display()
         marche_arret.display()
         curseur(screen)

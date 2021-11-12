@@ -124,9 +124,11 @@ class Zombies(deplace) :
         # Si le zombie est touché
         self.pv -= 1
     
-    def display(self, dt) :
-        self.deplacement(dt)
-        self.change()
+    def display(self, dt, game_state) :
+        if game_state :
+            self.deplacement(dt)
+            self.change()
+            self.pv -= random.randrange(0, 2, 1)/10
         screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
         self.barreVie()
 
@@ -145,6 +147,7 @@ class Zombies(deplace) :
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
     def barreVie(self) :
+        '''Affiche la barre de pv des zombies'''
         # Couleur des barres + deffinition du texte
         if self.pv > 0:
             couleur_pv = (255-self.pv/self.pv_maxi*200, self.pv/self.pv_maxi*200, 0)
@@ -157,11 +160,6 @@ class Zombies(deplace) :
         draw_rect(screen, (self.x-(30), self.y-(30)), (self.pv*(100-10)/self.pv_maxi, 20-10), couleur_pv)
         text(screen, myfont, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
         # Test de la barre de vie en foction des pv restants
-        self.pv -= random.randrange(0, 2, 1)/10
-        '''Affiche la barre de pv des zombies
-        draw_rect(screen, (self.x-(20+15), self.y-(15+30)), (100, 20), BLACK)
-        draw_rect(screen, (self.x-(20+10), self.y-(15+25)), (self.pv*(100-10)/self.pv_maxi, 20-10), RED)
-        text(screen, myfont, str(self.pv), WHITE, (self.x-(20+10), self.y-(15+30)+1))'''
 
 class Construct_Zombies() :
 
@@ -191,14 +189,15 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt) :
-        self.respawn()
+    def display(self, dt, game_state) :
+        if game_state :
+            self.respawn()
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
             self.mourir(zomb, ID)
             the_x, the_y = zomb.x, zomb.y
-            zomb.display(dt)
+            zomb.display(dt, game_state)
             for zombi in self.zombies :
                 if zomb is zombi :
                     continue
