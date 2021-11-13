@@ -353,13 +353,13 @@ class Munition(deplace) :
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
     
     def move(self, dt) :
-        self.x += round(self.vect[0]*self.speed*dt)
-        self.y += round(self.vect[1]*self.speed*dt)
+        self.x += self.vect[0]*self.speed*dt
+        self.y += self.vect[1]*self.speed*dt
     
     def display(self, dt) :
         '''Affichage de soi-même'''
         self.move(dt)
-        screen.blit(self.image, (self.x, self.y))
+        screen.blit(self.image, (round(self.x), round(self.y)))
     
     def get_rect(self) :
         '''Donne les infos du rectangle de la balle (abscisse, ordonnée, largeur, longueur)'''
@@ -374,8 +374,15 @@ class Construct_munitions() :
         self.balles.append(Munition())
     
     def display(self, dt) :
+        self.update()
         for balle in self.balles :
             balle.display(dt)
+
+    def update(self) :
+        '''Supprime les balles qui doivent être supprimées.'''
+        for balle in self.balles :
+            if balle.x < -2*x or balle.y < -2*y or balle.x > 2*x or balle.y > 2*y :
+                self.balles.pop(self.balles.index(balle))
 
     def haut(self, dt) :
         for balle in self.balles :
