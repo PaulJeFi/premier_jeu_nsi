@@ -343,6 +343,7 @@ class Munition(deplace) :
     def calculer(self, mousepos) :
         '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
         chemin.'''
+        self.angle = 0
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
             self.angle = convert_degrees(self.angle)

@@ -239,7 +239,7 @@ class Construct_Zombies() :
         return touche_hero
 
     def touch_balle(self, dt, hero: pygame.Rect) -> bool :
-        '''Si les zombies touchent le héro.'''
+        '''Si les zombies touchent une balle.'''
         touche_hero = False
         ID = None
         for zombie in self.zombies :
@@ -294,7 +294,7 @@ def main() :
             zombies.droite(dt)
         # Affiche ton sprite ici.
         grass.display()
-        zombies.display(dt, marche_arret.game_state())
+        zombies.display(dt, marche_arret.game_state(), score)
         pygame.display.flip()
         #zombies.add(3)
 
