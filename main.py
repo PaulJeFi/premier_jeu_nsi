@@ -36,6 +36,14 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
+# Police d'écriture ci-dessous
+myfont = pygame.font.SysFont('couriernewbold', 24)
+
+def text(screen, font, string, color, pos) :
+    '''Permet d'afficher un texte de façon simplifiée'''
+    textsurface = font.render(string, False, color)
+    screen.blit(textsurface, pos)
+
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
 
@@ -90,27 +98,47 @@ class Marche_Arret() :
                 self.status = True
         
 class Score_actuel() :
-    '''Classe pour le score, mais aussi pour la dificulté et le brouillard (qui augmentent en fonction du score)'''
-
-    # CETTE CLASSE RALENTIE UN PEU LE JEU
+    '''Classe pour le score'''
 
     def __init__(self) :
         '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 9 # <-- Plus cette valeur est faible, plus le champs de vision et réduit (de 9 à 1)
+        self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
+        self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000, 20000, 28000, 38000, 50000, 65000, 80000, 100000] # Palier de score requis pour passer au niveau de difficulté supérieur
+        self.nom_niveau = ['Jeu d\'enfant', 'Simplissime', 'Facile', 'Abordable', 'Intermédiaire', 'Un peu complexe', 'Compliqué', 'Difficile', 'Très dur', 'Périlleux', 'Cauchemardesque', 'Démoniaque', 'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
-        '''Affichage de soi-même'''
-        self.b_image = pygame.image.load(f'./images/autres/Brouillard{self.niveau}.png')
-        self.rect = self.b_image.get_rect()
-        screen.blit(self.b_image, self.rect)
-        self.add(0) # TEST evolution brouillard : A SUPRIMER !
-    
+        text(screen, myfont, f'Votre score : {self.score} points', WHITE, (500, 20))
+        text(screen, myfont, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
+
     def add(self, score) :
-        '''Permet d'actualiser le score, le brouillard et la difficulté'''
+        '''Permet d'actualiser le score et la difficulté'''
         self.score += score
-        if self.score+self.niveau*1000 >= 10000 and self.niveau != 1 :
-            self.niveau -= 1
+        if self.score >= self.score_min_pour_niveau[self.niveau] :
+            self.niveau += 1
+
+
+
+
+    # CETTE CLASSE RALENTIE UN PEU LE JEU
+
+    #def __init__(self) :
+    #    '''Appel initial de la classe'''
+    #    self.score = 0
+    #    self.niveau = 9 # <-- Plus cette valeur est faible, plus le champs de vision et réduit (de 9 à 1)
+
+    #def display(self) :
+    #    '''Affichage de soi-même'''
+    #    self.b_image = pygame.image.load(f'./images/autres/Brouillard{self.niveau}.png')
+    #    self.rect = self.b_image.get_rect()
+    #    screen.blit(self.b_image, self.rect)
+    #    self.add(0) # TEST evolution brouillard : A SUPRIMER !
+    
+    #def add(self, score) :
+    #    '''Permet d'actualiser le score, le brouillard et la difficulté'''
+    #    self.score += score
+    #    if self.score+self.niveau*1000 >= 10000 and self.niveau != 1 :
+    #        self.niveau -= 1
 
 
 class Grass() :
@@ -336,10 +364,10 @@ def main() :
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        zombies.display(dt, marche_arret.game_state())
+        zombies.display(dt, marche_arret.game_state(), score)
         hero.display()
-        #score.display()   <--   Le brouillard fait tout rammer...
         hero.GUI_display()
+        score.display()
         marche_arret.display()
         curseur(screen)
         pygame.display.flip()

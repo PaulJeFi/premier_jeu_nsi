@@ -1,6 +1,6 @@
 import pygame
 if __name__ == '__main__' :
-    from main import Grass
+    from main import Grass, Marche_Arret, Score_actuel
 import sys
 import math
 import random
@@ -57,19 +57,28 @@ class Zombies(deplace) :
 
     def spawn(self) :
         '''Fait naître les Zombies par la grâce de [REDACTED]. N'oublions pas sa supériorité totale.'''
-        def spawn_x(the_x) :
-            '''Faut pas le dire à Mr Mandic...'''
-            the_x = random.randint(-1*x, 2*x)
-            if 0-self.size <= the_x <= x+self.size :
-                the_x = spawn_x(the_x)
-            return the_x
-        def spawn_y(the_y=0) :
-            '''Faut pas le dire à Mr Mandic...'''
-            the_y = random.randint(-1*y, 2*y)
-            if 0-self.size <= the_y <= y+self.size :
-                the_y = spawn_y(the_y)
-            return the_y
-        self.x, self.y = spawn_x(self), spawn_y(self)
+        position = random.randint(1,4)
+        if position == 1 :
+            self.x, self.y = 0-self.size, random.randint(0-self.size, y+self.size)
+        elif position == 2 :
+            self.x, self.y = random.randint(0-self.size, x+self.size), 0-self.size
+        elif position == 3 :
+            self.x, self.y = x+self.size, random.randint(0-self.size, y+self.size)
+        elif position == 4 :
+            self.x, self.y = random.randint(0-self.size, x+self.size), y+self.size
+        #def spawn_x(the_x) :
+        #    '''Faut pas le dire à Mr Mandic...'''
+        #    the_x = random.randint(-1*x, 2*x)
+        #    if 0-self.size <= the_x <= x+self.size :
+        #        the_x = spawn_x(the_x)
+        #    return the_x
+        #def spawn_y(the_y=0) :
+        #    '''Faut pas le dire à Mr Mandic...'''
+        #    the_y = random.randint(-1*y, 2*y)
+        #    if 0-self.size <= the_y <= y+self.size :
+        #        the_y = spawn_y(the_y)
+        #    return the_y
+        #self.x, self.y = spawn_x(self), spawn_y(self)
 
     def deplacement (self, dt) :
         '''Le déplacement de l'IA'''
@@ -124,7 +133,7 @@ class Zombies(deplace) :
         # Si le zombie est touché
         self.pv -= 1
     
-    def display(self, dt, game_state) :
+    def display(self, dt, game_state, score) :
         if game_state :
             self.deplacement(dt)
             self.change()
@@ -189,15 +198,15 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt, game_state) :
+    def display(self, dt, game_state, score) :
         if game_state :
             self.respawn()
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
-            self.mourir(zomb, ID)
+            self.mourir(zomb, ID, score)
             the_x, the_y = zomb.x, zomb.y
-            zomb.display(dt, game_state)
+            zomb.display(dt, game_state, score)
             for zombi in self.zombies :
                 if zomb is zombi :
                     continue
@@ -206,9 +215,10 @@ class Construct_Zombies() :
                     zomb.x, zomb.y = the_x, the_y
                     break
 
-    def mourir(self, zomb, ID) :
+    def mourir(self, zomb, ID, score) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
+            score.add(1000)
             self.zombies.pop(ID)
             
     def respawn(self):
@@ -248,6 +258,8 @@ class Construct_Zombies() :
 def main() :
     '''Fonction principale'''
     grass = Grass()
+    score = Score_actuel()
+    marche_arret = Marche_Arret()
     zombies = Construct_Zombies()
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
@@ -271,7 +283,7 @@ def main() :
             zombies.droite(dt)
         # Affiche ton sprite ici.
         grass.display()
-        zombies.display(dt)
+        zombies.display(dt, marche_arret.game_state())
         pygame.display.flip()
         #zombies.add(3)
 
