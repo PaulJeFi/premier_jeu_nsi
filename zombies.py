@@ -229,14 +229,14 @@ class Construct_Zombies() :
         else :
             self.respawn_cooldown -= 1
         
-    def touch_hero(self, hero: pygame.Rect) -> bool :
+    def touch_hero(self, dt, hero: pygame.Rect) -> bool :
         '''Si les zombies touchent le héro.'''
+        touche_hero = False
         for zombie in self.zombies :
             if zombie.get_rect().colliderect(hero) :
-                break
-        else :
-            return False
-        return True
+                zombie.deplacement_inverse(dt)
+                touche_hero = True
+        return touche_hero
 
     def haut(self, dt) :
         for zomb in self.zombies :

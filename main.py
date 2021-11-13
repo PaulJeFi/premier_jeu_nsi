@@ -344,19 +344,39 @@ def main() :
                 grass.bas(dt)
                 soin.bas(dt)
                 zombies.bas(dt)
+                if zombies.touch_hero(dt, hero.get_rect()) :
+                    hero.pv -= 0.5
+                    grass.haut(dt)
+                    soin.haut(dt)
+                    zombies.haut(dt)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(dt)
                 soin.haut(dt)
                 zombies.haut(dt)
+                if zombies.touch_hero(dt, hero.get_rect()) :
+                    hero.pv -= 0.5
+                    grass.bas(dt)
+                    soin.bas(dt)
+                    zombies.bas(dt)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(dt)
                 soin.gauche(dt)
                 zombies.gauche(dt)
+                if zombies.touch_hero(dt, hero.get_rect()) :
+                    hero.pv -= 0.5
+                    grass.droite(dt)
+                    soin.droite(dt)
+                    zombies.droite(dt)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(dt)
                 soin.droite(dt)
                 zombies.droite(dt)
-            if zombies.touch_hero(hero.get_rect()) :
+                if zombies.touch_hero(dt, hero.get_rect()) :
+                    hero.pv -= 0.5
+                    grass.gauche(dt)
+                    soin.gauche(dt)
+                    zombies.gauche(dt)
+            if zombies.touch_hero(dt, hero.get_rect()) :
                 hero.pv -= 0.5
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
             hero.pv_check()
