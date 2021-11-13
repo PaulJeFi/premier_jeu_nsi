@@ -466,8 +466,13 @@ def main() :
                     soin.gauche(dt)
                     zombies.gauche(dt)
                     balles.gauche(dt)
-            if zombies.touch_hero(dt, hero.get_rect()) :
+            if zombies.touch_hero(dt, hero.get_rect())[0] :
                 hero.pv -= 0.5
+            for balle in balles.balles : # Pour chaque balle
+                test = zombies.touch_hero(dt, balle.get_rect())
+                if test[0] : # Si elle touche un zombie
+                    zombies.zombies[test[1]].pv -= 50 # On retire 50 aux PVs du Zombie
+                    balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
@@ -481,6 +486,7 @@ def main() :
         score.display()
         marche_arret.display()
         curseur(screen)
+        text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         pygame.display.flip()
 
 if __name__ == '__main__' :
