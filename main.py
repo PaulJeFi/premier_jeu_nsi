@@ -326,7 +326,73 @@ class Arme() :
         self.rotated = pygame.transform.rotate(self.image, angle)
         self.x = (x)+math.sin(convert_radians(angle))*100+50
         self.y = (y)+math.cos(convert_radians(angle))*100-10
-        
+
+class Munition(deplace) :
+    '''Les munitions.'''
+    def __init__(self) :
+        mouse = pygame.mouse.get_pos()
+        self.speed = 1.5
+        self.size = 20
+        self.image = pygame.image.load('./images/personages/Humain_type_1.png').convert()
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.x = x/2-self.size/2
+        self.y = y/2-self.size/2
+        self.calculer(mouse)
+        self.image = pygame.transform.rotate(self.image, self.angle)
+
+    def calculer(self, mousepos) :
+        '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
+        chemin.'''
+        if mousepos[0]-x/2 != 0 :
+            self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
+            self.angle = convert_degrees(self.angle)
+            if mousepos[0] < x/2 :
+                self.angle = 180-self.angle
+            else :
+                self.angle = -self.angle
+        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
+    
+    def move(self, dt) :
+        self.x += round(self.vect[0]*self.speed*dt)
+        self.y += round(self.vect[1]*self.speed*dt)
+    
+    def display(self, dt) :
+        '''Affichage de soi-même'''
+        self.move(dt)
+        screen.blit(self.image, (self.x, self.y))
+    
+    def get_rect(self) :
+        '''Donne les infos du rectangle de la balle (abscisse, ordonnée, largeur, longueur)'''
+        return pygame.Rect(self.x, self.y, self.size, self.size)
+
+class Construct_munitions() :
+    '''Classe de gestion des munitions'''
+    def __init__(self) :
+        self.balles = []
+    
+    def add(self) :
+        self.balles.append(Munition())
+    
+    def display(self, dt) :
+        for balle in self.balles :
+            balle.display(dt)
+
+    def haut(self, dt) :
+        for balle in self.balles :
+            balle.haut(dt)
+
+    def bas(self, dt) :
+        for balle in self.balles :
+            balle.bas(dt)
+
+    def gauche(self, dt) :
+        for balle in self.balles :
+            balle.gauche(dt)
+
+    def droite(self, dt) :
+        for balle in self.balles :
+            balle.droite(dt)
+
 def main() :
     '''Fonction principale'''
     marche_arret = Marche_Arret()
@@ -335,6 +401,7 @@ def main() :
     score = Score_actuel()
     soin = Soin()
     zombies = Construct_Zombies()
+    balles = Construct_munitions()
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -342,6 +409,8 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN :
+                balles.add()
         marche_arret.on_off() # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
@@ -350,38 +419,46 @@ def main() :
                 grass.bas(dt)
                 soin.bas(dt)
                 zombies.bas(dt)
+                balles.bas(dt)
                 if zombies.touch_hero(dt, hero.get_rect()) :
                     hero.pv -= 0.5
                     grass.haut(dt)
                     soin.haut(dt)
                     zombies.haut(dt)
+                    balles.haut(dt)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(dt)
                 soin.haut(dt)
                 zombies.haut(dt)
+                balles.haut(dt)
                 if zombies.touch_hero(dt, hero.get_rect()) :
                     hero.pv -= 0.5
                     grass.bas(dt)
                     soin.bas(dt)
                     zombies.bas(dt)
+                    balles.bas(dt)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(dt)
                 soin.gauche(dt)
                 zombies.gauche(dt)
+                balles.gauche(dt)
                 if zombies.touch_hero(dt, hero.get_rect()) :
                     hero.pv -= 0.5
                     grass.droite(dt)
                     soin.droite(dt)
                     zombies.droite(dt)
+                    balles.droite(dt)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(dt)
                 soin.droite(dt)
                 zombies.droite(dt)
+                balles.droite(dt)
                 if zombies.touch_hero(dt, hero.get_rect()) :
                     hero.pv -= 0.5
                     grass.gauche(dt)
                     soin.gauche(dt)
                     zombies.gauche(dt)
+                    balles.gauche(dt)
             if zombies.touch_hero(dt, hero.get_rect()) :
                 hero.pv -= 0.5
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
@@ -391,6 +468,7 @@ def main() :
         grass.display()
         soin.display()
         zombies.display(dt, marche_arret.game_state(), score)
+        balles.display(dt)
         hero.display()
         hero.GUI_display()
         score.display()
