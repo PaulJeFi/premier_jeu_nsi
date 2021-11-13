@@ -333,7 +333,7 @@ class Munition(deplace) :
         mouse = pygame.mouse.get_pos()
         self.speed = 1.5
         self.size = 20
-        self.image = pygame.image.load('./images/personages/Humain_type_1.png').convert()
+        self.image = pygame.image.load('./images/personages/Humain_type_1.png')#.convert()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.x = x/2-self.size/2
         self.y = y/2-self.size/2
@@ -466,10 +466,10 @@ def main() :
                     soin.gauche(dt)
                     zombies.gauche(dt)
                     balles.gauche(dt)
-            if zombies.touch_hero(dt, hero.get_rect())[0] :
+            if zombies.touch_hero(dt, hero.get_rect()) :
                 hero.pv -= 0.5
             for balle in balles.balles : # Pour chaque balle
-                test = zombies.touch_hero(dt, balle.get_rect())
+                test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
                     zombies.zombies[test[1]].pv -= 50 # On retire 50 aux PVs du Zombie
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle

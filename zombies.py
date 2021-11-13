@@ -215,10 +215,10 @@ class Construct_Zombies() :
                     zomb.x, zomb.y = the_x, the_y
                     break
 
-    def mourir(self, zomb, ID, score=1000) :
+    def mourir(self, zomb, ID, score) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
-            score.add(score)
+            score.add(1000)
             self.zombies.pop(ID)
             
     def respawn(self):
@@ -230,6 +230,15 @@ class Construct_Zombies() :
             self.respawn_cooldown -= 1
         
     def touch_hero(self, dt, hero: pygame.Rect) -> bool :
+        '''Si les zombies touchent le héro.'''
+        touche_hero = False
+        for zombie in self.zombies :
+            if zombie.get_rect().colliderect(hero) :
+                zombie.deplacement_inverse(dt)
+                touche_hero = True
+        return touche_hero
+
+    def touch_balle(self, dt, hero: pygame.Rect) -> bool :
         '''Si les zombies touchent le héro.'''
         touche_hero = False
         ID = None
