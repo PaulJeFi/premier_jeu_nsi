@@ -4,7 +4,8 @@ Les autre fichiers sont des éléments externes au gameplay principal ou des scr
 '''
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
-import loadding
+#import intro    # L'introduction se lance toute seule
+import loadding  # L'écran de chargement se charge tout seul
 from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from pygame.event import wait
@@ -38,6 +39,7 @@ clock = pygame.time.Clock()
 
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
+gros_nul = pygame.font.SysFont('couriernewbold', 60)
 
 def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
@@ -87,9 +89,9 @@ class Marche_Arret() :
         self.can_switch = self.cooldown == self.base_cooldown
         return self.status
 
-    def on_off(self) :
+    def on_off(self, game_over) :
         '''Le setup qui permet de faire pause'''
-        if self.highlight() and self.can_switch :
+        if self.highlight() and self.can_switch and not game_over :
             if self.status == True and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
                 self.status = False
@@ -145,7 +147,6 @@ class Score_actuel() :
     #    self.score += score
     #    if self.score+self.niveau*1000 >= 10000 and self.niveau != 1 :
     #        self.niveau -= 1
-
 
 class Grass() :
     '''Classe permettant de remplir l'arrière plan avec des tuilles d'herbe'''
@@ -230,7 +231,7 @@ class Hero() :
         '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; slef.max_pv ]'''
         if self.pv > self.max_pv :
             self.pv = self.max_pv
-        elif self.pv < 0 :
+        elif self.pv <= 0 :
             self.pv = 0
 
     def display(self) :
@@ -410,6 +411,7 @@ def main() :
     soin = Soin()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
+    game_over = False
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -417,9 +419,10 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN :
+            if event.type == pygame.MOUSEBUTTONDOWN and not game_over :
                 balles.add()
-        marche_arret.on_off() # Permet de savoir si le jeu est OUI ou NON en PAUSE
+        marche_arret.on_off(game_over) # Permet de savoir si le jeu est OUI ou NON en PAUSE
+        
         if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
@@ -477,6 +480,14 @@ def main() :
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
             hero.pv_check()
             hero.change(pygame.mouse.get_pos())
+        if hero.pv <= 0 :
+            game_over = True
+            marche_arret.status = False
+            marche_arret.can_switch = False
+        pressed = (pygame.key.get_pressed(), game_over)
+        if pressed[0][pygame.K_n] and pressed[1] :
+            main()
+
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
@@ -488,6 +499,9 @@ def main() :
         marche_arret.display()
         curseur(screen)
         text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
+        if game_over :
+            text(screen, gros_nul, 'GAME OVER', RED, (385, 350))
+            text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', GREEN, (250, 400))
         pygame.display.flip()
 
 if __name__ == '__main__' :
