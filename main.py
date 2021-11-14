@@ -427,54 +427,59 @@ def main() :
         if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
+            # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
+            if pressed[pygame.K_z] and pressed[pygame.K_q] or pressed[pygame.K_z] and pressed[pygame.K_d] or pressed[pygame.K_s] and pressed[pygame.K_q] or pressed[pygame.K_s] and pressed[pygame.K_d] or pressed[pygame.K_UP] and pressed[pygame.K_LEFT] or pressed[pygame.K_UP] and pressed[pygame.K_RIGHT] or pressed[pygame.K_DOWN] and pressed[pygame.K_LEFT] or pressed[pygame.K_DOWN] and pressed[pygame.K_RIGHT] :
+                speed_hero = math.sqrt(2)/2*dt
+            else :
+                speed_hero = dt
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
-                grass.bas(dt)
-                soin.bas(dt)
-                zombies.bas(dt)
-                balles.bas(dt)
-                touche =  zombies.touch_balle(dt, hero.get_rect())
+                grass.bas(speed_hero)
+                soin.bas(speed_hero)
+                zombies.bas(speed_hero)
+                balles.bas(speed_hero)
+                touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
-                    grass.haut(dt)
-                    soin.haut(dt)
-                    zombies.haut(dt)
-                    balles.haut(dt)
+                    grass.haut(speed_hero)
+                    soin.haut(speed_hero)
+                    zombies.haut(speed_hero)
+                    balles.haut(speed_hero)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
-                grass.haut(dt)
-                soin.haut(dt)
-                zombies.haut(dt)
-                balles.haut(dt)
+                grass.haut(speed_hero)
+                soin.haut(speed_hero)
+                zombies.haut(speed_hero)
+                balles.haut(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
-                    grass.bas(dt)
-                    soin.bas(dt)
-                    zombies.bas(dt)
-                    balles.bas(dt)
+                    grass.bas(speed_hero)
+                    soin.bas(speed_hero)
+                    zombies.bas(speed_hero)
+                    balles.bas(speed_hero)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
-                grass.gauche(dt)
-                soin.gauche(dt)
-                zombies.gauche(dt)
-                balles.gauche(dt)
+                grass.gauche(speed_hero)
+                soin.gauche(speed_hero)
+                zombies.gauche(speed_hero)
+                balles.gauche(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
-                    grass.droite(dt)
-                    soin.droite(dt)
-                    zombies.droite(dt)
-                    balles.droite(dt)
+                    grass.droite(speed_hero)
+                    soin.droite(speed_hero)
+                    zombies.droite(speed_hero)
+                    balles.droite(speed_hero)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
-                grass.droite(dt)
-                soin.droite(dt)
-                zombies.droite(dt)
-                balles.droite(dt)
+                grass.droite(speed_hero)
+                soin.droite(speed_hero)
+                zombies.droite(speed_hero)
+                balles.droite(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
-                    grass.gauche(dt)
-                    soin.gauche(dt)
-                    zombies.gauche(dt)
-                    balles.gauche(dt)
+                    grass.gauche(speed_hero)
+                    soin.gauche(speed_hero)
+                    zombies.gauche(speed_hero)
+                    balles.gauche(speed_hero)
             touche =  zombies.touch_balle(dt, hero.get_rect())
             if touche[0] :
                 hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
