@@ -28,6 +28,7 @@ class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
     def __init__(self, type=1) :
+        self.type = type
         self.size = 100
         self.SPEED = 0.4
         self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
@@ -35,7 +36,6 @@ class Zombies(deplace) :
         self.image = pygame.transform.rotate(self.image, 180)
         self.spawn()
         self.pos = [self.x, self.y]
-        self.size = 100
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
         self.pv_maxi = 100
         self.pv = self.pv_maxi
@@ -178,6 +178,12 @@ class Construct_Zombies() :
         self.respawn_cooldown = 350
         for i in range(number) :
             self.zombies.append(self.do_again(1))
+        self.zomb_level = {0: [1]*100, 1: [1]*100, 2: [1]*100, 3: [1]*90+[2]*10,
+        4: [1]*75+[2]*25, 5: [1]*60+[2]*35+[3]*5, 6: [1]*40+[2]*45+[3]*15,
+        7: [1]*30+[2]*50+[3]*20, 8: [1]*20+[2]*45+[3]*35,
+        9: [1]*10+[2]*40+[3]*50, 10: [2]*35+[3]*65, 11: [2]*20+[3]*80,
+        12: [2]*10+[3]*90, 13: [3]*100}
+        self.zomb_score = [0, 250, 350, 500]
         #self.zombies = [self.do_again(1) for i in range(number)]
             
     def do_again(self, type) :
@@ -200,7 +206,7 @@ class Construct_Zombies() :
 
     def display(self, dt, game_state, score) :
         if game_state :
-            self.respawn()
+            self.respawn(score)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
@@ -218,14 +224,14 @@ class Construct_Zombies() :
     def mourir(self, zomb, ID, score) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
-            score.add(1000)
+            score.add(self.zomb_score[self.zombies[ID].type])
             self.zombies.pop(ID)
             
-    def respawn(self):
+    def respawn(self, score):
         '''Lorsque le compteur respawn_cooldown atteint 0, on spawn un zombie'''
         if self.respawn_cooldown <= 0 :
-            self.zombies.append(self.do_again(1))
-            self.respawn_cooldown = 350
+            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau])))
+            self.respawn_cooldown = random.randint(250, 350)-20*score.niveau
         else :
             self.respawn_cooldown -= 1
         

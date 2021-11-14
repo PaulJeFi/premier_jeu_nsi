@@ -108,7 +108,7 @@ class Score_actuel() :
         self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
         # Palier de score requis pour passer au niveau de difficulté supérieur
         self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
-        20000, 28000, 38000, 50000, 65000, 80000, 100000]
+        20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
         self.nom_niveau = ['Jeu d\'enfant', 'Simplissime', 'Facile',
         'Abordable', 'Intermédiaire', 'Un peu complexe', 'Compliqué',
         'Difficile', 'Très dur', 'Périlleux', 'Cauchemardesque', 'Démoniaque',
@@ -121,8 +121,8 @@ class Score_actuel() :
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
         self.score += score
-        if self.niveau < len(self.score_min_pour_niveau)  :
-            if self.score >= self.score_min_pour_niveau[self.niveau] :
+        if self.niveau < len(self.score_min_pour_niveau)-1 :
+            while self.score >= self.score_min_pour_niveau[self.niveau] :
                 self.niveau += 1
 
 
