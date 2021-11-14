@@ -333,8 +333,8 @@ class Munition(deplace) :
     def __init__(self) :
         mouse = pygame.mouse.get_pos()
         self.speed = 1.5
-        self.size = 20
-        self.image = pygame.image.load('./images/personages/Humain_type_1.png')#.convert()
+        self.size = 40
+        self.image = pygame.image.load('./images/armes/Projectiles/Projectile.png')#.convert()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.x = x/2-self.size/2
         self.y = y/2-self.size/2
@@ -354,13 +354,14 @@ class Munition(deplace) :
                 self.angle = -self.angle
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
     
-    def move(self, dt) :
-        self.x += self.vect[0]*self.speed*dt
-        self.y += self.vect[1]*self.speed*dt
+    def move(self, dt, marche_arret) :
+        if marche_arret :
+            self.x += self.vect[0]*self.speed*dt
+            self.y += self.vect[1]*self.speed*dt
     
-    def display(self, dt) :
+    def display(self, dt, marche_arret) :
         '''Affichage de soi-même'''
-        self.move(dt)
+        self.move(dt, marche_arret)
         screen.blit(self.image, (round(self.x), round(self.y)))
     
     def get_rect(self) :
@@ -375,10 +376,10 @@ class Construct_munitions() :
     def add(self) :
         self.balles.append(Munition())
     
-    def display(self, dt) :
+    def display(self, dt, marche_arret) :
         self.update()
         for balle in self.balles :
-            balle.display(dt)
+            balle.display(dt, marche_arret)
 
     def update(self) :
         '''Supprime les balles qui doivent être supprimées.'''
@@ -419,7 +420,7 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and not game_over :
+            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() :
                 balles.add()
         marche_arret.on_off(game_over) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         
@@ -497,7 +498,7 @@ def main() :
         grass.display()
         soin.display()
         zombies.display(dt, marche_arret.game_state(), score)
-        balles.display(dt)
+        balles.display(dt, marche_arret.game_state())
         hero.display()
         hero.GUI_display()
         score.display()

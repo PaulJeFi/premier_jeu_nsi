@@ -173,7 +173,7 @@ class Zombies(deplace) :
 class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
-    def __init__(self, number=3) :
+    def __init__(self, number=0) :
         self.zombies = []
         self.respawn_cooldown = 350
         for i in range(number) :
@@ -183,7 +183,7 @@ class Construct_Zombies() :
         7: [1]*30+[2]*50+[3]*20, 8: [1]*20+[2]*45+[3]*35,
         9: [1]*10+[2]*40+[3]*50, 10: [2]*35+[3]*65, 11: [2]*20+[3]*80,
         12: [2]*10+[3]*90, 13: [3]*100}
-        self.zomb_score = [0, 2000, 350, 500]
+        self.zomb_score = [0, 250, 350, 500]
         #self.zombies = [self.do_again(1) for i in range(number)]
             
     def do_again(self, type) :
