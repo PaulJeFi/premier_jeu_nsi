@@ -30,14 +30,14 @@ class Zombies(deplace) :
     def __init__(self, type=1) :
         self.type = type
         self.size = 100
-        self.SPEED = 0.4
+        self.SPEED = 0.25+0.05*self.type
         self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image = pygame.transform.rotate(self.image, 180)
         self.spawn()
         self.pos = [self.x, self.y]
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
-        self.pv_maxi = 100
+        self.pv_maxi = 100*self.type
         self.pv = self.pv_maxi
         self.rotated = self.image
         self.angle = 0
@@ -137,7 +137,7 @@ class Zombies(deplace) :
         if game_state :
             self.deplacement(dt)
             self.change()
-            self.pv -= random.randrange(0, 2, 1)/10
+            #self.pv -= random.randrange(0, 2, 1)/10
         screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
         self.barreVie()
 
@@ -183,7 +183,7 @@ class Construct_Zombies() :
         7: [1]*30+[2]*50+[3]*20, 8: [1]*20+[2]*45+[3]*35,
         9: [1]*10+[2]*40+[3]*50, 10: [2]*35+[3]*65, 11: [2]*20+[3]*80,
         12: [2]*10+[3]*90, 13: [3]*100}
-        self.zomb_score = [0, 250, 350, 500]
+        self.zomb_score = [0, 2000, 350, 500]
         #self.zombies = [self.do_again(1) for i in range(number)]
             
     def do_again(self, type) :

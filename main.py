@@ -431,8 +431,9 @@ def main() :
                 soin.bas(dt)
                 zombies.bas(dt)
                 balles.bas(dt)
-                if zombies.touch_hero(dt, hero.get_rect()) :
-                    hero.pv -= 0.5
+                touche =  zombies.touch_balle(dt, hero.get_rect())
+                if touche[0] :
+                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
                     grass.haut(dt)
                     soin.haut(dt)
                     zombies.haut(dt)
@@ -442,8 +443,9 @@ def main() :
                 soin.haut(dt)
                 zombies.haut(dt)
                 balles.haut(dt)
-                if zombies.touch_hero(dt, hero.get_rect()) :
-                    hero.pv -= 0.5
+                touche =  zombies.touch_balle(dt, hero.get_rect())
+                if touche[0] :
+                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
                     grass.bas(dt)
                     soin.bas(dt)
                     zombies.bas(dt)
@@ -453,8 +455,9 @@ def main() :
                 soin.gauche(dt)
                 zombies.gauche(dt)
                 balles.gauche(dt)
-                if zombies.touch_hero(dt, hero.get_rect()) :
-                    hero.pv -= 0.5
+                touche =  zombies.touch_balle(dt, hero.get_rect())
+                if touche[0] :
+                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
                     grass.droite(dt)
                     soin.droite(dt)
                     zombies.droite(dt)
@@ -464,14 +467,16 @@ def main() :
                 soin.droite(dt)
                 zombies.droite(dt)
                 balles.droite(dt)
-                if zombies.touch_hero(dt, hero.get_rect()) :
-                    hero.pv -= 0.5
+                touche =  zombies.touch_balle(dt, hero.get_rect())
+                if touche[0] :
+                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
                     grass.gauche(dt)
                     soin.gauche(dt)
                     zombies.gauche(dt)
                     balles.gauche(dt)
-            if zombies.touch_hero(dt, hero.get_rect()) :
-                hero.pv -= 0.5
+            touche =  zombies.touch_balle(dt, hero.get_rect())
+            if touche[0] :
+                hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
