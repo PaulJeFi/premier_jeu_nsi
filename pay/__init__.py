@@ -9,8 +9,9 @@ def get() :
     table = pickle.load(open("./pay/data.p", "rb"))
     with open("./pay/data.py", "w") as Table :
         Table.write(table.decode())
-    from pay.data import table
-    return table
+    
+    import pay.data
+    return pay.data.table
 
 def write(pay, games) :
     with open("./pay/data.py", "w") as Table :
@@ -23,6 +24,10 @@ def compiler() :
 
 def pay() :
     write(150, 0)
+    compiler()
+
+def add() :
+    write(get()["pay"], get()["games"]+1)
     compiler()
 
 if __name__ == '__main__' :

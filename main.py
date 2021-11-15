@@ -16,6 +16,7 @@ import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
 from zombies import Construct_Zombies
+import pay
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -420,6 +421,9 @@ class Construct_munitions() :
 
 def main() :
     '''Fonction principale'''
+    pay.add()
+    del pay
+    import pay
     marche_arret = Marche_Arret()
     grass = Grass()
     hero = Hero()
