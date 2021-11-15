@@ -422,8 +422,6 @@ class Construct_munitions() :
 def main() :
     '''Fonction principale'''
     pay.add()
-    del pay
-    import pay
     marche_arret = Marche_Arret()
     grass = Grass()
     hero = Hero()
