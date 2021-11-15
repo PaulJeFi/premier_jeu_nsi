@@ -37,6 +37,11 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
+#import des musiques d'ambiences 
+mus_game_over = pygame.mixer.sound("musiques\Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
+mus_victoire = pygame.mixer.sound("musiques\Phantom Manor - Loop piano bar-converted.mp3")
+mus_jeu = pygame.mixer.sound("musiques\Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
 gros_nul = pygame.font.SysFont('couriernewbold', 60)
@@ -98,7 +103,11 @@ class Marche_Arret() :
             elif self.status == False and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
                 self.status = True
-        
+    def musique_start(self):
+        """le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu"""
+        mus_jeu.play(0, 0, 3000)
+
+
 class Score_actuel() :
     '''Classe pour le score'''
 
