@@ -6,6 +6,9 @@ def reset() :
         Table.write(f"table = {str(table)}")
 
 def get() :
+    table = pickle.load(open("./pay/data.p", "rb"))
+    with open("./pay/data.py", "w") as Table :
+        Table.write(table.decode())
     from pay.data import table
     return table
 
