@@ -37,10 +37,12 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
+"""
 #import des musiques d'ambiences 
 mus_game_over = pygame.mixer.sound("musiques\Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
 mus_victoire = pygame.mixer.sound("musiques\Phantom Manor - Loop piano bar-converted.mp3")
 mus_jeu = pygame.mixer.sound("musiques\Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+"""
 
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
@@ -50,6 +52,11 @@ def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
     textsurface = font.render(string, False, color)
     screen.blit(textsurface, pos)
+"""
+def musique_start(self):
+    le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
+    pygame.mixer.play(mus_jeu)
+"""
 
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
@@ -99,14 +106,13 @@ class Marche_Arret() :
         if self.highlight() and self.can_switch and not game_over :
             if self.status == True and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
+                """pygame.mixer.pause(mus_jeu)"""
                 self.status = False
             elif self.status == False and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
+                """pygame.mixer.unpause(mus_jeu)"""
                 self.status = True
-    def musique_start(self):
-        """le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu"""
-        mus_jeu.play(0, 0, 3000)
-
+   
 
 class Score_actuel() :
     '''Classe pour le score'''
@@ -421,6 +427,7 @@ def main() :
     soin = Soin()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
+    """musique_start()"""
     game_over = False
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
