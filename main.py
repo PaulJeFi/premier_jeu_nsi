@@ -16,7 +16,7 @@ import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
 from zombies import Construct_Zombies
-import pay
+import save
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -419,9 +419,9 @@ class Construct_munitions() :
         for balle in self.balles :
             balle.droite(dt)
 
-def main() :
+def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
-    pay.add()
+    save.add_game()
     marche_arret = Marche_Arret()
     grass = Grass()
     hero = Hero()
@@ -434,6 +434,8 @@ def main() :
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
+        if score.score > save.get()["best_score"] :
+            save.set_score(score.score)
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
@@ -515,7 +517,7 @@ def main() :
             marche_arret.can_switch = False
         pressed = (pygame.key.get_pressed(), game_over)
         if pressed[0][pygame.K_n] and pressed[1] :
-            main()
+            return score.score
 
         '''Tous les affichages de sprites'''
         grass.display()
@@ -534,4 +536,5 @@ def main() :
         pygame.display.flip()
 
 if __name__ == '__main__' :
-    main()
+    while True :
+        main()
