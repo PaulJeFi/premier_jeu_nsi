@@ -40,16 +40,18 @@ clock = pygame.time.Clock()
 
 intro.main() # Lancement de l'intro
 
-"""
 #import et init des musiques d'ambiences 
 pygame.mixer.init()
-mus_game_over = pygame.mixer.Sound("./musiques/Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
-mus_victoire = pygame.mixer.Sound("./musiques/Phantom Manor - Loop piano bar-converted.mp3")
-mus_jeu = pygame.mixer.Sound("./musiques/Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+pygame.mixer.get_num_channels()
+
+mus_game_over = pygame.mixer.Sound("musiques/gameOver.mp3")
+mus_victoire = pygame.mixer.Sound("./musiques/Phantom Manor  Foyer (Instrumental)-converted.mp3")
+#mus_jeu = pygame.mixer.Sound("./musiques/Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
-"""
+#création variables pour les channels du mixer 
+pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les apellera après.
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
 gros_nul = pygame.font.SysFont('couriernewbold', 60)
@@ -58,11 +60,7 @@ def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
     textsurface = font.render(string, False, color)
     screen.blit(textsurface, pos)
-"""
-def musique_start(self):
-    le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
-    pygame.mixer.play(mus_jeu)
-"""
+
 
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
@@ -83,6 +81,12 @@ class Marche_Arret() :
     def display(self) :
         '''Affichage de soi-même'''
         screen.blit(self.image, self.rect)
+
+    
+    def musique_start(self):
+        #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
+        pygame.mixer.Channel(0).play(mus_victoire)
+    
     
     def highlight(self) :
         '''Permet de faire briller le bouton pause quand on a sa souris dessus'''
@@ -434,6 +438,7 @@ def main(score=save.get()["best_score"]) :
     soin = Soin()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
+    marche_arret.musique_start()
     """musique_start()"""
     game_over = False
     while True : # False = le jeu s'arrête

@@ -4,3 +4,5 @@ __pycache__/
 .DS_Store
 # Fichiers de configuration VS Code
 .vscode
+# Fichiers de sauvegarde (pour le développement)
+save/
