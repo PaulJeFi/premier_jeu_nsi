@@ -39,12 +39,15 @@ screen.fill(WHITE)
 clock = pygame.time.Clock()
 
 """
-#import des musiques d'ambiences 
-mus_game_over = pygame.mixer.sound("musiques\Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
-mus_victoire = pygame.mixer.sound("musiques\Phantom Manor - Loop piano bar-converted.mp3")
-mus_jeu = pygame.mixer.sound("musiques\Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+#import et init des musiques d'ambiences 
+pygame.mixer.init()
+mus_game_over = pygame.mixer.Sound("./musiques/Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
+mus_victoire = pygame.mixer.Sound("./musiques/Phantom Manor - Loop piano bar-converted.mp3")
+mus_jeu = pygame.mixer.Sound("./musiques/Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+#import des sons additionels 
+tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
+sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
 """
-
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
 gros_nul = pygame.font.SysFont('couriernewbold', 60)
@@ -515,6 +518,7 @@ def main(score=save.get()["best_score"]) :
             game_over = True
             marche_arret.status = False
             marche_arret.can_switch = False
+            """pygame.mixer.play(mus_game_over)"""
         pressed = (pygame.key.get_pressed(), game_over)
         if pressed[0][pygame.K_n] and pressed[1] :
             return score.score
