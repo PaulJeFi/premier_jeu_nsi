@@ -114,5 +114,5 @@ def main() :
         if intro.is_finished :
             break
 
-if __name__ == "__main__" or True :
+if __name__ == "__main__" :
     main()
