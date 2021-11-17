@@ -41,12 +41,19 @@ clock = pygame.time.Clock()
 """
 #import et init des musiques d'ambiences 
 pygame.mixer.init()
-mus_game_over = pygame.mixer.Sound("./musiques/Phantom Manor  Loop Orgue (Grande salle)-converted.mp3")
+pygame.mixer.get_num_channels()
+
+mus_game_over = pygame.mixer.Sound("musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/Phantom Manor - Loop piano bar-converted.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
+#création variables pour les channels du mixer 
+canal1 = pygame.mixer.channel(0)
+canal2 = pygame.mixer.channel(1)
+canal2 = pygame.mixer.channel(2)
+canal3 = pygame.mixer.channel(3)
 """
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
@@ -56,11 +63,7 @@ def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
     textsurface = font.render(string, False, color)
     screen.blit(textsurface, pos)
-"""
-def musique_start(self):
-    le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
-    pygame.mixer.play(mus_jeu)
-"""
+
 
 class Marche_Arret() :
     '''Classe du bouton pause/marche'''
@@ -81,6 +84,12 @@ class Marche_Arret() :
     def display(self) :
         '''Affichage de soi-même'''
         screen.blit(self.image, self.rect)
+
+    """
+    def musique_start(self):
+        #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
+        canal1.play(mus_jeu)
+    """
     
     def highlight(self) :
         '''Permet de faire briller le bouton pause quand on a sa souris dessus'''
