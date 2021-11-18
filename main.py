@@ -45,8 +45,9 @@ pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
 mus_game_over = pygame.mixer.Sound("musiques/gameOver.mp3")
-mus_victoire = pygame.mixer.Sound("./musiques/Phantom Manor  Foyer (Instrumental)-converted.mp3")
-#mus_jeu = pygame.mixer.Sound("./musiques/Phantom Manor - Orgue Loop (Instrumental)-converted.mp3")
+mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
+mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
+jouer_son = 0
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
@@ -85,7 +86,7 @@ class Marche_Arret() :
     
     def musique_start(self):
         #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
-        pygame.mixer.Channel(0).play(mus_victoire)
+        pygame.mixer.Channel(0).play(mus_jeu)
     
     
     def highlight(self) :
@@ -116,13 +117,32 @@ class Marche_Arret() :
         if self.highlight() and self.can_switch and not game_over :
             if self.status == True and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
-                """pygame.mixer.pause(mus_jeu)"""
+                pygame.mixer.pause()
                 self.status = False
             elif self.status == False and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
-                """pygame.mixer.unpause(mus_jeu)"""
+                pygame.mixer.unpause()
                 self.status = True
-   
+class tout_sons():
+     # gestion intégrale du son
+
+    def __init__(self):
+        pygame.mixer.init()
+        pygame.mixer.set_num_channels(self.channels)
+
+    def pause(self):
+        pygame.mixer.channel(jouer_son).pause
+
+    def unpause(self):
+        pygame.mixer.channel(jouer_son).unpause
+
+    def fin_musique(self):
+        pass
+
+    def musique_mort(self):
+        #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
+        pygame.mixer.Channel(1).play(mus_game_over)
+
 
 class Score_actuel() :
     '''Classe pour le score'''
@@ -431,6 +451,7 @@ class Construct_munitions() :
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
+    jouer_son = mus_jeu
     marche_arret = Marche_Arret()
     grass = Grass()
     hero = Hero()
@@ -523,6 +544,7 @@ def main(score=save.get()["best_score"]) :
             hero.change(pygame.mouse.get_pos())
         if hero.pv <= 0 :
             game_over = True
+            pygame.mixer.pause()
             marche_arret.status = False
             marche_arret.can_switch = False
             """pygame.mixer.play(mus_game_over)"""
@@ -542,10 +564,12 @@ def main(score=save.get()["best_score"]) :
         curseur(screen)
         text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         if game_over :
+            pygame.mixer.music.load("./musiques/gameOver.mp3")
+            pygame.mixer.music.play()
             text(screen, gros_nul, 'GAME OVER', RED, (385, 350))
             text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', GREEN, (250, 400))
         pygame.display.flip()
-
+()
 if __name__ == '__main__' :
     while True :
         main()
