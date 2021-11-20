@@ -123,6 +123,7 @@ class Marche_Arret() :
                 self.cooldown = 0
                 pygame.mixer.unpause()
                 self.status = True
+
 class tout_sons():
      # gestion intégrale du son
 
@@ -569,7 +570,7 @@ def main(score=save.get()["best_score"]) :
             text(screen, gros_nul, 'GAME OVER', RED, (385, 350))
             text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', GREEN, (250, 400))
         pygame.display.flip()
-()
+() # C'est normal le " () " juste là ? [signé Térence]
 if __name__ == '__main__' :
     while True :
         main()

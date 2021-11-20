@@ -1,10 +1,16 @@
 '''
 IMPORTANT :
+
 Pour ouvrir l'inventaire, tapez " a "
 Pour le fermer c'est la même touche
 Configurable dans la fonction main() en bas de ce script
-ET MERCI DE NE PAS MODIFIER SANS AUTORISATION
-Si vous avez besoin d'aide contactez votre chef de groupe
+
+Clique gauche pour sélectionner
+Clique droit après avoir sélectionné un objet pour le changer de place
+
+MERCI DE NE PAS MODIFIER SANS AUTORISATION SINON C'EST 0/20 !!!
+
+Si vous avez besoin d'aide contactez votre chef de groupe préféré : Térence
 '''
 
 import pygame
@@ -21,12 +27,16 @@ screen.fill(WHITE)
 pygame.font.init()
 myfont = pygame.font.SysFont('couriernewbold', 15)
 
+base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100}
+stats = {"Spe" : 1, "Def" : 0, "Vie" : 100}
+
 class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
-        self.all_items = {"Bottes" : ["Bottes", "description", "stats"], # nom objet : [nom fichier png, description, stats]
-            "Armure" : ["Armure", "description", "stats"],
+        self.objet_selection = "" # L'objet sélectionné
+        self.all_items = {"Bottes" : ["bottes", "description", ["Spe +0.1", "Def +10"]], # nom objet : [nom fichier png, description, stats]
+            "Armure" : ["armure", "description", ["Spe -0.05", "Def +40"]],
             "Objet de type random" : ["objet_random", "description...", "stats"],
             "Un truc" : ["un_truc", "description", "stats"]}
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
@@ -34,6 +44,8 @@ class Inventaire() :
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
         self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png') # Case jaune (objets équipés)
         self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png') # Case noir (inventaire)
+        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png') # Surbrillance
+        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection
         self.actualiser_pos()
 
     def actualiser_pos(self) :
@@ -41,6 +53,8 @@ class Inventaire() :
         self.size = 50
         self.image1 = pygame.transform.scale(self.o_image1, (self.size, self.size))
         self.image2 = pygame.transform.scale(self.o_image2, (self.size, self.size))
+        self.image3 = pygame.transform.scale(self.o_image3, (self.size, self.size))
+        self.image4 = pygame.transform.scale(self.o_image4, (self.size, self.size))
         self.rect = self.image1.get_rect()
         self.positions1 = [] # x et y pour toutes les cases image1 sous la forme x1, y1, x2, y2, etc...
         self.positions2 = [] # x et y pour toutes les cases image2
@@ -72,7 +86,9 @@ class Inventaire() :
             screen.blit(self.image1, (self.positions1[i], self.positions1[i+1]))
         for i in range(0, len(self.positions2), 2) :
             screen.blit(self.image2, (self.positions2[i], self.positions2[i+1]))
+        objet_selection_pos = self.overlay()
         self.items_display()
+        self.selection(objet_selection_pos)
 
     def items_display(self) :
         '''Affichage des objets dans l'inventaire'''
@@ -84,6 +100,63 @@ class Inventaire() :
             if self.objets_inventaire[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets_inventaire[index] in self.all_items :
                     screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
+
+    def overlay(self) :
+        '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoie les informations de cette case'''
+        mouse = pygame.mouse.get_pos()
+        # Partie inventaire
+        for i in range(0, len(self.positions2), 2) :
+            if mouse[0] > self.positions2[i] and mouse[1] > self.positions2[i+1] and mouse[0] < self.positions2[i] + self.size and mouse[1] < self.positions2[i+1] + self.size :
+                screen.blit(self.image3, (self.positions2[i], self.positions2[i+1]))
+                return (self.positions2[i], self.positions2[i+1], self.objets_inventaire[i//2], i//2, "inventaire") # Position X et y de la case ainsi que l'objet contenu dans celle-ci
+        # Partie équipement
+        for i in range(0, len(self.positions1), 2) :
+            if mouse[0] > self.positions1[i] and mouse[1] > self.positions1[i+1] and mouse[0] < self.positions1[i] + self.size and mouse[1] < self.positions1[i+1] + self.size :
+                screen.blit(self.image3, (self.positions1[i], self.positions1[i+1]))
+                return (self.positions1[i], self.positions1[i+1], self.objets[i//2], i//2, "equipement")
+
+    def selection(self, infos) :
+        if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clique gauche
+            screen.blit(self.image4, (infos[0], infos[1]))
+            self.objet_selection = infos
+        elif pygame.mouse.get_pressed()[0] :
+            self.objet_selection = ""
+        elif pygame.mouse.get_pressed()[2] : # Clique droit
+            if type(infos) == tuple and self.objet_selection != "" :
+                '''Permet d'échanger la position de 2 objets, en fonction de si ils sont dans l'inventaire ou dans les objets équipés'''
+                # PS : ne pas oublier d'utiliser " self.objets_stats() "" pour actualiser les stats du héro. Pas besoin de le mettre pour le premier cas vu que l'on ne touche pas aux objets équipés
+                if infos[4] == "inventaire" and self.objet_selection[4] == "inventaire" :
+                    self.objets_inventaire[infos[3]], self.objets_inventaire[self.objet_selection[3]] = self.objets_inventaire[self.objet_selection[3]], self.objets_inventaire[infos[3]]
+                elif infos[4] == "equipement" and self.objet_selection[4] == "inventaire" :
+                    self.objets[infos[3]], self.objets_inventaire[self.objet_selection[3]] = self.objets_inventaire[self.objet_selection[3]], self.objets[infos[3]]
+                    self.objets_stats()
+                elif infos[4] == "equipement" and self.objet_selection[4] == "equipement" :
+                    self.objets[infos[3]], self.objets[self.objet_selection[3]] = self.objets[self.objet_selection[3]], self.objets[infos[3]]
+                    self.objets_stats()
+                elif infos[4] == "inventaire" and self.objet_selection[4] == "equipement" :
+                    self.objets_inventaire[infos[3]], self.objets[self.objet_selection[3]] = self.objets[self.objet_selection[3]], self.objets_inventaire[infos[3]]
+                    self.objets_stats()
+            self.objet_selection = ""
+        elif self.objet_selection != "" :
+            screen.blit(self.image4, (self.objet_selection[0], self.objet_selection[1]))
+
+    def add_item(self, item) :
+        for i in range(len(self.objets_inventaire)) :
+            if self.objets_inventaire[i] == "" :
+                self.objets_inventaire[i] = item
+                return True
+        return False
+
+    def objets_stats(self) :
+        new_stats = base_stats.copy()
+        for i in self.objets :
+            if i != "" :
+                if i in self.all_items :
+                    for j in range(len(self.all_items[i][2])) :
+                        value = self.all_items[i][2][j].split()
+                        new_stats[value[0]] += float(value[1])
+        stats = new_stats.copy()
+        print(stats, new_stats, base_stats)
 
 def main() :
     '''Fonction principale'''
