@@ -10,6 +10,7 @@ from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
 from pygame.event import wait
 from pygame.mixer import pause, unpause
+from inventaire import Inventaire
 import pygame
 import sys
 import math
@@ -454,6 +455,7 @@ def main(score=save.get()["best_score"]) :
     save.add_game()
     jouer_son = mus_jeu
     marche_arret = Marche_Arret()
+    inventaire = Inventaire()
     grass = Grass()
     hero = Hero()
     score = Score_actuel()
@@ -475,7 +477,6 @@ def main(score=save.get()["best_score"]) :
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() :
                 balles.add()
         marche_arret.on_off(game_over) # Permet de savoir si le jeu est OUI ou NON en PAUSE
-        
         if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
@@ -562,6 +563,16 @@ def main(score=save.get()["best_score"]) :
         hero.GUI_display()
         score.display()
         marche_arret.display()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a] :
+            if inventaire.can_switch :
+                inventaire.ouvert = not inventaire.ouvert
+                inventaire.can_switch = False
+        elif not inventaire.can_switch :
+            inventaire.can_switch = True
+        if inventaire.ouvert :
+            inventaire.display() # Affichage
+        inventaire.stats_display()
         curseur(screen)
         text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         if game_over :

@@ -18,6 +18,7 @@ import sys
 
 pygame.init()
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
@@ -25,18 +26,17 @@ pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 pygame.font.init()
-myfont = pygame.font.SysFont('couriernewbold', 15)
-
-base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100}
-stats = {"Spe" : 1, "Def" : 0, "Vie" : 100}
 
 class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
+        self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100} # Stats de base du héro
+        self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
         self.all_items = {"Bottes" : ["bottes", "description", ["Spe +0.1", "Def +10"]], # nom objet : [nom fichier png, description, stats]
-            "Armure" : ["armure", "description", ["Spe -0.05", "Def +40"]],
+            "Armure dorée" : ["armure_doree", "description", ["Spe -0.05", "Def +40"]],
+            "Armure avec cape" : ["armure_cape", "description", ["Spe +0.05", "Def +15", "Vie +10"]],
             "Objet de type random" : ["objet_random", "description...", "stats"],
             "Un truc" : ["un_truc", "description", "stats"]}
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
@@ -74,10 +74,11 @@ class Inventaire() :
             self.objets = [""]*(self.pos[0]*self.pos[1]-1)
             self.objets_inventaire = [""]*(self.pos[2]*self.pos[3])
             # Merci d'appeller les objet par leur nom de clé et si il ne doit pas avoir d'objet à un emplacement mettre simplement ""
-            self.objets = ["", "Armure", "Bottes", "Bottes", "Bottes", ""] # TEST : Customisez l'équipement (attention à ne pas faire un "index out of range")
-            self.objets_inventaire = ["Armure", "", "", "", "Bottes", "Armure", "",
-                "", "", "Bottes", "Armure", "", "", "",
-                "Bottes", "Armure", "", "", "", "Bottes", "Armure"] # TEST : Customisez l'inventaire (attention à ne pas faire un "index out of range")
+            self.objets = ["", "Armure dorée", "Armure avec cape", "Bottes", "Bottes", ""] # TEST : Customisez l'équipement (attention à ne pas faire un "index out of range")
+            self.objets_inventaire = ["Armure dorée", "", "Armure avec cape", "", "Bottes", "Armure dorée", "",
+                "Armure avec cape", "", "Bottes", "Armure dorée", "Armure avec cape", "Armure avec cape", "",
+                "Bottes", "Armure dorée", "", "Armure avec cape", "", "Bottes", "Armure dorée"] # TEST : Customisez l'inventaire (attention à ne pas faire un "index out of range")
+            self.objets_stats()
             self.inventaire_done = True # Pour ne pas reset l'inventaire en permanance
 
     def display(self) :
@@ -148,15 +149,25 @@ class Inventaire() :
         return False
 
     def objets_stats(self) :
-        new_stats = base_stats.copy()
+        new_stats = self.base_stats.copy()
         for i in self.objets :
             if i != "" :
                 if i in self.all_items :
                     for j in range(len(self.all_items[i][2])) :
                         value = self.all_items[i][2][j].split()
                         new_stats[value[0]] += float(value[1])
-        stats = new_stats.copy()
-        print(stats, new_stats, base_stats)
+        self.stats = new_stats.copy()
+
+    def text2(self, screen, font, size, string, color, pos) :
+        '''Permet d'afficher un texte de façon simplifiée'''
+        textsurface = pygame.font.SysFont(font, size).render(string, False, color)
+        screen.blit(textsurface, pos)
+
+    def stats_display(self) :
+        x, y, size = 10, 500, 20
+        for i in self.stats :
+            self.text2(screen, 'couriernewbold', size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
+            y += size*1.2
 
 def main() :
     '''Fonction principale'''
@@ -177,6 +188,7 @@ def main() :
             inventaire.can_switch = True
         if inventaire.ouvert :
             inventaire.display() # Affichage
+        inventaire.stats_display()
         pygame.display.flip()
 
 if __name__ == '__main__' :
