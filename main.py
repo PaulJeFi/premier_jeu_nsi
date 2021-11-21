@@ -501,10 +501,10 @@ def main(score=save.get()["best_score"]) :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() :
+            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
                 balles.add()
         marche_arret.on_off(game_over) # Permet de savoir si le jeu est OUI ou NON en PAUSE
-        if marche_arret.game_state() : # Exécute seulement si le jeu est en marche
+        if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
             # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
@@ -586,9 +586,10 @@ def main(score=save.get()["best_score"]) :
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        zombies.display(dt, marche_arret.game_state(), score)
-        balles.display(dt, marche_arret.game_state())
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score)
+        balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert))
         hero.display()
+        text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
         marche_arret.display()
@@ -603,7 +604,6 @@ def main(score=save.get()["best_score"]) :
             inventaire.display() # Affichage
         inventaire.stats_display()
         curseur(screen)
-        text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         if game_over :
             pygame.mixer.music.load("./musiques/gameOver.mp3")
             pygame.mixer.music.play()

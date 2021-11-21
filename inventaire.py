@@ -44,7 +44,8 @@ class Inventaire() :
         self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png') # Case jaune (objets équipés)
         self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png') # Case noir (inventaire)
         self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png') # Surbrillance
-        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection
+        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection (contour orange)
+        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png') # Panel sur lequel on affiche les informations de l'objet
         self.actualiser_pos()
 
     def actualiser_pos(self) :
@@ -89,6 +90,7 @@ class Inventaire() :
         objet_selection_pos = self.overlay()
         self.items_display()
         self.selection(objet_selection_pos)
+        self.description()
 
     def items_display(self) :
         '''Affichage des objets dans l'inventaire'''
@@ -170,6 +172,24 @@ class Inventaire() :
         for i in self.stats :
             self.text2(screen, 'couriernewbold', size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
             y += size*1.2
+
+    def description(self) :
+        if type(self.objet_selection) == tuple and self.objet_selection[2] != '' : # On affiche les informations seulement si un objet a été sélectionné (autrement ça fait une erreur)
+            size = (200, 65 + 20*(list(self.all_items[self.objet_selection[2]][1]).count('|') + 2) + 25*len(self.all_items[self.objet_selection[2]][2]))
+            pos = [x - size[0] + 14, y - size[1] + 14]
+            self.image5 = pygame.transform.scale(self.o_image5, size)
+            screen.blit(self.image5, (x-size[0], y-size[1]))
+            self.text2(screen, 'couriernewbold', 25, self.objet_selection[2], WHITE, (pos[0], pos[1])) # Nom de l'objet
+            pos[1] += 45
+            if self.all_items[self.objet_selection[2]][1] != "" :
+                texte = self.all_items[self.objet_selection[2]][1].split('|')
+                for i in texte :
+                    self.text2(screen, 'couriernewbold', 20, i, WHITE, (pos[0], pos[1]))
+                    pos[1] += 20
+                pos[1] += 20
+            for i in range(len(self.all_items[self.objet_selection[2]][2])) : # Statistiques de l'objet
+                self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], WHITE, (pos[0], pos[1]))
+                pos[1] += 25
 
 def main() :
     '''Fonction principale'''
