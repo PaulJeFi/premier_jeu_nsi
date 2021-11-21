@@ -11,10 +11,13 @@ Clique droit après avoir sélectionné un objet pour le changer de place
 MERCI DE NE PAS MODIFIER SANS AUTORISATION SINON C'EST 0/20 !!!
 
 Si vous avez besoin d'aide contactez votre chef de groupe préféré : Térence
+
+Si vous voulez créer votre propre objet merci de vous référer au script liste_objets.py
 '''
 
 import pygame
 import sys
+from liste_objets import definition_de_tous_les_objets
 
 pygame.init()
 WHITE = (255, 255, 255)
@@ -34,11 +37,7 @@ class Inventaire() :
         self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100} # Stats de base du héro
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
-        self.all_items = {"Bottes" : ["bottes", "description", ["Spe +0.1", "Def +10"]], # nom objet : [nom fichier png, description, stats]
-            "Armure dorée" : ["armure_doree", "description", ["Spe -0.05", "Def +40"]],
-            "Armure avec cape" : ["armure_cape", "description", ["Spe +0.05", "Def +15", "Vie +10"]],
-            "Objet de type random" : ["objet_random", "description...", "stats"],
-            "Un truc" : ["un_truc", "description", "stats"]}
+        self.all_items = definition_de_tous_les_objets # Liste de tous les objets du jeu, ainsi que leur nom, description et stats
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
         self.ouvert = False # False = inventaire invisible ; True = inventaire visible
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
@@ -142,6 +141,7 @@ class Inventaire() :
             screen.blit(self.image4, (self.objet_selection[0], self.objet_selection[1]))
 
     def add_item(self, item) :
+        '''Ajoute un objet dans l'inventaire'''
         for i in range(len(self.objets_inventaire)) :
             if self.objets_inventaire[i] == "" :
                 self.objets_inventaire[i] = item
@@ -149,6 +149,7 @@ class Inventaire() :
         return False
 
     def objets_stats(self) :
+        '''Réactualise les stats données par les objets équipés'''
         new_stats = self.base_stats.copy()
         for i in self.objets :
             if i != "" :
@@ -164,6 +165,7 @@ class Inventaire() :
         screen.blit(textsurface, pos)
 
     def stats_display(self) :
+        '''Affiche les stats totales'''
         x, y, size = 10, 500, 20
         for i in self.stats :
             self.text2(screen, 'couriernewbold', size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
