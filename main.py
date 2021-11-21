@@ -57,6 +57,7 @@ pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les ap
 # Police d'écriture ci-dessous
 myfont = pygame.font.SysFont('couriernewbold', 24)
 gros_nul = pygame.font.SysFont('couriernewbold', 60)
+v_pv = pygame.font.SysFont('couriernewbold', 30)
 
 def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
@@ -269,17 +270,40 @@ class Hero() :
         self.x = x/2 - self.size//2
         self.y = y/2 - self.size//2
         self.rect = self.image.get_rect()
-        self.max_pv = 100
-        self.pv = 100
+        self.max_pv = Inventaire().stats["Vie"]
+        self.pv = self.max_pv
+        self.old_pv = self.pv # Utilisé pour la fonction regen
+        self.pv_différence = 0 # Même chose
         self.angle = 90
         self.rotated = pygame.image.load('./images/personages/Humain_type_1.png')
     
-    def pv_check(self) :
-        '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; slef.max_pv ]'''
+    def regen(self, valeur, dt) :
+        '''Régénération naturelle de la vie du héro'''
+        # Si le héro a pris de gros dégat récemment, il regagnera plus lentement des pv
+        if self.old_pv > self.pv : # Calcul des dégats reçus
+            self.pv_différence += 200*(self.old_pv - self.pv)/self.max_pv
+        self.old_pv = self.pv
+        if self.pv + valeur*(0.97**self.pv_différence) < self.max_pv : # Régénération des pv en fonction de la pénalité de dégats reçus
+            self.pv += valeur*(0.97**self.pv_différence)
+        else :
+            self.pv = self.max_pv
+        self.pv_différence -= self.max_pv/dt/100 # Diminution du malus de régénération
+        if self.pv_différence < 0 :
+            self.pv_différence = 0
+        if self.pv_différence > 100 :
+            self.pv_différence = 100
+
+    def pv_check(self, vie) :
+        '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; self.max_pv ]'''
+        # Permet aussi d'actualiser le nombre maximal de pv
+        Inventaire().objets_stats()
         if self.pv > self.max_pv :
             self.pv = self.max_pv
         elif self.pv <= 0 :
             self.pv = 0
+        if self.max_pv != vie :
+            self.pv = self.pv/self.max_pv*vie
+            self.max_pv = vie
 
     def display(self) :
         '''Affichage de soi-même'''
@@ -295,6 +319,9 @@ class Hero() :
         draw_rect(screen, (25, 25), (300, 25), BLACK)
         draw_rect(screen, (27, 27), (296, 21), GRAY)
         draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
+        # Affichage de la valeur numérique des pv
+        draw_rect(screen, (25, 50), ((len(f'{round(self.pv, 1)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
+        text(screen, myfont, f'{round(self.pv, 1)} / {round(self.max_pv)}', WHITE, (29, 50))
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -485,6 +512,7 @@ def main(score=save.get()["best_score"]) :
                 speed_hero = math.sqrt(2)/2*dt
             else :
                 speed_hero = dt
+            speed_hero *= inventaire.stats["Spe"]
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(speed_hero)
                 soin.bas(speed_hero)
@@ -492,7 +520,7 @@ def main(score=save.get()["best_score"]) :
                 balles.bas(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
+                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
                     grass.haut(speed_hero)
                     soin.haut(speed_hero)
                     zombies.haut(speed_hero)
@@ -504,7 +532,7 @@ def main(score=save.get()["best_score"]) :
                 balles.haut(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
+                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
                     grass.bas(speed_hero)
                     soin.bas(speed_hero)
                     zombies.bas(speed_hero)
@@ -516,7 +544,7 @@ def main(score=save.get()["best_score"]) :
                 balles.gauche(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
+                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
                     grass.droite(speed_hero)
                     soin.droite(speed_hero)
                     zombies.droite(speed_hero)
@@ -528,21 +556,22 @@ def main(score=save.get()["best_score"]) :
                 balles.droite(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
+                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
                     grass.gauche(speed_hero)
                     soin.gauche(speed_hero)
                     zombies.gauche(speed_hero)
                     balles.gauche(speed_hero)
             touche =  zombies.touch_balle(dt, hero.get_rect())
             if touche[0] :
-                hero.pv -= 0.25+0.25*zombies.zombies[touche[1]].type
+                hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
                     zombies.zombies[test[1]].pv -= 50 # On retire 50 aux PVs du Zombie
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
-            hero.pv_check()
+            hero.regen(inventaire.stats["Reg"]/(dt*10), dt)
+            hero.pv_check(inventaire.stats["Vie"])
             hero.change(pygame.mouse.get_pos())
         if hero.pv <= 0 :
             game_over = True

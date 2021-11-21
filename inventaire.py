@@ -34,7 +34,7 @@ class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
-        self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100} # Stats de base du héro
+        self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100, "Reg" : 1} # Stats de base du héro
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
         self.all_items = definition_de_tous_les_objets # Liste de tous les objets du jeu, ainsi que leur nom, description et stats
@@ -73,10 +73,10 @@ class Inventaire() :
             self.objets = [""]*(self.pos[0]*self.pos[1]-1)
             self.objets_inventaire = [""]*(self.pos[2]*self.pos[3])
             # Merci d'appeller les objet par leur nom de clé et si il ne doit pas avoir d'objet à un emplacement mettre simplement ""
-            self.objets = ["", "Armure dorée", "Armure avec cape", "Bottes", "Bottes", ""] # TEST : Customisez l'équipement (attention à ne pas faire un "index out of range")
-            self.objets_inventaire = ["Armure dorée", "", "Armure avec cape", "", "Bottes", "Armure dorée", "",
-                "Armure avec cape", "", "Bottes", "Armure dorée", "Armure avec cape", "Armure avec cape", "",
-                "Bottes", "Armure dorée", "", "Armure avec cape", "", "Bottes", "Armure dorée"] # TEST : Customisez l'inventaire (attention à ne pas faire un "index out of range")
+            self.objets = ["", "", "", "", "", ""] # TEST : Customisez l'équipement (attention à ne pas faire un "index out of range")
+            self.objets_inventaire = ["Armure dorée", "Armure dorée", "Grand coeur", "Armure avec cape", "Trèfle à 4 feuilles", "Bottes", "Trèfle à 4 feuilles",
+                "Trèfle à 4 feuilles", "Armure dorée", "Grand coeur", "Armure avec cape", "Bottes", "Bottes", "Grand coeur",
+                "Armure dorée", "Armure dorée", "Armure avec cape", "Trèfle à 4 feuilles", "Bottes", "Grand coeur", "Trèfle à 4 feuilles"] # TEST : Customisez l'inventaire (attention à ne pas faire un "index out of range")
             self.objets_stats()
             self.inventaire_done = True # Pour ne pas reset l'inventaire en permanance
 
@@ -95,11 +95,11 @@ class Inventaire() :
         for index in range(len(self.objets)) :
             if self.objets[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/{self.all_items[self.objets[index]][0]}.png'), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png'), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
         for index in range(len(self.objets_inventaire)) :
             if self.objets_inventaire[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets_inventaire[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
 
     def overlay(self) :
         '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoie les informations de cette case'''

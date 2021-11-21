@@ -6,7 +6,7 @@ Pour ce faire, suivez les instructions suivantes :
      Ce nom sera affiché au joueur, et sera utilisé dans l'inventaire non-visuel (la liste contenant tous les objets)
   -  Après avoir mis le symbole " : ", il faudra que vous mettez une liste []
      En premier argument de cette liste, vous mettrez les nom du fichier png du sprite de votre objet (sans mettre le .png)
-     Votre image doit être dans le fichier inventaire
+     Votre image doit avoir pour chemin " ./images/inventaire/objets "
      En deuxième argument vous pouvez entrer une description de votre objet que pourra lire le joueur. Vous pouvez simplement entrer "" si vous ne voulez pas en mettre
      Le dernier argument est le plus important : il vous faudra créer de nouveau une liste []
      Dans celle-ci vous pourrez insérer les stats que donne votre objet
@@ -18,14 +18,14 @@ En résumé, vous devriez obtenir quelque chose de cette forme :
 Pour le moment, les stats sont :
   -  "Spe" pour la vitesse : La vitesse de base est de 1
   -  "Def" pour la défence : Réduit tous les dommages reçus en les multipliant par " 0.99**<valeur_défence> ". La défence de base est 0
-  -  "Vie" pour la vie maximale : La vie maximale de base est 100
-  -  "Reg" pour la régénération naturelle de pv : Chaque seconde, redonne <Reg> pv. La régénération naturelle de base est 0
+  -  "Vie" pour la vie maximale : La vie maximale de base est 100. Réduit aussi le malus de régénération lorsque l'on prend des dégats (voir "Reg")
+  -  "Reg" pour la régénération naturelle de pv : Chaque seconde, redonne <Reg> pv. Prendre des dégats réduit temporairement la régénération. La régénération naturelle de base est 1.
 '''
 
 
 
-definition_de_tous_les_objets = {"Bottes" : ["bottes", "description", ["Spe +0.1", "Def +10"]],
-            "Armure dorée" : ["armure_doree", "description", ["Spe -0.05", "Def +40"]],
-            "Armure avec cape" : ["armure_cape", "description", ["Spe +0.05", "Def +15", "Vie +10"]],
-            "Objet de type random" : ["objet_random", "description...", "stats"],
-            "Un truc" : ["un_truc", "description", "stats"]}
+definition_de_tous_les_objets = {"Bottes" : ["bottes", "description", ["Spe +0.06", "Def +4"]],
+            "Armure dorée" : ["armure_doree", "description", ["Spe -0.02", "Def +20"]],
+            "Armure avec cape" : ["armure_cape", "description", ["Spe +0.02", "Def +8", "Vie +8"]],
+            "Grand coeur" : ["grand_coeur", "", ["Vie +24", "Reg +1"]],
+            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.4", "Reg +0.5"]]}
