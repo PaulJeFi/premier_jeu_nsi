@@ -287,7 +287,7 @@ class Hero() :
             self.pv += valeur*(0.97**self.pv_différence)
         else :
             self.pv = self.max_pv
-        self.pv_différence -= self.max_pv/dt/100 # Diminution du malus de régénération
+        self.pv_différence -= self.max_pv/dt/250 # Diminution du malus de régénération
         if self.pv_différence < 0 :
             self.pv_différence = 0
         if self.pv_différence > 100 :
@@ -320,8 +320,8 @@ class Hero() :
         draw_rect(screen, (27, 27), (296, 21), GRAY)
         draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
         # Affichage de la valeur numérique des pv
-        draw_rect(screen, (25, 50), ((len(f'{round(self.pv, 1)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
-        text(screen, myfont, f'{round(self.pv, 1)} / {round(self.max_pv)}', WHITE, (29, 50))
+        draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
+        text(screen, myfont, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (29, 50))
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -512,7 +512,8 @@ def main(score=save.get()["best_score"]) :
                 speed_hero = math.sqrt(2)/2*dt
             else :
                 speed_hero = dt
-            speed_hero *= inventaire.stats["Spe"]
+            speed_hero *= inventaire.stats["Spe"] # Vitesse du héro en fonction du stat "Spe"
+            can_be_hit = True # Permet de faire en sorte que le héro se fasse toucher qu'une seul fois
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(speed_hero)
                 soin.bas(speed_hero)
@@ -520,7 +521,9 @@ def main(score=save.get()["best_score"]) :
                 balles.bas(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                    if can_be_hit :
+                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        can_be_hit = False
                     grass.haut(speed_hero)
                     soin.haut(speed_hero)
                     zombies.haut(speed_hero)
@@ -532,7 +535,9 @@ def main(score=save.get()["best_score"]) :
                 balles.haut(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                    if can_be_hit :
+                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        can_be_hit = False
                     grass.bas(speed_hero)
                     soin.bas(speed_hero)
                     zombies.bas(speed_hero)
@@ -544,7 +549,9 @@ def main(score=save.get()["best_score"]) :
                 balles.gauche(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                    if can_be_hit :
+                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        can_be_hit = False
                     grass.droite(speed_hero)
                     soin.droite(speed_hero)
                     zombies.droite(speed_hero)
@@ -556,14 +563,17 @@ def main(score=save.get()["best_score"]) :
                 balles.droite(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
-                    hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                    if can_be_hit :
+                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        can_be_hit = False
                     grass.gauche(speed_hero)
                     soin.gauche(speed_hero)
                     zombies.gauche(speed_hero)
                     balles.gauche(speed_hero)
             touche =  zombies.touch_balle(dt, hero.get_rect())
-            if touche[0] :
+            if touche[0] and can_be_hit :
                 hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                can_be_hit = False
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie

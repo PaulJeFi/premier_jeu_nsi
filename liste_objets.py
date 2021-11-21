@@ -30,4 +30,4 @@ definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simple bottes...|Parf
             "Armure dorée" : ["armure_doree", "Une splendide armure que|seul les plus grands|capitaines ont portée.", ["Spe -0.02", "Def +20"]],
             "Armure avec cape" : ["armure_cape", "Une armure ornée d'une|cape.", ["Spe +0.02", "Def +8", "Vie +8"]],
             "Grand coeur" : ["grand_coeur", "Un vrai bonheur <3", ["Vie +24", "Reg +1"]],
-            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.4", "Reg +0.5"]]}
+            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.04", "Reg +0.5"]]}
