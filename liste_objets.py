@@ -30,4 +30,6 @@ definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simple bottes...|Parf
             "Armure dorée" : ["armure_doree", "Une splendide armure que|seul les plus grands|capitaines ont portée.", ["Spe -0.02", "Def +20"]],
             "Armure avec cape" : ["armure_cape", "Une armure ornée d'une|cape.", ["Spe +0.02", "Def +8", "Vie +8"]],
             "Grand coeur" : ["grand_coeur", "Un vrai bonheur <3", ["Vie +24", "Reg +1"]],
-            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.04", "Reg +0.5"]]}
+            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.04", "Reg +0.5"]],
+            "Rune anti-vie" : ["anti_coeur", "Une poussance maléfique|l'aurait créée...|Serait-il raisonnable de|l'équiper ?", ["Spe +0.15", "Def -50", "Vie +150", "Reg -2.5"]],
+            "Âme des flammes" : ["ame_feu", "Le pouvoir du démon des|flammes demeure dans ce|mystérieux fragment.", ["Spe +0.1", "Vie -25"]]}

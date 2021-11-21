@@ -3,6 +3,7 @@ IMPORTANT :
 
 Pour ouvrir l'inventaire, tapez " a "
 Pour le fermer c'est la même touche
+Pour obtenir un item aléatoire, tapez " e "
 Configurable dans la fonction main() en bas de ce script
 
 Clique gauche pour sélectionner
@@ -15,6 +16,7 @@ Si vous avez besoin d'aide contactez votre chef de groupe préféré : Térence
 Si vous voulez créer votre propre objet merci de vous référer au script liste_objets.py
 '''
 
+from random import choice
 import pygame
 import sys
 from liste_objets import definition_de_tous_les_objets
@@ -22,6 +24,10 @@ from liste_objets import definition_de_tous_les_objets
 pygame.init()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+
 
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
@@ -38,6 +44,7 @@ class Inventaire() :
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
         self.all_items = definition_de_tous_les_objets # Liste de tous les objets du jeu, ainsi que leur nom, description et stats
+        self.all_items_name = list(self.all_items.keys()) # Permet de faire une liste d'objet avec seulement leurs noms
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
         self.ouvert = False # False = inventaire invisible ; True = inventaire visible
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
@@ -71,13 +78,8 @@ class Inventaire() :
                 self.positions2.append(self.pos[5]+(j+self.pos[1])*(self.size+self.pos[4]))
                 self.positions2.append(self.pos[6]+i*(self.size+self.pos[4]))
         if not self.inventaire_done : # Création de la liste contenant l'équipement et l'inventaire
-            self.objets = [""]*(self.pos[0]*self.pos[1]-1)
+            self.objets = [""]*(self.pos[0]*self.pos[1])
             self.objets_inventaire = [""]*(self.pos[2]*self.pos[3])
-            # Merci d'appeller les objet par leur nom de clé et si il ne doit pas avoir d'objet à un emplacement mettre simplement ""
-            self.objets = ["", "", "", "", "", ""] # TEST : Customisez l'équipement (attention à ne pas faire un "index out of range")
-            self.objets_inventaire = ["Armure dorée", "Armure dorée", "Grand coeur", "Armure avec cape", "Trèfle à 4 feuilles", "Bottes", "Trèfle à 4 feuilles",
-                "Trèfle à 4 feuilles", "Armure dorée", "Grand coeur", "Armure avec cape", "Bottes", "Bottes", "Grand coeur",
-                "Armure dorée", "Armure dorée", "Armure avec cape", "Trèfle à 4 feuilles", "Bottes", "Grand coeur", "Trèfle à 4 feuilles"] # TEST : Customisez l'inventaire (attention à ne pas faire un "index out of range")
             self.objets_stats()
             self.inventaire_done = True # Pour ne pas reset l'inventaire en permanance
 
@@ -121,7 +123,7 @@ class Inventaire() :
         if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clique gauche
             screen.blit(self.image4, (infos[0], infos[1]))
             self.objet_selection = infos
-        elif pygame.mouse.get_pressed()[0] :
+        elif pygame.mouse.get_pressed()[0] and not(self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14) :
             self.objet_selection = ""
         elif pygame.mouse.get_pressed()[2] : # Clique droit
             if type(infos) == tuple and self.objet_selection != "" :
@@ -179,7 +181,7 @@ class Inventaire() :
             pos = [x - size[0] + 14, y - size[1] + 14]
             self.image5 = pygame.transform.scale(self.o_image5, size)
             screen.blit(self.image5, (x-size[0], y-size[1]))
-            self.text2(screen, 'couriernewbold', 25, self.objet_selection[2], WHITE, (pos[0], pos[1])) # Nom de l'objet
+            self.text2(screen, 'couriernewbold', 25, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
             pos[1] += 45
             if self.all_items[self.objet_selection[2]][1] != "" :
                 texte = self.all_items[self.objet_selection[2]][1].split('|')
@@ -188,8 +190,31 @@ class Inventaire() :
                     pos[1] += 20
                 pos[1] += 20
             for i in range(len(self.all_items[self.objet_selection[2]][2])) : # Statistiques de l'objet
-                self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], WHITE, (pos[0], pos[1]))
+                if float((self.all_items[self.objet_selection[2]][2][i].split())[1]) < 0 :
+                    self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
+                else :
+                    self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
                 pos[1] += 25
+            self.suprimer()
+
+    def suprimer(self) :
+        '''Permet de suprimer un objet depuis l'inventaire grâce à un bouton'''
+        self.size_del = 32 # Taille du bouton
+        self.mouse = pygame.mouse.get_pos()
+        if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
+            if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
+                if type(self.objet_selection) == tuple :
+                    if self.objet_selection[4] == "equipement" :
+                        self.objets[self.objet_selection[3]] = ""
+                        self.objet_selection = ""
+                        self.objets_stats() # On actualise les stats
+                    elif self.objet_selection[4] == "inventaire" :
+                        self.objets_inventaire[self.objet_selection[3]] = ""
+                        self.objet_selection = ""
+        else :
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
+
 
 def main() :
     '''Fonction principale'''
@@ -206,6 +231,10 @@ def main() :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
                 inventaire.can_switch = False
+        elif pressed[pygame.K_e] :
+            if inventaire.can_switch :
+                inventaire.can_switch = False
+                inventaire.add_item(choice(inventaire.all_items_name))
         elif not inventaire.can_switch :
             inventaire.can_switch = True
         if inventaire.ouvert :

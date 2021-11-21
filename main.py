@@ -26,6 +26,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
 
 # Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
@@ -608,6 +609,10 @@ def main(score=save.get()["best_score"]) :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
                 inventaire.can_switch = False
+        elif pressed[pygame.K_e] :
+            if inventaire.can_switch :
+                inventaire.can_switch = False
+                inventaire.add_item(random.choice(inventaire.all_items_name))
         elif not inventaire.can_switch :
             inventaire.can_switch = True
         if inventaire.ouvert :
