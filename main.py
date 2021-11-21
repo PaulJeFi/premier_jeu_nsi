@@ -302,9 +302,13 @@ class Hero() :
             self.pv = self.max_pv
         elif self.pv <= 0 :
             self.pv = 0
-        if self.max_pv != vie :
+        if self.max_pv != vie and vie >= 1 :
             self.pv = self.pv/self.max_pv*vie
             self.max_pv = vie
+        elif self.max_pv != 0.001 and vie < 1 :
+            self.pv = 0.001
+            self.max_pv = 0.001
+        
 
     def display(self) :
         '''Affichage de soi-même'''
@@ -313,7 +317,9 @@ class Hero() :
 
     def GUI_display(self):
         '''Affichage de la barre de pv'''
-        if self.pv > 0 : # <-- La division par 0 cause une ERREUR
+        if self.max_pv == 0.001 : # Easter egg pour avoir self.max_pv = 0
+            HP_GREEN = (100, 0, 0)
+        elif self.pv > 0 : # <-- La division par 0 cause une ERREUR
             HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
         else :
             HP_GREEN = (200, 0, 0)
@@ -321,8 +327,11 @@ class Hero() :
         draw_rect(screen, (27, 27), (296, 21), GRAY)
         draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
         # Affichage de la valeur numérique des pv
-        draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
-        text(screen, myfont, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (29, 50))
+        if self.max_pv != 0.001 :
+            draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
+            text(screen, myfont, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (29, 50))
+        else :
+            text(screen, myfont, 'ERROR', RED, (140, 30)) # Easter egg pour avoir self.max_pv = 0
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -623,9 +632,9 @@ def main(score=save.get()["best_score"]) :
             pygame.mixer.music.load("./musiques/gameOver.mp3")
             pygame.mixer.music.play()
             text(screen, gros_nul, 'GAME OVER', RED, (385, 350))
-            text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', GREEN, (250, 400))
+            text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
         pygame.display.flip()
-() # C'est normal le " () " juste là ? [signé Térence]
+
 if __name__ == '__main__' :
     while True :
         main()
