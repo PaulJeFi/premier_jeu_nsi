@@ -6,3 +6,5 @@ __pycache__/
 .vscode
 # Fichiers de sauvegarde (pour le développement)
 save/
+save/data.py
+save/data.p
