@@ -5,6 +5,5 @@ __pycache__/
 # Fichiers de configuration VS Code
 .vscode
 # Fichiers de sauvegarde (pour le développement)
-save/
 save/data.py
 save/data.p

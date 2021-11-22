@@ -6,10 +6,11 @@ Pour le fermer c'est la même touche
 Pour obtenir un item aléatoire, tapez " e "
 Configurable dans la fonction main() en bas de ce script
 
-Clique gauche pour sélectionner
-Clique droit après avoir sélectionné un objet pour le changer de place
+Clic gauche pour sélectionner
+Clic droit après avoir sélectionné un objet pour le changer de place
 
 MERCI DE NE PAS MODIFIER SANS AUTORISATION SINON C'EST 0/20 !!!
+# Oui bien sûr ^^.
 
 Si vous avez besoin d'aide contactez votre chef de groupe préféré : Térence
 
@@ -44,15 +45,15 @@ class Inventaire() :
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
         self.all_items = definition_de_tous_les_objets # Liste de tous les objets du jeu, ainsi que leur nom, description et stats
-        self.all_items_name = list(self.all_items.keys()) # Permet de faire une liste d'objet avec seulement leurs noms
+        self.all_items_name = list(self.all_items.keys()) # Permet de faire une liste d'objets avec seulement leurs noms
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
         self.ouvert = False # False = inventaire invisible ; True = inventaire visible
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
-        self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png') # Case jaune (objets équipés)
-        self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png') # Case noir (inventaire)
-        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png') # Surbrillance
-        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection (contour orange)
-        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png') # Panel sur lequel on affiche les informations de l'objet
+        self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png').convert() # Case jaune (objets équipés)
+        self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png').convert() # Case noire (inventaire)
+        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png').convert() # Surbrillance
+        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png').convert() # Sélection (contour orange)
+        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png').convert() # Panel sur lequel on affiche les informations de l'objet
         self.actualiser_pos()
 
     def actualiser_pos(self) :
@@ -99,14 +100,14 @@ class Inventaire() :
         for index in range(len(self.objets)) :
             if self.objets[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png'), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png').convert(), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
         for index in range(len(self.objets_inventaire)) :
             if self.objets_inventaire[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets_inventaire[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png').convert(), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
 
     def overlay(self) :
-        '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoie les informations de cette case'''
+        '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoyer les informations de cette case'''
         mouse = pygame.mouse.get_pos()
         # Partie inventaire
         for i in range(0, len(self.positions2), 2) :
@@ -120,12 +121,12 @@ class Inventaire() :
                 return (self.positions1[i], self.positions1[i+1], self.objets[i//2], i//2, "equipement")
 
     def selection(self, infos) :
-        if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clique gauche
+        if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clic gauche
             screen.blit(self.image4, (infos[0], infos[1]))
             self.objet_selection = infos
         elif pygame.mouse.get_pressed()[0] and not(self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14) :
             self.objet_selection = ""
-        elif pygame.mouse.get_pressed()[2] : # Clique droit
+        elif pygame.mouse.get_pressed()[2] : # Clic droit
             if type(infos) == tuple and self.objet_selection != "" :
                 '''Permet d'échanger la position de 2 objets, en fonction de si ils sont dans l'inventaire ou dans les objets équipés'''
                 # PS : ne pas oublier d'utiliser " self.objets_stats() "" pour actualiser les stats du héro. Pas besoin de le mettre pour le premier cas vu que l'on ne touche pas aux objets équipés
@@ -202,7 +203,7 @@ class Inventaire() :
         self.size_del = 32 # Taille du bouton
         self.mouse = pygame.mouse.get_pos()
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png').convert(), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
                 if type(self.objet_selection) == tuple :
                     if self.objet_selection[4] == "equipement" :
@@ -213,7 +214,7 @@ class Inventaire() :
                         self.objets_inventaire[self.objet_selection[3]] = ""
                         self.objet_selection = ""
         else :
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png').convert(), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
 
 
 def main() :

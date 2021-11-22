@@ -595,7 +595,7 @@ def main(score=save.get()["best_score"]) :
             hero.change(pygame.mouse.get_pos())
         if hero.pv <= 0 :
             game_over = True
-            pygame.mixer.pause()
+            pygame.mixer.stop()
             marche_arret.status = False
             marche_arret.can_switch = False
             """pygame.mixer.play(mus_game_over)"""
