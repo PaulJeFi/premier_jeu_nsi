@@ -436,6 +436,11 @@ class Munition(deplace) :
                 self.angle = 180-self.angle
             else :
                 self.angle = -self.angle
+        else :
+            if mousepos[1] < y/2 :
+                self.angle = 90
+            else :
+                self.angle = -90
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
     
     def move(self, dt, marche_arret) :
