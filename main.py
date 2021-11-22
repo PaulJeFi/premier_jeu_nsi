@@ -154,7 +154,7 @@ class Score_actuel() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 7 # Plus le niveau est élevé, plus le jeu devient difficile
+        self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
         # Palier de score requis pour passer au niveau de difficulté supérieur
         self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
         20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
