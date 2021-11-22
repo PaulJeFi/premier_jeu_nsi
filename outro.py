@@ -35,7 +35,7 @@ myfont = pygame.font.Sysfont("couriernewbold", 20)
 
 #initialisation du son
 pygame.mixer.init()
-pygame.mixer.load("./sons/clic_clavier.wav")
+son = pygame.mixer.load("./sons/clic_clavier.wav")
 
 #definiton des textes
 
@@ -72,10 +72,20 @@ class outro():
         #creer l'affichage de la fenêtre
         screen.blit(self.image, (0, 0))
         draw_rect(screen, (0, 570), (1080, 720), BROWN)
-        draw_rect(screen, (0, 585), (1080, 705), BROWN)
+        draw_rect(screen, (15, 585), (1080, 705), BROWN)
         self.write()
 
-    """def ecriture():"""
+    def ecriture():
+        text(screen, myfont, text_outro1, WHITE, (30,600))
+        if text_outro1 == (1050, 600):
+            text(screen, myfont, text_outro1, WHITE, (30,650))
+
+    def son (self):
+        if randint(1, 2):
+            sound(son)
+        
+
+
 
 
 """
