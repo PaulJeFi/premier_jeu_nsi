@@ -16,7 +16,7 @@ import sys
 import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
-from zombies import Construct_Zombies
+from zombies_new import Construct_Zombies
 import save
 
 # Définition de certaines couleurs
@@ -154,7 +154,7 @@ class Score_actuel() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
+        self.niveau = 7 # Plus le niveau est élevé, plus le jeu devient difficile
         # Palier de score requis pour passer au niveau de difficulté supérieur
         self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
         20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
@@ -532,7 +532,7 @@ def main(score=save.get()["best_score"]) :
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
                         can_be_hit = False
                     grass.haut(speed_hero)
                     soin.haut(speed_hero)
@@ -543,10 +543,10 @@ def main(score=save.get()["best_score"]) :
                 soin.haut(speed_hero)
                 zombies.haut(speed_hero)
                 balles.haut(speed_hero)
-                touche =  zombies.touch_balle(dt, hero.get_rect())
+                touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
                         can_be_hit = False
                     grass.bas(speed_hero)
                     soin.bas(speed_hero)
@@ -560,7 +560,7 @@ def main(score=save.get()["best_score"]) :
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
                         can_be_hit = False
                     grass.droite(speed_hero)
                     soin.droite(speed_hero)
@@ -574,15 +574,15 @@ def main(score=save.get()["best_score"]) :
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
                         can_be_hit = False
                     grass.gauche(speed_hero)
                     soin.gauche(speed_hero)
                     zombies.gauche(speed_hero)
                     balles.gauche(speed_hero)
-            touche =  zombies.touch_balle(dt, hero.get_rect())
+            touche = zombies.touch_balle(dt, hero.get_rect())
             if touche[0] and can_be_hit :
-                hero.pv -= (0.25+0.25*zombies.zombies[touche[1]].type)*0.99**inventaire.stats["Def"]
+                hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
                 can_be_hit = False
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
