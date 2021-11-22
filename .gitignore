@@ -1,0 +1,12 @@
+# Fichiers CPython
+__pycache__/
+# Fichiers MAC OSX
+.DS_Store
+# Fichiers de configuration VS Code
+.vscode
+# Fichiers de sauvegarde (pour le développement)
+save/
+save/data.py
+save/data.p
+*.p
+save/data.py
