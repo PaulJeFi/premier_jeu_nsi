@@ -166,14 +166,14 @@ class Inventaire() :
 
     def text2(self, screen, font, size, string, color, pos) :
         '''Permet d'afficher un texte de façon simplifiée'''
-        textsurface = pygame.font.SysFont(font, size).render(string, False, color)
+        textsurface = pygame.font.Font(font, size).render(string, False, color)
         screen.blit(textsurface, pos)
 
     def stats_display(self) :
         '''Affiche les stats totales'''
         x, y, size = 10, 500, 20
         for i in self.stats :
-            self.text2(screen, 'couriernewbold', size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
+            self.text2(screen, "./FreeSansBold.ttf", size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
             y += size*1.2
 
     def description(self) :
@@ -182,19 +182,19 @@ class Inventaire() :
             pos = [x - size[0] + 14, y - size[1] + 14]
             self.image5 = pygame.transform.scale(self.o_image5, size)
             screen.blit(self.image5, (x-size[0], y-size[1]))
-            self.text2(screen, 'couriernewbold', 25, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
+            self.text2(screen, "./FreeSansBold.ttf", 25, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
             pos[1] += 45
             if self.all_items[self.objet_selection[2]][1] != "" :
                 texte = self.all_items[self.objet_selection[2]][1].split('|')
                 for i in texte :
-                    self.text2(screen, 'couriernewbold', 20, i, WHITE, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 20, i, WHITE, (pos[0], pos[1]))
                     pos[1] += 20
                 pos[1] += 20
             for i in range(len(self.all_items[self.objet_selection[2]][2])) : # Statistiques de l'objet
                 if float((self.all_items[self.objet_selection[2]][2][i].split())[1]) < 0 :
-                    self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 25, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
                 else :
-                    self.text2(screen, 'couriernewbold', 25, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 25, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
                 pos[1] += 25
             self.suprimer()
 

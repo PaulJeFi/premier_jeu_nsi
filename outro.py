@@ -31,7 +31,8 @@ img3 = pygame.image.load("./images/intro/zombie2.png")
 
 #initialisation et chargement de la police 
 pygame.font.init()
-myfont = pygame.font.Sysfont("couriernewbold", 20)
+#myfont = pygame.font.Sysfont("couriernewbold", 20)
+myfont = pygame.font.Font("./courriernewbold.ttf", 20)
 
 #initialisation du son
 pygame.mixer.init()

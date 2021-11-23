@@ -22,7 +22,8 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 pygame.font.init()
-myfont = pygame.font.SysFont('couriernewbold', 15)
+#myfont = pygame.font.SysFont('couriernewbold', 15)
+myfont = pygame.font.Font("./FreeSansBold.ttf", 15)
 
 class Zombies(deplace) :
 

@@ -22,7 +22,7 @@ screen.fill(WHITE)
 
 # Initialisation du texte
 pygame.font.init()
-myfont = pygame.font.SysFont('couriernewbold', 20)
+myfont = pygame.font.Font("./courriernewbold.ttf", 20)
 frame1 = pygame.image.load('./images/intro/lessive.png').convert()
 frame2 = pygame.image.load('./images/intro/zombie1.png').convert()
 frame3 = pygame.image.load('./images/intro/armurerie.png').convert()

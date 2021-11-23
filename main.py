@@ -55,10 +55,17 @@ tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
 #création variables pour les channels du mixer 
 pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les apellera après.
+
 # Police d'écriture ci-dessous
-myfont = pygame.font.SysFont('couriernewbold', 24)
-gros_nul = pygame.font.SysFont('couriernewbold', 60)
-v_pv = pygame.font.SysFont('couriernewbold', 30)
+# doc :
+#pygame.font.get_default_font()
+#pygame.font.get_fonts()
+#myfont = pygame.font.SysFont('couriernewbold', 24)
+myfont = pygame.font.Font("./FreeSansBold.ttf", 24)
+#gros_nul = pygame.font.SysFont('couriernewbold', 60)
+gros_nul = pygame.font.Font("./FreeSansBold.ttf", 60)
+#v_pv = pygame.font.SysFont('couriernewbold', 30)
+v_pv = pygame.font.Font("./FreeSansBold.ttf", 30)
 
 def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
