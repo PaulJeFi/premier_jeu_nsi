@@ -160,8 +160,8 @@ class Inventaire() :
             return False
 
     def objet_trouve(self) :
-        self.affichage -= 1
-        text(screen, "./FreeSansBold.ttf", YELLOW, f'Vous avez obtenu {self.item} !', WHITE, (300, 500))
+        self.affichage -= 2
+        text(screen, "./FreeSansBold.ttf", 20, f'Vous avez obtenu {self.item} !', (255, 255, 255-self.affichage), (x/2-len(f'Vous avez obtenu {self.item} !')*5, 500+self.affichage))
 
     def objets_stats(self) :
         '''Réactualise les stats données par les objets équipés'''
