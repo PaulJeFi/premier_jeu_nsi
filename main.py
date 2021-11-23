@@ -60,7 +60,7 @@ pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les ap
 # doc :
 #pygame.font.get_default_font()
 #pygame.font.get_fonts()
-'''  Les polices actuelles sont "./FreeSansBold.ttf" et 'couriernewbold'.  '''
+'''  Les polices actuelles sont "./FreeSansBold.ttf" et "./courriernewbold.ttf".  '''
 
 def text(screen, font, size, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
