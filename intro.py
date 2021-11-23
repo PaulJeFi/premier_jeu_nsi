@@ -74,8 +74,8 @@ class Intro() :
             text(screen, "./FreeSansBold.ttf", 20, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
             self.sound()
         elif self.char-len(self.text[0]) < len(self.text[1]) : # sinon si on est à la deuxième ligne
-            text(screen, myfont, self.text[0][0:self.char], WHITE, (30, 720-150+30))
-            text(screen, myfont, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
+            text(screen, "./FreeSansBold.ttf", 20, self.text[0][0:self.char], WHITE, (30, 720-150+30))
+            text(screen, "./FreeSansBold.ttf", 20, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
             self.sound()
         elif self.text == text_intro1 or self.text == text_intro3 : # sinon, si on est à la troisième ligne
             if self.char-len(self.text[0])-len(self.text[1]) < len(self.text[2]) :
