@@ -5,7 +5,6 @@ import sys
 import math
 import random
 from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text, sound
-from liste_zombies import all_zombie_type, zombie_wave_spawn_rate
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -29,30 +28,29 @@ myfont = pygame.font.Font("./FreeSansBold.ttf", 15)
 class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
-    def __init__(self, type="Z1") :
+    def __init__(self, type=1) :
         self.type = type
-        self.all_zombies = all_zombie_type
         self.size = 100
-        self.SPEED = self.all_zombies[self.type][1][1]
-        self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
+        self.SPEED = 0.25+0.05*self.type
+        self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image = pygame.transform.rotate(self.image, 180)
         self.spawn()
         self.pos = [self.x, self.y]
         screen.blit(self.image, (int(self.pos[0]-self.size/2), int(self.pos[1]-self.size/2)))
-        self.pv_maxi = self.all_zombies[self.type][1][0]
+        self.pv_maxi = 100*self.type
         self.pv = self.pv_maxi
         self.rotated = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
     
     def change_to_type(self, type) :
-        if type in list(self.all_zombies.keys()) :
-            self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
+        if type in [1, 2, 3] :
+            self.image = pygame.image.load(f'./images/personages/Zombie_type_{type}.png') 
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.image = pygame.transform.rotate(self.image, 180)
 
-    def nbrPV(self) : 
+    def nbrPV (self) : 
         if self.pv > self.pv_maxi :
             self.pv = self.pv_maxi
         elif self.pv < 0 :
@@ -69,10 +67,32 @@ class Zombies(deplace) :
             self.x, self.y = x+self.size, random.randint(0-self.size, y+self.size)
         elif position == 4 :
             self.x, self.y = random.randint(0-self.size, x+self.size), y+self.size
+        #def spawn_x(the_x) :
+        #    '''Faut pas le dire à Mr Mandic...'''
+        #    the_x = random.randint(-1*x, 2*x)
+        #    if 0-self.size <= the_x <= x+self.size :
+        #        the_x = spawn_x(the_x)
+        #    return the_x
+        #def spawn_y(the_y=0) :
+        #    '''Faut pas le dire à Mr Mandic...'''
+        #    the_y = random.randint(-1*y, 2*y)
+        #    if 0-self.size <= the_y <= y+self.size :
+        #        the_y = spawn_y(the_y)
+        #    return the_y
+        #self.x, self.y = spawn_x(self), spawn_y(self)
 
     def deplacement (self, dt) :
         '''Le déplacement de l'IA'''
-
+        #############################################
+        # Old code d'Anatole. J'ai pas tout compris.#
+        # if self.x > 540 and self.y > 360 :        #
+        #    self.x += 2                            #
+        #    self.y += 1                            #
+        #if self.x < 540 and self.y < 360 :         #
+        #    self.x -= 2                            #
+        #    self.y -= 1                            #
+        #############################################
+        
         '''
         Un code naïf serait le suivant :
 
@@ -155,12 +175,16 @@ class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
     def __init__(self, number=0) :
-        self.all_zombies = all_zombie_type
         self.zombies = []
         self.respawn_cooldown = 350
         for i in range(number) :
             self.zombies.append(self.do_again(1))
-        self.zomb_level = zombie_wave_spawn_rate
+        self.zomb_level = {0: [1]*100, 1: [1]*100, 2: [1]*100, 3: [1]*90+[2]*10,
+        4: [1]*75+[2]*25, 5: [1]*60+[2]*35+[3]*5, 6: [1]*40+[2]*45+[3]*15,
+        7: [1]*30+[2]*50+[3]*20, 8: [1]*20+[2]*45+[3]*35,
+        9: [1]*10+[2]*40+[3]*50, 10: [2]*35+[3]*65, 11: [2]*20+[3]*80,
+        12: [2]*10+[3]*90, 13: [3]*100}
+        self.zomb_score = [0, 250, 350, 500]
         #self.zombies = [self.do_again(1) for i in range(number)]
             
     def do_again(self, type) :
@@ -181,13 +205,13 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt, game_state, score, inventaire) :
+    def display(self, dt, game_state, score) :
         if game_state :
             self.respawn(score)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
-            self.mourir(zomb, ID, score, inventaire)
+            self.mourir(zomb, ID, score)
             the_x, the_y = zomb.x, zomb.y
             zomb.display(dt, game_state, score)
             for zombi in self.zombies :
@@ -198,11 +222,10 @@ class Construct_Zombies() :
                     zomb.x, zomb.y = the_x, the_y
                     break
 
-    def mourir(self, zomb, ID, score, inventaire) :
+    def mourir(self, zomb, ID, score) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
-            score.add(self.all_zombies[zomb.type][2])
-            inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
+            score.add(self.zomb_score[self.zombies[ID].type])
             self.zombies.pop(ID)
             
     def respawn(self, score):
@@ -225,15 +248,13 @@ class Construct_Zombies() :
     def touch_balle(self, dt, hero: pygame.Rect) -> bool :
         '''Si les zombies touchent une balle.'''
         touche_hero = False
-        zombie = None
         ID = None
         for zombie in self.zombies :
             if zombie.get_rect().colliderect(hero) :
                 zombie.deplacement_inverse(dt)
                 touche_hero = True
                 ID = self.zombies.index(zombie)
-                return touche_hero, ID, zombie.type
-        return touche_hero, ID, zombie
+        return touche_hero, ID
 
     def haut(self, dt) :
         for zomb in self.zombies :

@@ -71,7 +71,7 @@ class Intro() :
         '''Comment écrire le texte'''
         self.char += 1  # On basera toutes les actions sur le nombre de carractères affichés jusqu'alors
         if self.char < len(self.text[0]) : # si on est à la première ligne
-            text(screen, "./FreeSansBold.ttf", 20, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
+            text(screen, myfont, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
             self.sound()
         elif self.char-len(self.text[0]) < len(self.text[1]) : # sinon si on est à la deuxième ligne
             text(screen, myfont, self.text[0][0:self.char], WHITE, (30, 720-150+30))
@@ -79,9 +79,9 @@ class Intro() :
             self.sound()
         elif self.text == text_intro1 or self.text == text_intro3 : # sinon, si on est à la troisième ligne
             if self.char-len(self.text[0])-len(self.text[1]) < len(self.text[2]) :
-                text(screen, "./FreeSansBold.ttf", 20, self.text[0], WHITE, (30, 720-150+30))
-                text(screen, "./FreeSansBold.ttf", 20, self.text[1], WHITE, (30, 720-150+60))
-                text(screen, "./FreeSansBold.ttf", 20, self.text[2][0:self.char-len(self.text[0])-len(self.text[1])]+'|', WHITE, (30, 720-150+90))
+                text(screen, myfont, self.text[0], WHITE, (30, 720-150+30))
+                text(screen, myfont, self.text[1], WHITE, (30, 720-150+60))
+                text(screen, myfont, self.text[2][0:self.char-len(self.text[0])-len(self.text[1])]+'|', WHITE, (30, 720-150+90))
                 self.sound()
             else :
                 time.sleep(5) # on attend 5 sec entre chaque slide
@@ -109,7 +109,7 @@ def main() :
         if pressed[pygame.K_SPACE] : # histoire qu'on puisse passer l'intro
             break
         intro.display()
-        text(screen, "./FreeSansBold.ttf", 20, '[espace]: passer l\'intro', WHITE, (750, 720-150+90))
+        text(screen, myfont, '[espace]: passer l\'intro', WHITE, (750, 720-150+90))
         pygame.display.flip()
         if intro.is_finished :
             break

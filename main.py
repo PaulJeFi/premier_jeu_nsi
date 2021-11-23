@@ -60,11 +60,16 @@ pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les ap
 # doc :
 #pygame.font.get_default_font()
 #pygame.font.get_fonts()
-'''  Les polices actuelles sont "./FreeSansBold.ttf" et 'couriernewbold'.  '''
+#myfont = pygame.font.SysFont('couriernewbold', 24)
+myfont = pygame.font.Font("./FreeSansBold.ttf", 24)
+#gros_nul = pygame.font.SysFont('couriernewbold', 60)
+gros_nul = pygame.font.Font("./FreeSansBold.ttf", 60)
+#v_pv = pygame.font.SysFont('couriernewbold', 30)
+v_pv = pygame.font.Font("./FreeSansBold.ttf", 30)
 
-def text(screen, font, size, string, color, pos) :
+def text(screen, font, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
-    textsurface = pygame.font.Font(font, size).render(string, False, color)
+    textsurface = font.render(string, False, color)
     screen.blit(textsurface, pos)
 
 
@@ -166,8 +171,8 @@ class Score_actuel() :
         'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
-        text(screen, "./FreeSansBold.ttf", 25, f'Votre score : {self.score} points', WHITE, (500, 20))
-        text(screen, "./FreeSansBold.ttf", 25, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
+        text(screen, myfont, f'Votre score : {self.score} points', WHITE, (500, 20))
+        text(screen, myfont, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
@@ -330,10 +335,10 @@ class Hero() :
         draw_rect(screen, (27, 27), (int((296)*(self.pv/self.max_pv)), 21), HP_GREEN)
         # Affichage de la valeur numérique des pv
         if self.max_pv != 0.001 :
-            draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}'))*7, 16), BLACK)
-            text(screen, "./FreeSansBold.ttf", 12, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (31, 50))
+            draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}')+6)*5, 16), BLACK)
+            text(screen, myfont, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (29, 50))
         else :
-            text(screen, "./FreeSansBold.ttf", 12, 'ERROR', RED, (140, 30)) # Easter egg pour avoir self.max_pv = 0
+            text(screen, myfont, 'ERROR', RED, (140, 30)) # Easter egg pour avoir self.max_pv = 0
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -616,7 +621,7 @@ def main(score=save.get()["best_score"]) :
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert))
         hero.display()
-        text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
+        text(screen, myfont, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
         marche_arret.display()
@@ -640,8 +645,8 @@ def main(score=save.get()["best_score"]) :
         if game_over :
             pygame.mixer.music.load("./musiques/gameOver.mp3")
             pygame.mixer.music.play()
-            text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
-            text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
+            text(screen, gros_nul, 'GAME OVER', RED, (385, 350))
+            text(screen, myfont, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
         pygame.display.flip()
 
 if __name__ == '__main__' :
