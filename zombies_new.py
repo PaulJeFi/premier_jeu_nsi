@@ -181,13 +181,13 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt, game_state, score) :
+    def display(self, dt, game_state, score, inventaire) :
         if game_state :
             self.respawn(score)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
-            self.mourir(zomb, ID, score)
+            self.mourir(zomb, ID, score, inventaire)
             the_x, the_y = zomb.x, zomb.y
             zomb.display(dt, game_state, score)
             for zombi in self.zombies :
@@ -198,10 +198,11 @@ class Construct_Zombies() :
                     zomb.x, zomb.y = the_x, the_y
                     break
 
-    def mourir(self, zomb, ID, score) :
+    def mourir(self, zomb, ID, score, inventaire) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
             score.add(self.all_zombies[zomb.type][2])
+            inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
             self.zombies.pop(ID)
             
     def respawn(self, score):

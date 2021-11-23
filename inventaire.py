@@ -20,6 +20,7 @@ Si vous voulez créer votre propre objet merci de vous référer au script liste
 from random import choice
 import pygame
 import sys
+from functions import text
 from liste_objets import definition_de_tous_les_objets
 
 pygame.init()
@@ -41,6 +42,7 @@ class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
+        self.affichage = 0
         self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100, "Reg" : 1} # Stats de base du héro
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
@@ -147,11 +149,19 @@ class Inventaire() :
 
     def add_item(self, item) :
         '''Ajoute un objet dans l'inventaire'''
-        for i in range(len(self.objets_inventaire)) :
-            if self.objets_inventaire[i] == "" :
-                self.objets_inventaire[i] = item
-                return True
-        return False
+        if item != "" :
+            for i in range(len(self.objets_inventaire)) :
+                if self.objets_inventaire[i] == "" :
+                    self.affichage = 200
+                    self.item = item
+                    self.objet_trouve()
+                    self.objets_inventaire[i] = item
+                    return True
+            return False
+
+    def objet_trouve(self) :
+        self.affichage -= 1
+        text(screen, "./FreeSansBold.ttf", YELLOW, f'Vous avez obtenu {self.item} !', WHITE, (300, 500))
 
     def objets_stats(self) :
         '''Réactualise les stats données par les objets équipés'''
@@ -240,6 +250,8 @@ def main() :
             inventaire.can_switch = True
         if inventaire.ouvert :
             inventaire.display() # Affichage
+        if inventaire.affichage > 0 :
+            inventaire.objet_trouve()
         inventaire.stats_display()
         pygame.display.flip()
 

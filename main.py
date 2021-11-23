@@ -156,7 +156,7 @@ class Score_actuel() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.score = 0
-        self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
+        self.niveau = 7 # Plus le niveau est élevé, plus le jeu devient difficile
         # Palier de score requis pour passer au niveau de difficulté supérieur
         self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
         20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
@@ -613,7 +613,7 @@ def main(score=save.get()["best_score"]) :
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score)
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert))
         hero.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
@@ -633,6 +633,8 @@ def main(score=save.get()["best_score"]) :
             inventaire.can_switch = True
         if inventaire.ouvert :
             inventaire.display() # Affichage
+        if inventaire.affichage > 0 :
+            inventaire.objet_trouve()
         inventaire.stats_display()
         curseur(screen)
         if game_over :
