@@ -51,11 +51,11 @@ class Inventaire() :
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
         self.ouvert = False # False = inventaire invisible ; True = inventaire visible
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
-        self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png').convert() # Case jaune (objets équipés)
-        self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png').convert() # Case noire (inventaire)
-        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png').convert() # Surbrillance
-        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png').convert() # Sélection (contour orange)
-        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png').convert() # Panel sur lequel on affiche les informations de l'objet
+        self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png') # Case jaune (objets équipés)
+        self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png') # Case noire (inventaire)
+        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png') # Surbrillance
+        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection (contour orange)
+        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png') # Panel sur lequel on affiche les informations de l'objet
         self.actualiser_pos()
 
     def actualiser_pos(self) :
@@ -102,11 +102,11 @@ class Inventaire() :
         for index in range(len(self.objets)) :
             if self.objets[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png').convert(), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png'), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
         for index in range(len(self.objets_inventaire)) :
             if self.objets_inventaire[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets_inventaire[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png').convert(), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
+                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
 
     def overlay(self) :
         '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoyer les informations de cette case'''
@@ -188,23 +188,23 @@ class Inventaire() :
 
     def description(self) :
         if type(self.objet_selection) == tuple and self.objet_selection[2] != '' : # On affiche les informations seulement si un objet a été sélectionné (autrement ça fait une erreur)
-            size = (200, 65 + 20*(list(self.all_items[self.objet_selection[2]][1]).count('|') + 2) + 25*len(self.all_items[self.objet_selection[2]][2]))
+            size = (200, 55 + 20*(list(self.all_items[self.objet_selection[2]][1]).count('|') + 2) + 25*len(self.all_items[self.objet_selection[2]][2]))
             pos = [x - size[0] + 14, y - size[1] + 14]
             self.image5 = pygame.transform.scale(self.o_image5, size)
             screen.blit(self.image5, (x-size[0], y-size[1]))
-            self.text2(screen, "./FreeSansBold.ttf", 25, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
-            pos[1] += 45
+            self.text2(screen, "./FreeSansBold.ttf", 18, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
+            pos[1] += 40
             if self.all_items[self.objet_selection[2]][1] != "" :
                 texte = self.all_items[self.objet_selection[2]][1].split('|')
                 for i in texte :
-                    self.text2(screen, "./FreeSansBold.ttf", 20, i, WHITE, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 15, i, WHITE, (pos[0], pos[1]))
                     pos[1] += 20
-                pos[1] += 20
+                pos[1] += 15
             for i in range(len(self.all_items[self.objet_selection[2]][2])) : # Statistiques de l'objet
                 if float((self.all_items[self.objet_selection[2]][2][i].split())[1]) < 0 :
-                    self.text2(screen, "./FreeSansBold.ttf", 25, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
                 else :
-                    self.text2(screen, "./FreeSansBold.ttf", 25, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
+                    self.text2(screen, "./FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
                 pos[1] += 25
             self.suprimer()
 

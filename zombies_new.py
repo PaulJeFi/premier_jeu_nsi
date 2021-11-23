@@ -148,7 +148,7 @@ class Zombies(deplace) :
         draw_rect(screen, (self.x-(32), self.y-(32)), (94, 14), BLACK)
         draw_rect(screen, (self.x-(32), self.y-(42)), (round(len(valeur_pv)*6)-5, 11), BLACK) # Barre noire suplémentaire
         draw_rect(screen, (self.x-(30), self.y-(30)), (self.pv*(100-10)/self.pv_maxi, 20-10), couleur_pv)
-        text(screen, myfont, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
+        text(screen, "./FreeSansBold.ttf", 10, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
         # Test de la barre de vie en foction des pv restants
 
 class Construct_Zombies() :

@@ -24,9 +24,9 @@ def Q_rsqrt(number):
     y = y * (1.5 - (x2 * y * y))
     return y
 
-def text(screen, font, string, color, pos) :
-    """Permet d'afficher un texte de façon simplifiée"""
-    textsurface = font.render(string, False, color)
+def text(screen, font, size, string, color, pos) :
+    '''Permet d'afficher un texte de façon simplifiée'''
+    textsurface = pygame.font.Font(font, size).render(string, False, color)
     screen.blit(textsurface, pos)
 
 def draw_rect(screen, position, size, color) :
