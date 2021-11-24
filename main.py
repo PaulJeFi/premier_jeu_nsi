@@ -19,6 +19,7 @@ from functions import deplace, draw_rect, convert_degrees, convert_radians, curs
 from zombies_new import Construct_Zombies
 import save
 import time
+from liste_zombies import zombie_wave_spawn_rate
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -155,15 +156,29 @@ class Temps() :
 
     def __init__(self) :
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
+        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
-    def display(self) :
-        '''Affichage du temps en "heures : minutes : secondes"'''
-        self.actualiser()
+    def display(self, marche, score) :
+        '''Affichage du temps en "heures : minutes : secondes" '''
+        self.pause_time(marche)
+        if marche :
+            self.actualiser()
+            score.niveau_zombie(self)
         self.affichage()
+    
+    def pause_time(self, marche) :
+        '''Permet de ne pas faire avancer le temps'''
+        if marche and self.pause == True :
+            self.all_pause_time += time.time() - self.time_stop
+            self.pause = False
+        elif not marche and self.pause == False :
+            self.time_stop = time.time()
+            self.pause = True
 
     def actualiser(self) :
         '''On actualise le temps'''
-        self.time = time.time() - self.starting_time # Permet de connaitre le temps passé sur une partie de notre jeu
+        self.time = time.time() - self.starting_time - self.all_pause_time # Permet de connaitre le temps passé sur une partie de notre jeu
         heure = math.floor(self.time//3600)
         minute = math.floor((self.time//60)%60)
         seconde = math.floor(self.time%60)
@@ -192,23 +207,29 @@ class Score_actuel() :
         '''Appel initial de la classe'''
         self.score = 0
         self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
+        self.paliers = zombie_wave_spawn_rate
         # Palier de score requis pour passer au niveau de difficulté supérieur
-        self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
-        20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
-        self.nom_niveau = ['Jeu d\'enfant', 'Simplissime', 'Facile',
-        'Abordable', 'Intermédiaire', 'Un peu complexe', 'Compliqué',
-        'Difficile', 'Très dur', 'Périlleux', 'Cauchemardesque', 'Démoniaque',
-        'Impossible', 'SEIGNEUR MANDIC']
+        #self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
+        #20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
+        #self.nom_niveau = ['Jeu d\'enfant', 'Simplissime', 'Facile',
+        #'Abordable', 'Intermédiaire', 'Un peu complexe', 'Compliqué',
+        #'Difficile', 'Très dur', 'Périlleux', 'Cauchemardesque', 'Démoniaque',
+        #'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
         text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
-        text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
+        #text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
         self.score += score
-        if self.niveau < len(self.score_min_pour_niveau)-1 :
-            while self.score >= self.score_min_pour_niveau[self.niveau] :
+        #if self.niveau < len(self.score_min_pour_niveau)-1 :
+        #    while self.score >= self.score_min_pour_niveau[self.niveau] :
+        #        self.niveau += 1
+
+    def niveau_zombie(self, temps) :
+        if self.niveau < len(self.paliers)-1 :
+            while temps.time/60 >= self.paliers[self.niveau+1][2] :
                 self.niveau += 1
 
 class Grass() :
@@ -631,7 +652,7 @@ def main(score=save.get()["best_score"]) :
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
-        temps.display()
+        temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
         marche_arret.display()
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] :

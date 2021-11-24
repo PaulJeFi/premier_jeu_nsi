@@ -1,6 +1,6 @@
 import pygame
 if __name__ == '__main__' :
-    from main import Grass, Marche_Arret, Score_actuel
+    from main import Grass, Marche_Arret, Score_actuel, Temps, Inventaire
 import sys
 import math
 import random
@@ -208,8 +208,8 @@ class Construct_Zombies() :
     def respawn(self, score):
         '''Lorsque le compteur respawn_cooldown atteint 0, on spawn un zombie'''
         if self.respawn_cooldown <= 0 :
-            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau])))
-            self.respawn_cooldown = random.randint(250, 350)-20*score.niveau
+            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau][0])))
+            self.respawn_cooldown = random.randint(self.zomb_level[score.niveau][1][0], self.zomb_level[score.niveau][1][1])
         else :
             self.respawn_cooldown -= 1
         
@@ -256,6 +256,8 @@ def main() :
     '''Fonction principale'''
     grass = Grass()
     score = Score_actuel()
+    temps = Temps()
+    inventaire = Inventaire()
     marche_arret = Marche_Arret()
     zombies = Construct_Zombies()
     while True : # False = le jeu s'arrête
@@ -280,7 +282,24 @@ def main() :
             zombies.droite(dt)
         # Affiche ton sprite ici.
         grass.display()
-        zombies.display(dt, marche_arret.game_state(), score)
+        zombies.display(dt, marche_arret.game_state(), score, inventaire)
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a] :
+            if inventaire.can_switch :
+                inventaire.ouvert = not inventaire.ouvert
+                inventaire.can_switch = False
+        elif pressed[pygame.K_e] :
+            if inventaire.can_switch :
+                inventaire.can_switch = False
+                inventaire.add_item(random.choice(inventaire.all_items_name))
+        elif not inventaire.can_switch :
+            inventaire.can_switch = True
+        if inventaire.ouvert :
+            inventaire.display() # Affichage
+        if inventaire.affichage > 0 :
+            inventaire.objet_trouve()
+        inventaire.stats_display()
+        temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
         pygame.display.flip()
         #zombies.add(3)
 
