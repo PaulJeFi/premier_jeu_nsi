@@ -309,7 +309,7 @@ class Hero() :
         self.max_pv = Inventaire().stats["Vie"]
         self.pv = self.max_pv
         self.old_pv = self.pv # Utilisé pour la fonction regen
-        self.pv_différence = 0 # Même chose
+        self.pv_difference = 0 # Même chose
         self.angle = 90
         self.rotated = pygame.image.load('./images/personages/Humain_type_1.png')
     
@@ -317,17 +317,20 @@ class Hero() :
         '''Régénération naturelle de la vie du héro'''
         # Si le héro a pris de gros dégat récemment, il regagnera plus lentement des pv
         if self.old_pv > self.pv : # Calcul des dégats reçus
-            self.pv_différence += 200*(self.old_pv - self.pv)/self.max_pv
+            self.pv_difference += (200*(self.old_pv - self.pv))/((1.005**(self.max_pv-100))*100)
         self.old_pv = self.pv
-        if self.pv + valeur*(0.97**self.pv_différence) < self.max_pv : # Régénération des pv en fonction de la pénalité de dégats reçus
-            self.pv += valeur*(0.97**self.pv_différence)
+        if self.pv + valeur*(0.97**self.pv_difference) < self.max_pv : # Régénération des pv en fonction de la pénalité de dégats reçus
+            self.pv += valeur*(0.97**self.pv_difference)
         else :
             self.pv = self.max_pv
-        self.pv_différence -= self.max_pv/dt/250 # Diminution du malus de régénération
-        if self.pv_différence < 0 :
-            self.pv_différence = 0
-        if self.pv_différence > 100 :
-            self.pv_différence = 100
+        if self.pv_difference < 0 :
+            self.pv_difference += 40/dt/self.max_pv # Diminution du bonus de régénération
+        else :
+            self.pv_difference -= self.max_pv/dt/250 # Diminution du malus de régénération
+        if self.pv_difference > 100 :
+            self.pv_difference = 100
+        elif self.pv_difference < -100 :
+            self.pv_difference = -100
 
     def pv_check(self, vie) :
         '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; self.max_pv ]'''
@@ -338,7 +341,8 @@ class Hero() :
         elif self.pv <= 0 :
             self.pv = 0
         if self.max_pv != vie and vie >= 1 :
-            self.pv = self.pv/self.max_pv*vie
+            if self.pv != 0.001 :
+                self.pv = self.pv/self.max_pv*vie
             self.max_pv = vie
         elif self.max_pv != 0.001 and vie < 1 :
             self.pv = 0.001
@@ -419,8 +423,10 @@ class Soin(deplace) :
         '''Interraction avec la trousse de premiers secours'''
         if self.x > x/2 - hero.size//2 and self.x < x/2 + hero.size//2 and self.y > y/2 - hero.size//2 and self.y < y/2 + hero.size//2 and hero.pv != hero.max_pv :
             self.replace()
-            if hero.pv < hero.max_pv - 35 :
-                hero.pv += 35
+            valeur = random.randrange(200, 500)*math.sqrt(hero.max_pv)/100
+            hero.pv_difference = -valeur
+            if hero.pv < hero.max_pv - valeur :
+                hero.pv += valeur
             else :
                 hero.pv = hero.max_pv
 
