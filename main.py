@@ -18,6 +18,7 @@ import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
 from zombies_new import Construct_Zombies
 import save
+import time
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -149,6 +150,40 @@ class tout_sons():
         #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
         pygame.mixer.Channel(1).play(mus_game_over)
 
+class Temps() :
+    '''Permet d'afficher la durée de la partie'''
+
+    def __init__(self) :
+        self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
+    
+    def display(self) :
+        '''Affichage du temps en "heures : minutes : secondes"'''
+        self.actualiser()
+        self.affichage()
+
+    def actualiser(self) :
+        '''On actualise le temps'''
+        self.time = time.time() - self.starting_time # Permet de connaitre le temps passé sur une partie de notre jeu
+        heure = math.floor(self.time//3600)
+        minute = math.floor((self.time//60)%60)
+        seconde = math.floor(self.time%60)
+        # On affiche seulement le nombres d'heurs passés si on joue plus d'une heure
+        if heure == 0 :
+            self.h_min_s = [minute, seconde]
+        else :
+            self.h_min_s = [heure, minute, seconde]
+        self.affichage()
+
+    def affichage(self) :
+        '''Affichage du temps à l'écrant'''
+        self.texte_temps = []
+        # On fait des strings pour afficher le temps
+        for i in range(len(self.h_min_s)) :
+            if len(str(self.h_min_s[i])) < 2 :
+                self.texte_temps.append("0" + str(self.h_min_s[i]))
+            else :
+                self.texte_temps.append(str(self.h_min_s[i]))
+        text(screen, "./FreeSansBold.ttf", 20, ' : '.join(self.texte_temps), WHITE, (x/2-50, 100))
 
 class Score_actuel() :
     '''Classe pour le score'''
@@ -166,8 +201,8 @@ class Score_actuel() :
         'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
-        text(screen, "./FreeSansBold.ttf", 25, f'Votre score : {self.score} points', WHITE, (500, 20))
-        text(screen, "./FreeSansBold.ttf", 25, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
+        text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
+        text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
@@ -175,29 +210,6 @@ class Score_actuel() :
         if self.niveau < len(self.score_min_pour_niveau)-1 :
             while self.score >= self.score_min_pour_niveau[self.niveau] :
                 self.niveau += 1
-
-
-
-
-    # CETTE CLASSE RALENTIE UN PEU LE JEU
-
-    #def __init__(self) :
-    #    '''Appel initial de la classe'''
-    #    self.score = 0
-    #    self.niveau = 9 # <-- Plus cette valeur est faible, plus le champs de vision et réduit (de 9 à 1)
-
-    #def display(self) :
-    #    '''Affichage de soi-même'''
-    #    self.b_image = pygame.image.load(f'./images/autres/Brouillard{self.niveau}.png')
-    #    self.rect = self.b_image.get_rect()
-    #    screen.blit(self.b_image, self.rect)
-    #    self.add(0) # TEST evolution brouillard : A SUPRIMER !
-    
-    #def add(self, score) :
-    #    '''Permet d'actualiser le score, le brouillard et la difficulté'''
-    #    self.score += score
-    #    if self.score+self.niveau*1000 >= 10000 and self.niveau != 1 :
-    #        self.niveau -= 1
 
 class Grass() :
     '''Classe permettant de remplir l'arrière plan avec des tuilles d'herbe'''
@@ -310,7 +322,6 @@ class Hero() :
         elif self.max_pv != 0.001 and vie < 1 :
             self.pv = 0.001
             self.max_pv = 0.001
-        
 
     def display(self) :
         '''Affichage de soi-même'''
@@ -503,6 +514,7 @@ def main(score=save.get()["best_score"]) :
     grass = Grass()
     hero = Hero()
     score = Score_actuel()
+    temps = Temps()
     soin = Soin()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
@@ -619,6 +631,7 @@ def main(score=save.get()["best_score"]) :
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
+        temps.display()
         marche_arret.display()
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] :
