@@ -1,7 +1,7 @@
 # Definition de tous les zombies {"nom_d_appel" : ["nom_fichier_png", [vie, vitesse, attaque, régénération(pas encore fonctionnel)], score, [loot_table]]}
 all_zombie_type = {"Z1" : ["Zombie_type_1", [100, 0.3, 0.25, 0], 250, [""]*400 + ["Vieille botte"]*7 + ["Vieille veste"]*7 + ["Bottes"]*2 + ["Armure avec cape"]*2 + ["Armure dorée"]*1],
                    "Z2" : ["Zombie_type_2", [150, 0.35, 0.35, 0], 350, [""]*350 + ["ADN de mutant"]*3 + ["Rune du vent"]*1 + ["Armure dorée"]*2 + ["Armure avec cape"]*2 + ["Bottes"]*4 + ["Grand coeur"]*1 + ["Trèfle à 4 feuilles"]*1],
-                   "Z3" : ["Zombie_type_3", [225, 0.4, 0.5, 0], 500, [""]*300 + ["Epée corrompue"]*1 + ["Chapeau corrompue"]*1 + ["Trèfle à 4 feuilles"]*3 + ["Bouclier du paladin"]*4 + ["Âme des flammes"]*2 + ["Rune anti-vie"]*1]}
+                   "Z3" : ["Zombie_type_3", [225, 0.4, 0.5, 0], 500, [""]*300 + ["Epée corrompue"]*1 + ["Chapeau corrompu"]*1 + ["Trèfle à 4 feuilles"]*3 + ["Bouclier du paladin"]*4 + ["Âme des flammes"]*2 + ["Rune anti-vie"]*1]}
 
 
 
