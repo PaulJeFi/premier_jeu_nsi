@@ -34,4 +34,12 @@ definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simples bottes...|Par
             "Rune anti-vie" : ["anti_coeur", "Une puissance maléfique|l'aurait créée...|Serait-il raisonnable de|l'équiper ?", ["Spe +0.24", "Vie +150", "Reg -2.5"]],
             "Âme des flammes" : ["ame_feu", "Le pouvoir du démon des|flammes demeure dans ce|mystérieux fragment.", ["Spe +0.12", "Vie -15", "Reg +0.25"]],
             "Bouclier du paladin" : ["bouclier_paladin", "Un splendide bouclier|qui vous protégera|face à toutes menaces.", ["Spe -0.12", "Def +28", "Vie +12", "Reg +0.25"]],
-            "WINDOWS" : ["windows", "ERREUR FATALE||Si j'étais vous je|n'utiliserais pas cet|objet...", ["Spe +1.5", "Vie -10000"]]}
+            "WINDOWS" : ["windows", "ERREUR FATALE||Si j'étais vous je|n'utiliserais pas cet|objet...", ["Spe +1.5", "Vie -10000"]],
+            "Chapeau corrompu" : ["corruption", "Un simple chapeau...|Avec de la corruption|dessus.", ["Spe +0.2", "Def -35"]],
+            "Epée corrompue" : ["epee_corrompue", "Epée mytique du|grand Corrumpus.", ["Spe +0.03", "Vie +20", "Def +10"]],
+            "ADN de mutant" : ["genne_x", "De l'ADN provenant|d'un muttant...|Pour faire quoi ?|Aucune idée.", ["Vie +35", "Reg -0.5", "Def -5"]],
+            "De la ???????" : ["lessive", "[REDACTED]", []],
+            "Pierre PHILOSOPHALE" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.3", "Vie +8", "Def +4", "Reg +0.25"]],
+            "Rune du vent" : ["rune", "Avec cette rune|vous devriez pouvoir|aller un peu plus|vite...|FASTEST BOI !", ["Spe +0.16", "Def -20", "Vie -5"]],
+            "Vieille veste" : ["vieille_veste", "Une veste très abimmé.|C'est mieux que rien.", ["Def +4", "Vie +5"]],
+            "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.03"]]}
