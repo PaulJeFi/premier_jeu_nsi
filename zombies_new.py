@@ -1,3 +1,4 @@
+from typing import Type
 import pygame
 if __name__ == '__main__' :
     from main import Grass, Marche_Arret, Score_actuel, Temps, Inventaire
@@ -5,7 +6,7 @@ import sys
 import math
 import random
 from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text, sound
-from liste_zombies import all_zombie_type, zombie_wave_spawn_rate
+from liste_zombies import actualiser, zombie_wave_spawn_rate
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -29,11 +30,12 @@ myfont = pygame.font.Font("./FreeSansBold.ttf", 15)
 class Zombies(deplace) :
 
     """ intialisation de classe : image, pv et taille """
-    def __init__(self, type="Z1") :
+    def __init__(self, type="Z1", temps=0) :
         self.type = type
-        self.all_zombies = all_zombie_type
+        self.all_zombies = actualiser(temps)
         self.size = 100
         self.SPEED = self.all_zombies[self.type][1][1]
+        self.regen_pv = self.all_zombies[self.type][1][3]
         self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image = pygame.transform.rotate(self.image, 180)
@@ -45,7 +47,7 @@ class Zombies(deplace) :
         self.rotated = self.image
         self.angle = 0
         self.rect = self.image.get_rect()
-    
+
     def change_to_type(self, type) :
         if type in list(self.all_zombies.keys()) :
             self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
@@ -118,9 +120,17 @@ class Zombies(deplace) :
         if game_state :
             self.deplacement(dt)
             self.change()
+            self.regen(dt)
             #self.pv -= random.randrange(0, 2, 1)/10
         screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
         self.barreVie()
+
+    def regen(self, dt) :
+        valeur_regen = self.regen_pv/dt/6
+        if self.pv + valeur_regen >= self.pv_maxi :
+            self.pv = self.pv_maxi
+        else :
+            self.pv += valeur_regen
 
     def change(self) :
         '''Tourne le zombie pour qu'il ragarde le centre'''
@@ -143,7 +153,7 @@ class Zombies(deplace) :
             couleur_pv = (255-self.pv/self.pv_maxi*200, self.pv/self.pv_maxi*200, 0)
         else:
             couleur_pv = RED
-        valeur_pv = f"{str(round(self.pv))} / {str(self.pv_maxi)}"
+        valeur_pv = f"{str(round(self.pv))} / {str(round(self.pv_maxi))}"
         # Dessiner la bare de vie
         draw_rect(screen, (self.x-(32), self.y-(32)), (94, 14), BLACK)
         draw_rect(screen, (self.x-(32), self.y-(42)), (round(len(valeur_pv)*6)-5, 11), BLACK) # Barre noire suplémentaire
@@ -155,7 +165,7 @@ class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
     def __init__(self, number=0) :
-        self.all_zombies = all_zombie_type
+        self.all_zombies = actualiser(0)
         self.zombies = []
         self.respawn_cooldown = 350
         for i in range(number) :
@@ -163,11 +173,14 @@ class Construct_Zombies() :
         self.zomb_level = zombie_wave_spawn_rate
         #self.zombies = [self.do_again(1) for i in range(number)]
             
-    def do_again(self, type) :
-        zombie = Zombies(type)
+    def actualiser_all_zombies(self, temps) :
+        self.all_zombies = actualiser(temps)
+
+    def do_again(self, type, temps=0) :
+        zombie = Zombies(type, temps)
         for zomb in self.zombies :
             if self.is_next(zombie, zomb) :
-                zombie = self.do_again(type)
+                zombie = self.do_again(type, temps)
         return zombie
     
     def is_next(self, zomb, zombi) :
@@ -181,9 +194,9 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt, game_state, score, inventaire) :
+    def display(self, dt, game_state, score, inventaire, temps) :
         if game_state :
-            self.respawn(score)
+            self.respawn(score, temps)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
@@ -205,10 +218,10 @@ class Construct_Zombies() :
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
             self.zombies.pop(ID)
             
-    def respawn(self, score):
+    def respawn(self, score, temps):
         '''Lorsque le compteur respawn_cooldown atteint 0, on spawn un zombie'''
         if self.respawn_cooldown <= 0 :
-            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau][0])))
+            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau][0] + ["ZL"]*(round((temps/100)**1.3))), temps))
             self.respawn_cooldown = random.randint(self.zomb_level[score.niveau][1][0], self.zomb_level[score.niveau][1][1])
         else :
             self.respawn_cooldown -= 1
@@ -282,7 +295,7 @@ def main() :
             zombies.droite(dt)
         # Affiche ton sprite ici.
         grass.display()
-        zombies.display(dt, marche_arret.game_state(), score, inventaire)
+        zombies.display(dt, marche_arret.game_state(), score, inventaire, temps)
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
@@ -300,6 +313,7 @@ def main() :
             inventaire.objet_trouve()
         inventaire.stats_display()
         temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
+        zombies.actualiser_all_zombies(temps.time)
         pygame.display.flip()
         #zombies.add(3)
 

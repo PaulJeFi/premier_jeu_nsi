@@ -16,10 +16,10 @@ import sys
 import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
-from zombies_new import Construct_Zombies
+from zombies_new import Construct_Zombies, Zombies
 import save
 import time
-from liste_zombies import zombie_wave_spawn_rate
+from liste_zombies import actualiser, zombie_wave_spawn_rate
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -155,8 +155,9 @@ class Temps() :
     '''Permet d'afficher la durée de la partie'''
 
     def __init__(self) :
+        self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
-        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.all_pause_time = -600 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
     def display(self, marche, score) :
@@ -652,13 +653,18 @@ def main(score=save.get()["best_score"]) :
         '''Tous les affichages de sprites'''
         grass.display()
         soin.display()
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire)
+        if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
+            zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
+        else : # Cas où tu n'as pas de lessive équipé
+            zombie_temps = temps.time
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert))
         hero.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
         temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
+        zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
         marche_arret.display()
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a] :

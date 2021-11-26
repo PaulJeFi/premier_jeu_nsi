@@ -213,7 +213,7 @@ class Inventaire() :
         self.size_del = 32 # Taille du bouton
         self.mouse = pygame.mouse.get_pos()
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png').convert(), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
                 if type(self.objet_selection) == tuple :
                     if self.objet_selection[4] == "equipement" :
@@ -224,7 +224,7 @@ class Inventaire() :
                         self.objets_inventaire[self.objet_selection[3]] = ""
                         self.objet_selection = ""
         else :
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png').convert(), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
 
 
 def main() :

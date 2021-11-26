@@ -38,8 +38,8 @@ definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simples bottes...|Par
             "Chapeau corrompu" : ["corruption", "Un simple chapeau...|Avec de la corruption|dessus.", ["Spe +0.2", "Def -35"]],
             "Epée corrompue" : ["epee_corrompue", "Epée mytique du|grand Corrumpus.", ["Spe +0.03", "Vie +20", "Def +10"]],
             "ADN de mutant" : ["genne_x", "De l'ADN provenant|d'un muttant...|Pour faire quoi ?|Aucune idée.", ["Vie +35", "Reg -0.5", "Def -5"]],
-            "De la ???????" : ["lessive", "[REDACTED]", []],
-            "Pierre PHILOSOPHALE" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.3", "Vie +8", "Def +4", "Reg +0.25"]],
-            "Rune du vent" : ["rune", "Avec cette rune|vous devriez pouvoir|aller un peu plus|vite...|FASTEST BOI !", ["Spe +0.16", "Def -20", "Vie -5"]],
-            "Vieille veste" : ["vieille_veste", "Une veste très abimmé.|C'est mieux que rien.", ["Def +4", "Vie +5"]],
-            "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.03"]]}
+            "[REDACTED]" : ["lessive", "Malheur à celui qui|oserait l'équiper !||Votre collègue en a|payé les frais.", []],
+            "Pierre philosophale" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.04", "Vie +20", "Def +10", "Reg +0.25"]],
+            "Rune du vent" : ["rune", "Avec cette rune vous|devriez pouvoir aller un|peu plus vite...|Voir même très vite !", ["Spe +0.16", "Def -20", "Vie -5"]],
+            "Vieille veste" : ["vieille_veste", "Une veste très abimmé.|C'est mieux que rien.", ["Def +6", "Vie +6"]],
+            "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.05"]]}
