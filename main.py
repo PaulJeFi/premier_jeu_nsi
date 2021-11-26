@@ -157,7 +157,7 @@ class Temps() :
     def __init__(self) :
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
-        self.all_pause_time = -600 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
     def display(self, marche, score) :
