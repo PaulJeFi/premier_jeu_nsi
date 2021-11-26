@@ -24,9 +24,9 @@ screen.fill(WHITE)
 
 #chargement des images 
 
-img1 = pygame.image.load("./images/intro/zombie1.png")
-img2 = pygame.image.load("./images/intro/lessive.png")
-img3 = pygame.image.load("./images/intro/zombie2.png")
+img1 = pygame.image.load("./images/outro/zombie1.png")
+img2 = pygame.image.load("./images/outro/lessive.png")
+img3 = pygame.image.load("./images/outro/zombie2.png")
 #image à ajouter
 
 #initialisation et chargement de la police 
@@ -76,34 +76,52 @@ class outro():
         draw_rect(screen, (15, 585), (1080, 705), BROWN)
         self.write()
 
-    def ecriture():
-        text(screen, myfont, text_outro1, WHITE, (30,600))
-        if text_outro1 == (1050, 600):
-            text(screen, myfont, text_outro1, WHITE, (30,650))
-
-    def son (self):
-        if randint(1, 2):
-            sound(son)
+    def write(self) :
+        '''Comment écrire le texte'''
+        self.char += 1  # On basera toutes les actions sur le nombre de carractères affichés jusqu'alors
+        if self.char < len(self.text[0]) : # si on est à la première ligne
+            text(screen, "./courriernewbold.ttf", 20, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
+            self.sound()
+        elif self.char-len(self.text[0]) < len(self.text[1]) : # sinon si on est à la deuxième ligne
+            text(screen, "./courriernewbold.ttf", 20, self.text[0][0:self.char], WHITE, (30, 720-150+30))
+            text(screen, "./courriernewbold.ttf", 20, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
+            self.sound()
+        elif self.text == text_outro1 or self.text == text_outro3 : # sinon, si on est à la troisième ligne
+            if self.char-len(self.text[0])-len(self.text[1]) < len(self.text[2]) :
+                text(screen, "./courriernewbold.ttf", 20, self.text[0], WHITE, (30, 720-150+30))
+                text(screen, "./courriernewbold.ttf", 20, self.text[1], WHITE, (30, 720-150+60))
+                text(screen, "./courriernewbold.ttf", 20, self.text[2][0:self.char-len(self.text[0])-len(self.text[1])]+'|', WHITE, (30, 720-150+90))
+                self.sound()
+            else :
+                time.sleep(5) # on attend 5 sec entre chaque slide
+                self.change_text()
+                self.char = 0
+        else :
+            time.sleep(5) # on attend 5 sec entre chaque slide
+            self.change_text()
+            self.char = 0
         
+    def sound(self) :
+        '''Le son des clics du clavier'''
+        if self.char%randint(1, 4) == 0 : # on clique tous les random caractères, pour un son plus réaliste.
+            sound(clic)
 
+def main() :
+    '''Boucle principale'''
+    outro = outro()
+    while True :
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_SPACE] : # histoire qu'on puisse passer l'outro
+            break
+        outro.display()
+        text(screen, "./courriernewbold.ttf", 20, '[espace]: passer l\'outro', WHITE, (750, 720-150+90))
+        pygame.display.flip()
+        if outro.is_finished :
+            break
 
-
-
-"""
-#main
-main() 
-
-while True:
-    for event in pygame.evengt.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    if outro.is_finished: 
-        break
-
-"""
-
-
-        
-        
-
+if __name__ == "__main__" :
+    main()
