@@ -55,8 +55,6 @@ jouer_son = 0
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
-#création variables pour les channels du mixer 
-pygame.mixer.set_num_channels(10)  # Crée 10 chaînes. 8 par défaut. On les apellera après.
 
 # Police d'écriture ci-dessous
 # doc :
@@ -155,7 +153,7 @@ class Temps() :
     def __init__(self) :
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
-        self.all_pause_time = -600 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
     def display(self, marche, score) :
