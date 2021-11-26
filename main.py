@@ -451,7 +451,8 @@ class Arme() :
 
 class Munition(deplace) :
     '''Les munitions.'''
-    def __init__(self) :
+    def __init__(self, spread=0) :
+        self.spread = spread
         mouse = pygame.mouse.get_pos()
         self.speed = 1.5
         self.size = 40
@@ -478,6 +479,7 @@ class Munition(deplace) :
                 self.angle = 90
             else :
                 self.angle = -90
+        self.angle += random.randint(0, self.spread) - random.randint(0, self.spread)
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
     
     def move(self, dt, marche_arret) :
@@ -497,13 +499,16 @@ class Munition(deplace) :
 class Construct_munitions() :
     '''Classe de gestion des munitions'''
     def __init__(self) :
+        self.spread = 0 # Dispersion des balles
         self.balles = []
     
-    def add(self) :
-        self.balles.append(Munition())
+    def add(self, stats) :
+        self.balles.append(Munition(round(self.spread)))
+        self.spread += 15*(0.99**stats)
     
-    def display(self, dt, marche_arret) :
+    def display(self, dt, marche_arret, stats) :
         self.update()
+        self.spread_reduction(marche_arret, stats)
         for balle in self.balles :
             balle.display(dt, marche_arret)
 
@@ -512,6 +517,14 @@ class Construct_munitions() :
         for balle in self.balles :
             if balle.x < -2*x or balle.y < -2*y or balle.x > 2*x or balle.y > 2*y :
                 self.balles.pop(self.balles.index(balle))
+
+    def spread_reduction(self, marche_arret, stats) :
+        if marche_arret :
+            self.spread -= (0.02 + 0.05*self.spread)*(1.01**stats)
+            if self.spread < 0 :
+                self.spread = 0
+            elif self.spread > 30*(0.99**stats) :
+                self.spread = 30*(0.99**stats)
 
     def haut(self, dt) :
         for balle in self.balles :
@@ -554,7 +567,7 @@ def main(score=save.get()["best_score"]) :
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
-                balles.add()
+                balles.add(inventaire.stats["Agi"])
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
@@ -652,7 +665,7 @@ def main(score=save.get()["best_score"]) :
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps)
-        balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert))
+        balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()

@@ -21,7 +21,7 @@ from random import choice
 import pygame
 import sys
 from functions import text
-from liste_objets import definition_de_tous_les_objets
+from liste_objets import definition_de_tous_les_objets, stats_de_base
 
 pygame.init()
 WHITE = (255, 255, 255)
@@ -42,8 +42,9 @@ class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
+        self.size_del = 32 # Taille du bouton "suprimer"
         self.affichage = 0
-        self.base_stats = {"Spe" : 1, "Def" : 0, "Vie" : 100, "Reg" : 1} # Stats de base du héro
+        self.base_stats = stats_de_base # Stats de base du héro
         self.stats = self.base_stats.copy() # Stats actuelles du héro
         self.objet_selection = "" # L'objet sélectionné
         self.all_items = definition_de_tous_les_objets # Liste de tous les objets du jeu, ainsi que leur nom, description et stats
@@ -123,6 +124,7 @@ class Inventaire() :
                 return (self.positions1[i], self.positions1[i+1], self.objets[i//2], i//2, "equipement")
 
     def selection(self, infos) :
+        self.mouse = pygame.mouse.get_pos()
         if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clic gauche
             screen.blit(self.image4, (infos[0], infos[1]))
             self.objet_selection = infos
@@ -210,7 +212,6 @@ class Inventaire() :
 
     def suprimer(self) :
         '''Permet de suprimer un objet depuis l'inventaire grâce à un bouton'''
-        self.size_del = 32 # Taille du bouton
         self.mouse = pygame.mouse.get_pos()
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
             screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif

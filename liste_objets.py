@@ -26,20 +26,24 @@ Pour le moment, les stats sont :
 
 
 
+stats_de_base = {"Spe" : 1, "Def" : 0, "Vie" : 100, "Reg" : 1, "Agi" : 0} # Stats de base du héro
+
+
+
 definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simples bottes...|Parfaites pour courrir de|longues distances !", ["Spe +0.06", "Def +4"]],
             "Armure dorée" : ["armure_doree", "Une splendide armure que|seuls les plus grands|capitaines ont portée.", ["Spe -0.02", "Def +20"]],
             "Armure avec cape" : ["armure_cape", "Une armure ornée d'une|cape.", ["Spe +0.02", "Def +8", "Vie +8"]],
             "Grand coeur" : ["grand_coeur", "Un vrai bonheur <3", ["Vie +24", "Reg +1"]],
-            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.04", "Reg +0.5"]],
+            "Trèfle à 4 feuilles" : ["trefle_4_feuilles", "Quelle chance !", ["Spe +0.04", "Reg +0.5", "Agi +10"]],
             "Rune anti-vie" : ["anti_coeur", "Une puissance maléfique|l'aurait créée...|Serait-il raisonnable de|l'équiper ?", ["Spe +0.24", "Vie +150", "Reg -2.5"]],
-            "Âme des flammes" : ["ame_feu", "Le pouvoir du démon des|flammes demeure dans ce|mystérieux fragment.", ["Spe +0.12", "Vie -15", "Reg +0.25"]],
+            "Âme des flammes" : ["ame_feu", "Le pouvoir du démon des|flammes demeure dans ce|mystérieux fragment.", ["Spe +0.12", "Vie -15", "Reg +0.25", "Agi +5"]],
             "Bouclier du paladin" : ["bouclier_paladin", "Un splendide bouclier|qui vous protégera|face à toutes menaces.", ["Spe -0.12", "Def +28", "Vie +12", "Reg +0.25"]],
             "WINDOWS" : ["windows", "ERREUR FATALE||Si j'étais vous je|n'utiliserais pas cet|objet...", ["Spe +1.5", "Vie -10000"]],
             "Chapeau corrompu" : ["corruption", "Un simple chapeau...|Avec de la corruption|dessus.", ["Spe +0.2", "Def -35"]],
-            "Epée corrompue" : ["epee_corrompue", "Epée mytique du|grand Corrumpus.", ["Spe +0.03", "Vie +20", "Def +10"]],
-            "ADN de mutant" : ["genne_x", "De l'ADN provenant|d'un muttant...|Pour faire quoi ?|Aucune idée.", ["Vie +35", "Reg -0.5", "Def -5"]],
+            "Epée corrompue" : ["epee_corrompue", "Epée mytique du|grand Corrumpus.", ["Spe +0.04", "Vie +20", "Def +12", "Agi -15"]],
+            "ADN de mutant" : ["genne_x", "De l'ADN provenant|d'un muttant...|Pour faire quoi ?|Aucune idée.", ["Vie +50", "Reg -0.5", "Def -5"]],
             "[REDACTED]" : ["lessive", "Malheur à celui qui|oserait l'équiper !||Votre collègue en a|payé les frais.", []],
-            "Pierre philosophale" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.04", "Vie +20", "Def +10", "Reg +0.25"]],
-            "Rune du vent" : ["rune", "Avec cette rune vous|devriez pouvoir aller un|peu plus vite...|Voir même très vite !", ["Spe +0.16", "Def -20", "Vie -5"]],
+            "Pierre philosophale" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.04", "Vie +20", "Def +10", "Reg +0.25", "Agi +10"]],
+            "Rune du vent" : ["rune", "Avec cette rune vous|devriez pouvoir aller un|peu plus vite...|Voir même très vite !", ["Spe +0.2", "Def -15", "Vie -5", "Agi -15"]],
             "Vieille veste" : ["vieille_veste", "Une veste très abimmé.|C'est mieux que rien.", ["Def +6", "Vie +6"]],
             "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.05"]]}
