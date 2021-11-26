@@ -1,4 +1,3 @@
-from typing_extensions import Self
 import pygame
 import sys
 import time
@@ -24,9 +23,9 @@ screen.fill(WHITE)
 
 #chargement des images 
 
-img1 = pygame.image.load("./images/outro/zombie1.png")
-img2 = pygame.image.load("./images/outro/lessive.png")
-img3 = pygame.image.load("./images/outro/zombie2.png")
+img1 = pygame.image.load("./images/intro/zombie1.png")
+img2 = pygame.image.load("./images/intro/lessive.png")
+img3 = pygame.image.load("./images/intro/zombie2.png")
 #image à ajouter
 
 #initialisation et chargement de la police 
