@@ -15,7 +15,7 @@ import pygame
 import sys
 import math
 import random
-from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur
+from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur, sound
 from zombies_new import Construct_Zombies, Zombies
 import save
 import time
@@ -89,11 +89,6 @@ class Marche_Arret() :
     def display(self) :
         '''Affichage de soi-même'''
         screen.blit(self.image, self.rect)
-
-    
-    def musique_start(self):
-        #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
-        pygame.mixer.Channel(0).play(mus_jeu)
     
     
     def highlight(self) :
@@ -119,37 +114,40 @@ class Marche_Arret() :
         self.can_switch = self.cooldown == self.base_cooldown
         return self.status
 
-    def on_off(self, game_over) :
+    def on_off(self, game_over, sons) :
         '''Le setup qui permet de faire pause'''
         if self.highlight() and self.can_switch and not game_over :
             if self.status == True and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
-                pygame.mixer.pause()
+                for i in range(len(sons.sons)) :
+                    if i != 1 : #Si on ne joue pas la défaite
+                        sons.pause(i)
                 self.status = False
             elif self.status == False and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
-                pygame.mixer.unpause()
+                for i in range(len(sons.sons)) :
+                    if i != 1 : #Si on ne joue pas la défaite
+                        sons.unpause(i)
                 self.status = True
 
-class tout_sons():
-     # gestion intégrale du son
+class Sound() :
+    def __init__(self, *args) :
+        self.sons = [arg for arg in args]
+        self.chanels = len(args)
+        pygame.mixer.set_num_channels(self.chanels)
 
-    def __init__(self):
-        pygame.mixer.init()
-        pygame.mixer.set_num_channels(self.channels)
+    def play(self, index_son) :
+        pygame.mixer.Channel(index_son).play(self.sons[index_son])
 
-    def pause(self):
-        pygame.mixer.channel(jouer_son).pause
+    def pause(self, index_son) :
+        pygame.mixer.Channel(index_son).pause()
 
-    def unpause(self):
-        pygame.mixer.channel(jouer_son).unpause
+    def unpause(self, indexe_son) :
+        pygame.mixer.Channel(indexe_son).unpause()
 
-    def fin_musique(self):
-        pass
+    def is_playing(self, indexe_son) :
+        pygame.mixer.Channel(indexe_son).get_busy()
 
-    def musique_mort(self):
-        #le lancement de la musique s'effectue doucement puis tourne en boucle jusqu'à la fin du jeu
-        pygame.mixer.Channel(1).play(mus_game_over)
 
 class Temps() :
     '''Permet d'afficher la durée de la partie'''
@@ -157,7 +155,7 @@ class Temps() :
     def __init__(self) :
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
-        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.all_pause_time = -600 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
     def display(self, marche, score) :
@@ -536,7 +534,7 @@ class Construct_munitions() :
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
-    jouer_son = mus_jeu
+    sons = Sound(mus_jeu, mus_game_over)
     marche_arret = Marche_Arret()
     inventaire = Inventaire()
     grass = Grass()
@@ -546,9 +544,8 @@ def main(score=save.get()["best_score"]) :
     soin = Soin()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
-    marche_arret.musique_start()
-    """musique_start()"""
     game_over = False
+    sons.play(0)
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -560,7 +557,7 @@ def main(score=save.get()["best_score"]) :
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
                 balles.add()
-        marche_arret.on_off(game_over) # Permet de savoir si le jeu est OUI ou NON en PAUSE
+        marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
@@ -642,12 +639,11 @@ def main(score=save.get()["best_score"]) :
             hero.change(pygame.mouse.get_pos())
         if hero.pv <= 0 :
             game_over = True
-            pygame.mixer.stop()
             marche_arret.status = False
             marche_arret.can_switch = False
-            """pygame.mixer.play(mus_game_over)"""
         pressed = (pygame.key.get_pressed(), game_over)
         if pressed[0][pygame.K_n] and pressed[1] :
+            sons.pause(1)
             return score.score
 
         '''Tous les affichages de sprites'''
@@ -684,8 +680,8 @@ def main(score=save.get()["best_score"]) :
         inventaire.stats_display()
         curseur(screen)
         if game_over :
-            pygame.mixer.music.load("./musiques/gameOver.mp3")
-            pygame.mixer.music.play()
+            sons.pause(0)
+            sons.play(1)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
             text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
         pygame.display.flip()
