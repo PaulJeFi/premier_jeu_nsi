@@ -436,12 +436,12 @@ class Arme() :
         '''Appel initial de la classe'''
         # taille = 1105 x 682
         self.all_weapons = all_weapons
-        self.actualiser(list(self.all_weapons.keys())[0]) # Modifiez la valeur (0 ou 1) entre [crochet] pour avoir une autre arme en lançant le jeu
+        self.actualiser(list(self.all_weapons.keys())[2]) # Modifiez la valeur (0 ou 1) entre [crochet] pour avoir une autre arme en lançant le jeu
  
     def actualiser(self, arme) :
         self.arme_en_main = arme
         self.image = pygame.image.load(self.all_weapons[self.arme_en_main][0][0])
-        self.size = [300, 300]
+        self.size = [200, 200]
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
         self.rotated = self.image
         self.rect = self.image.get_rect()
@@ -498,11 +498,20 @@ class Munition(deplace) :
                 self.angle = 90
             else :
                 self.angle = -90
-        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))] # Angle
-        self.x += self.vect[0]*110 # Les balles apparaissent au niveau du canon de l'arme
-        self.y += self.vect[1]*110 # Les balles apparaissent au niveau du canon de l'arme
+        # Décalage latéral
+        self.angle -= 90
+        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
+        self.x += self.vect[0]*32
+        self.y += self.vect[1]*32
+        # Décalage en avant
+        self.angle += 90
+        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
+        self.x += self.vect[0]*90 # Les balles apparaissent au niveau du canon de l'arme
+        self.y += self.vect[1]*90 # Les balles apparaissent au niveau du canon de l'arme
+        # Calcul de l'angle final du projectile
         self.angle += random.randint(0, self.spread) - random.randint(0, self.spread)
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))] # Angle + dispersion
+        # Rotation de l'image
         self.image = pygame.transform.rotate(self.image, self.angle)
         self.rect = self.image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
     
@@ -535,7 +544,10 @@ class Construct_munitions() :
     def add(self, stats) :
         for i in range(self.arme[1][1]) :
             self.balles.append(Munition(round(self.spread), self.arme))
-        self.spread += (self.arme[1][2][0])*(0.99**stats)
+        if self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
+            self.spread += (self.arme[1][2][0])*(0.99**stats)
+        else :
+            self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
     
     def display(self, dt, marche_arret, stats) :
         self.update()
@@ -715,6 +727,9 @@ def main(score=save.get()["best_score"]) :
         elif pressed[pygame.K_2] :
             balles.weapon_stats_update(list(balles.all_weapons.keys())[1])
             arme.actualiser(list(arme.all_weapons.keys())[1])
+        elif pressed[pygame.K_3] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[2])
+            arme.actualiser(list(arme.all_weapons.keys())[2])
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert

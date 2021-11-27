@@ -4,4 +4,5 @@ all_weapons = {"Nom de l'arme" : [["chemin relatif de l'image de l'arme", "chemi
 '''
 
 all_weapons = {"Pistolet mitrailleur" : [["./images/armes/Mitraillette/Mitraillette.png", "./images/armes/Projectiles/Projectile.png", 40], [[45, 60], 1, [15, 0, 30], [1.5, 2], 50]],
-            "Fusil de chasse" : [["./images/armes/Fusil_a_pompe/Fusil_a_pompe.png", "./images/armes/Projectiles/Projectile_petit.png", 20], [[15, 30], 9, [25, 15, 50], [1.1, 1.8], 9]]}
+            "Fusil de chasse" : [["./images/armes/Fusil_a_pompe/Fusil_a_pompe.png", "./images/armes/Projectiles/Projectile_petit.png", 20], [[15, 30], 9, [25, 15, 50], [1.1, 1.8], 9]],
+            "Supra-fusil" : [["./images/armes/Supra_fusil/Supra_fusil.png", "./images/armes/Projectiles/Laser.png", 20], [[50, 50], 25, [0, 0, 0], [0.5, 2.5], 5]]}
