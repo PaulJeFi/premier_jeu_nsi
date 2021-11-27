@@ -346,7 +346,7 @@ class Hero() :
             self.max_pv = 0.001
 
     def display(self) :
-        '''Affichage du sprite tournée dans le bon sens'''
+        '''Affichage du sprite tourné dans le bon sens'''
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
         screen.blit(rotated_image, new_rect.topleft)
@@ -459,7 +459,7 @@ class Arme() :
                 self.angle = -self.angle
 
     def display(self) :
-        '''Affichage du sprite tournée dans le bon sens'''
+        '''Affichage du sprite tourné dans le bon sens'''
         rotated_image = pygame.transform.rotate(self.image, self.angle)
         new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
         screen.blit(rotated_image, new_rect.topleft)
@@ -470,6 +470,8 @@ class Munition(deplace) :
         self.type_stats = arme # Stats de l'arme utilisé
         self.domages = self.type_stats[1][4]
         self.spread = spread + self.type_stats[1][2][1] # Dispersion des projectiles
+        if self.spread > 30 : # limite de la sidpersion
+            self.spread = 30
         self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
         mouse = pygame.mouse.get_pos()
         self.speed = random.randint(round((self.type_stats[1][3][0])*100), round((self.type_stats[1][3][1])*100))/100 # Vitesse du projectile
