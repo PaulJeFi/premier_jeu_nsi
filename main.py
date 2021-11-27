@@ -470,7 +470,7 @@ class Munition(deplace) :
         self.type_stats = arme # Stats de l'arme utilisé
         self.domages = self.type_stats[1][4]
         self.spread = spread + self.type_stats[1][2][1] # Dispersion des projectiles
-        if self.spread > 30 : # limite de la sidpersion
+        if self.spread > 30 : # limite de la dispersion
             self.spread = 30
         self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
         mouse = pygame.mouse.get_pos()
