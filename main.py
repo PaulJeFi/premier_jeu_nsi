@@ -16,10 +16,11 @@ import sys
 import math
 import random
 from functions import deplace, draw_rect, convert_degrees, convert_radians, curseur, sound
-from zombies_new import Construct_Zombies, Zombies
+from zombies_new import Construct_Zombies
 import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
+from liste_armes import all_weapons
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -296,7 +297,6 @@ class Hero() :
 
     def __init__(self) :
         '''Appel initial de la classe'''
-        self.arme = Arme()
         self.image = pygame.image.load('./images/personages/Humain_type_1.png')
         self.size = 100
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
@@ -346,9 +346,10 @@ class Hero() :
             self.max_pv = 0.001
 
     def display(self) :
-        '''Affichage de soi-même'''
-        screen.blit(self.rotated, (self.x, self.y))
-        self.arme.display()
+        '''Affichage du sprite tournée dans le bon sens'''
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
+        screen.blit(rotated_image, new_rect.topleft)
 
     def GUI_display(self):
         '''Affichage de la barre de pv'''
@@ -379,7 +380,7 @@ class Hero() :
                 self.angle = -self.angle
             self.rotated = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.image.get_rect(center=self.rect.center)
-            self.arme.rotate(self.angle)
+
 
     def get_rect(self) :
         '''Donne les infos du rectangle du personnage (abscisse, ordonnée, largeur, longueur)'''
@@ -434,34 +435,50 @@ class Arme() :
     def __init__(self) :
         '''Appel initial de la classe'''
         # taille = 1105 x 682
-        self.image = pygame.image.load('./images/armes/Mitraillette/Mitraillette_frame1.png')
-        self.size = [1105/8, 682/8]
+        self.all_weapons = all_weapons
+        self.actualiser(list(self.all_weapons.keys())[0]) # Modifiez la valeur (0 ou 1) entre [crochet] pour avoir une autre arme en lançant le jeu
+ 
+    def actualiser(self, arme) :
+        self.arme_en_main = arme
+        self.image = pygame.image.load(self.all_weapons[self.arme_en_main][0][0])
+        self.size = [300, 300]
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
-        self.rotated = pygame.image.load('./images/armes/Mitraillette/Mitraillette_frame1.png')
+        self.rotated = self.image
+        self.rect = self.image.get_rect()
+        self.x = x//2 - self.size[0]//2
+        self.y = y//2 - self.size[0]//2
     
+    def change(self, mousepos) :
+        '''Tourne le personnage pour qu'il ragarde la souris'''
+        if mousepos[0]-x/2 != 0 :
+            self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
+            self.angle = convert_degrees(self.angle)
+            if mousepos[0] < x/2 :
+                self.angle = 180-self.angle
+            else :
+                self.angle = -self.angle
+
     def display(self) :
-        '''Affichage de soi-même'''
-        screen.blit(self.rotated, (int(self.x/2-self.size[0]/2), int(self.y/2-self.size[1]/2)))
-    
-    def rotate(self, angle) :
-        '''Rotation de soi-même pour regarder vers la souris'''
-        self.rotated = pygame.transform.rotate(self.image, angle)
-        self.x = (x)+math.sin(convert_radians(angle))*100+50
-        self.y = (y)+math.cos(convert_radians(angle))*100-10
+        '''Affichage du sprite tournée dans le bon sens'''
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
+        screen.blit(rotated_image, new_rect.topleft)
 
 class Munition(deplace) :
     '''Les munitions.'''
-    def __init__(self, spread=0) :
-        self.spread = spread
+    def __init__(self, spread=0, arme=all_weapons["Pistolet mitrailleur"]) :
+        self.type_stats = arme # Stats de l'arme utilisé
+        self.domages = self.type_stats[1][4]
+        self.spread = spread + self.type_stats[1][2][1] # Dispersion des projectiles
+        self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
         mouse = pygame.mouse.get_pos()
-        self.speed = 1.5
-        self.size = 40
-        self.image = pygame.image.load('./images/armes/Projectiles/Projectile.png')#.convert()
+        self.speed = random.randint(round((self.type_stats[1][3][0])*100), round((self.type_stats[1][3][1])*100))/100 # Vitesse du projectile
+        self.size = self.type_stats[0][2] # Taille du projectile
+        self.image = pygame.image.load(self.type_stats[0][1])#.convert()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.x = x/2-self.size/2
         self.y = y/2-self.size/2
         self.calculer(mouse)
-        self.image = pygame.transform.rotate(self.image, self.angle)
 
     def calculer(self, mousepos) :
         '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
@@ -479,13 +496,19 @@ class Munition(deplace) :
                 self.angle = 90
             else :
                 self.angle = -90
+        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))] # Angle
+        self.x += self.vect[0]*110 # Les balles apparaissent au niveau du canon de l'arme
+        self.y += self.vect[1]*110 # Les balles apparaissent au niveau du canon de l'arme
         self.angle += random.randint(0, self.spread) - random.randint(0, self.spread)
-        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
+        self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))] # Angle + dispersion
+        self.image = pygame.transform.rotate(self.image, self.angle)
+        self.rect = self.image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
     
     def move(self, dt, marche_arret) :
-        if marche_arret :
+        if marche_arret and self.life_time > 0 :
             self.x += self.vect[0]*self.speed*dt
             self.y += self.vect[1]*self.speed*dt
+            self.life_time -= 1
     
     def display(self, dt, marche_arret) :
         '''Affichage de soi-même'''
@@ -499,12 +522,18 @@ class Munition(deplace) :
 class Construct_munitions() :
     '''Classe de gestion des munitions'''
     def __init__(self) :
+        self.all_weapons = all_weapons
         self.spread = 0 # Dispersion des balles
         self.balles = []
-    
+
+    def weapon_stats_update(self, arme) :
+        if arme in self.all_weapons.keys() :
+            self.arme = self.all_weapons[arme]
+
     def add(self, stats) :
-        self.balles.append(Munition(round(self.spread)))
-        self.spread += 15*(0.99**stats)
+        for i in range(self.arme[1][1]) :
+            self.balles.append(Munition(round(self.spread), self.arme))
+        self.spread += (self.arme[1][2][0])*(0.99**stats)
     
     def display(self, dt, marche_arret, stats) :
         self.update()
@@ -515,7 +544,7 @@ class Construct_munitions() :
     def update(self) :
         '''Supprime les balles qui doivent être supprimées.'''
         for balle in self.balles :
-            if balle.x < -2*x or balle.y < -2*y or balle.x > 2*x or balle.y > 2*y :
+            if balle.x < -2*x or balle.y < -2*y or balle.x > 3*x or balle.y > 3*y or balle.life_time <= 0 :
                 self.balles.pop(self.balles.index(balle))
 
     def spread_reduction(self, marche_arret, stats) :
@@ -523,8 +552,8 @@ class Construct_munitions() :
             self.spread -= (0.02 + 0.05*self.spread)*(1.01**stats)
             if self.spread < 0 :
                 self.spread = 0
-            elif self.spread > 30*(0.99**stats) :
-                self.spread = 30*(0.99**stats)
+            elif self.spread > (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
+                self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
 
     def haut(self, dt) :
         for balle in self.balles :
@@ -550,6 +579,7 @@ def main(score=save.get()["best_score"]) :
     inventaire = Inventaire()
     grass = Grass()
     hero = Hero()
+    arme = Arme()
     score = Score_actuel()
     temps = Temps()
     soin = Soin()
@@ -562,6 +592,7 @@ def main(score=save.get()["best_score"]) :
         screen.fill(WHITE)
         if score.score > save.get()["best_score"] :
             save.set_score(score.score)
+        balles.weapon_stats_update(arme.arme_en_main)
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
@@ -642,12 +673,13 @@ def main(score=save.get()["best_score"]) :
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
-                    zombies.zombies[test[1]].pv -= 50 # On retire 50 aux PVs du Zombie
+                    zombies.zombies[test[1]].pv -= balle.domages # On retire 50 aux PVs du Zombie
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
             soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
             hero.regen(inventaire.stats["Reg"]/(dt*10), dt)
             hero.pv_check(inventaire.stats["Vie"])
             hero.change(pygame.mouse.get_pos())
+            arme.change(pygame.mouse.get_pos())
         if hero.pv <= 0 :
             game_over = True
             marche_arret.status = False
@@ -667,6 +699,7 @@ def main(score=save.get()["best_score"]) :
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
+        arme.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
         score.display()
@@ -674,6 +707,12 @@ def main(score=save.get()["best_score"]) :
         zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
         marche_arret.display()
         pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_1] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[0])
+            arme.actualiser(list(arme.all_weapons.keys())[0])
+        elif pressed[pygame.K_2] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[1])
+            arme.actualiser(list(arme.all_weapons.keys())[1])
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
