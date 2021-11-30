@@ -46,4 +46,5 @@ definition_de_tous_les_objets = {"Bottes" : ["bottes", "De simples bottes...|Par
             "Pierre philosophale" : ["pierre_philosophale", "UN BEAU CAILLOU !|Mais surtout un super|atout pour votre quête.", ["Spe +0.04", "Vie +20", "Def +10", "Reg +0.25", "Agi +10"]],
             "Rune du vent" : ["rune", "Avec cette rune vous|devriez pouvoir aller un|peu plus vite...|Voir même très vite !", ["Spe +0.2", "Def -15", "Vie -5", "Agi -15"]],
             "Vieille veste" : ["vieille_veste", "Une veste très abimmé.|C'est mieux que rien.", ["Def +6", "Vie +6"]],
-            "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.05"]]}
+            "Vieille botte" : ["vieille_botte", "Une seule botte...|Espérons trouver|l'autre.", ["Spe +0.05"]],
+            "Lunettes de gamer" : ["gamer_glasses", "YOLO SWAG M8|360° NO SCOPE|GAMER FOR EVER|2 STRONG 4 U", ["Spe +0.1", "Agi +30", "Vie -50"]]}
