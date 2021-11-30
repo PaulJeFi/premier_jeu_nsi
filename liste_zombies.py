@@ -1,8 +1,8 @@
 def actualiser(temps) :
 
     # Definition de tous les zombies {"nom_d_appel" : ["nom_fichier_png", [vie, vitesse, attaque, régénération(pas encore fonctionnel)], score, [loot_table]]}
-    all_zombie_type = {"Z1" : ["Zombie_type_1", [100, 0.3, 0.25, 0], 250, [""]*400 + ["Vieille botte"]*7 + ["Vieille veste"]*7 + ["Bottes"]*2 + ["Armure avec cape"]*2 + ["Armure dorée"]*1],
-                    "Z2" : ["Zombie_type_2", [150, 0.36, 0.4, 0], 400, [""]*350 + ["ADN de mutant"]*3 + ["Rune du vent"]*1 + ["Armure dorée"]*2 + ["Armure avec cape"]*2 + ["Bottes"]*4 + ["Grand coeur"]*1 + ["Trèfle à 4 feuilles"]*1],
+    all_zombie_type = {"Z1" : ["Zombie_type_1", [100, 0.3, 0.25, 1], 250, [""]*400 + ["Vieille botte"]*7 + ["Vieille veste"]*7 + ["Bottes"]*2 + ["Armure avec cape"]*2 + ["Armure dorée"]*1],
+                    "Z2" : ["Zombie_type_2", [150, 0.36, 0.4, 2.5], 400, [""]*350 + ["ADN de mutant"]*3 + ["Rune du vent"]*1 + ["Armure dorée"]*2 + ["Armure avec cape"]*2 + ["Bottes"]*4 + ["Grand coeur"]*1 + ["Trèfle à 4 feuilles"]*1],
                     "Z3" : ["Zombie_type_3", [225, 0.42, 0.65, 5], 650, [""]*300 + ["Epée corrompue"]*1 + ["Chapeau corrompu"]*1 + ["Trèfle à 4 feuilles"]*3 + ["Bouclier du paladin"]*4 + ["Âme des flammes"]*2 + ["Rune anti-vie"]*1],
                     "ZL" : ["Zombie_lessive", [(temps//60)*50+100, (temps//60)*0.02+0.3, (temps//60)*0.1+0.4, (temps//60)*1+5], round((temps//60)*100+300), [""]*1000 + ["De la ???????"]*1 + ["Epée corrompue"]*6 + ["Rune du vent"]*9 + ["Pierre PHILOSOPHALE"]*2]}
     

@@ -436,12 +436,12 @@ class Arme() :
         '''Appel initial de la classe'''
         # taille = 1105 x 682
         self.all_weapons = all_weapons
-        self.actualiser(list(self.all_weapons.keys())[2]) # Modifiez la valeur (0 ou 1) entre [crochet] pour avoir une autre arme en lançant le jeu
+        self.actualiser(list(self.all_weapons.keys())[3]) # Modifiez la valeur (de 0 à 3) entre [crochet] pour avoir une autre arme en lançant le jeu
  
     def actualiser(self, arme) :
         self.arme_en_main = arme
         self.image = pygame.image.load(self.all_weapons[self.arme_en_main][0][0])
-        self.size = [200, 200]
+        self.size = [self.all_weapons[self.arme_en_main][0][2][1]]*2 # Taille de l'arme
         self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
         self.rotated = self.image
         self.rect = self.image.get_rect()
@@ -473,7 +473,7 @@ class Munition(deplace) :
         self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
         mouse = pygame.mouse.get_pos()
         self.speed = random.randint(round((self.type_stats[1][3][0])*100), round((self.type_stats[1][3][1])*100))/100 # Vitesse du projectile
-        self.size = self.type_stats[0][2] # Taille du projectile
+        self.size = self.type_stats[0][2][0] # Taille du projectile
         self.image = pygame.image.load(self.type_stats[0][1])#.convert()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.x = x/2-self.size/2
@@ -554,10 +554,13 @@ class Construct_munitions() :
         for i in range(self.arme[1][1]) :
             self.balles.append(Munition(argument, self.arme)) # (dispersion individuelle des balles, dispersion commune des balles, stats de l'arme en main
         # Ajout de dispersion pour le prochain tir
-        if self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
+        if self.spread + (self.arme[1][2][0])*(0.99**stats) < 90 and self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
             self.spread += (self.arme[1][2][0])*(0.99**stats)
-        else :
+        elif self.spread + (self.arme[1][2][0])*(0.99**stats) < 90 :
             self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
+        else :
+            self.spread = 90
+
     
     def display(self, dt, marche_arret, stats) :
         '''Affichage de tous les projectiles du héro'''
@@ -577,6 +580,8 @@ class Construct_munitions() :
             self.spread -= (0.02 + 0.05*self.spread)*(1.01**stats)
             if self.spread < 0 :
                 self.spread = 0
+            elif self.spread >= 90 :
+                self.spread = 90
             elif self.spread > (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
                 self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
 
@@ -741,6 +746,9 @@ def main(score=save.get()["best_score"]) :
         elif pressed[pygame.K_3] :
             balles.weapon_stats_update(list(balles.all_weapons.keys())[2])
             arme.actualiser(list(arme.all_weapons.keys())[2])
+        elif pressed[pygame.K_4] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[3])
+            arme.actualiser(list(arme.all_weapons.keys())[3])
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
