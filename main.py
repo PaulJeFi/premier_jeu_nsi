@@ -466,12 +466,10 @@ class Arme() :
 
 class Munition(deplace) :
     '''Les munitions.'''
-    def __init__(self, spread=0, arme=all_weapons["Pistolet mitrailleur"]) :
+    def __init__(self, spread=(0, 0), arme=all_weapons["Pistolet mitrailleur"]) :
         self.type_stats = arme # Stats de l'arme utilisé
         self.domages = self.type_stats[1][4]
-        self.spread = spread + self.type_stats[1][2][1] # Dispersion des projectiles
-        if self.spread > 30 : # limite de la dispersion
-            self.spread = 30
+        self.spread = spread # Dispersion des projectiles
         self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
         mouse = pygame.mouse.get_pos()
         self.speed = random.randint(round((self.type_stats[1][3][0])*100), round((self.type_stats[1][3][1])*100))/100 # Vitesse du projectile
@@ -501,15 +499,15 @@ class Munition(deplace) :
         # Décalage latéral
         self.angle -= 90
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
-        self.x += self.vect[0]*32
-        self.y += self.vect[1]*32
+        self.x += self.vect[0]*self.type_stats[0][3][0]
+        self.y += self.vect[1]*self.type_stats[0][3][0]
         # Décalage en avant
         self.angle += 90
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))]
-        self.x += self.vect[0]*90 # Les balles apparaissent au niveau du canon de l'arme
-        self.y += self.vect[1]*90 # Les balles apparaissent au niveau du canon de l'arme
+        self.x += self.vect[0]*self.type_stats[0][3][1]
+        self.y += self.vect[1]*self.type_stats[0][3][1]
         # Calcul de l'angle final du projectile
-        self.angle += random.randint(0, self.spread) - random.randint(0, self.spread)
+        self.angle += random.randint(0, round(self.spread[0])) - random.randint(0, round(self.spread[0])) + self.spread[1]
         self.vect = [math.cos(convert_radians(self.angle)), -math.sin(convert_radians(self.angle))] # Angle + dispersion
         # Rotation de l'image
         self.image = pygame.transform.rotate(self.image, self.angle)
@@ -538,18 +536,31 @@ class Construct_munitions() :
         self.balles = []
 
     def weapon_stats_update(self, arme) :
+        '''Permet de mettre à jour l'arme (ses caractéristiques) en main'''
         if arme in self.all_weapons.keys() :
             self.arme = self.all_weapons[arme]
 
     def add(self, stats) :
+        '''Création d'un objet munition (permet au héro de tirer)'''
+        # Création de la dispersion individuelle et commune des projectiles
+        if self.arme[1][2][3] :
+            argument = (round(self.spread+(self.arme[1][2][1])*(0.99**stats)), 0)
+        else :
+            liste = [round(self.spread), round(self.spread*(-1))]
+            if liste[0] > liste[1] :
+                liste[0], liste[1] = liste[1], liste[0]
+            argument = ((self.arme[1][2][1])*(0.99**stats), random.randint(liste[0], liste[1]))
+        # Ajout des projectiles
         for i in range(self.arme[1][1]) :
-            self.balles.append(Munition(round(self.spread), self.arme))
+            self.balles.append(Munition(argument, self.arme)) # (dispersion individuelle des balles, dispersion commune des balles, stats de l'arme en main
+        # Ajout de dispersion pour le prochain tir
         if self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
             self.spread += (self.arme[1][2][0])*(0.99**stats)
         else :
             self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
     
     def display(self, dt, marche_arret, stats) :
+        '''Affichage de tous les projectiles du héro'''
         self.update()
         self.spread_reduction(marche_arret, stats)
         for balle in self.balles :
