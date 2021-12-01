@@ -31,8 +31,9 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
-# Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
+# Les règlages de base (vitesse du joueur + temps auquel on commence)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
+start_to = 0 # En secondes
 # Initialisation de Pygame
 x, y = 1080, 720 # dimensions de l'écran, en pixels
 pygame.init()
@@ -88,7 +89,6 @@ class Marche_Arret() :
     def display(self) :
         '''Affichage de soi-même'''
         screen.blit(self.image, self.rect)
-    
     
     def highlight(self) :
         '''Permet de faire briller le bouton pause quand on a sa souris dessus'''
@@ -154,7 +154,7 @@ class Temps() :
     def __init__(self) :
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
-        self.all_pause_time = 0 # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
+        self.all_pause_time = -start_to # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
     def display(self, marche, score) :
@@ -726,7 +726,7 @@ def main(score=save.get()["best_score"]) :
             zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps)
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, hero)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
         arme.display()

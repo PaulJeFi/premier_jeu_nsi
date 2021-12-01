@@ -6,7 +6,7 @@ import sys
 import math
 import random
 from functions import Q_rsqrt, deplace, convert_degrees, convert_radians, collisions, v2, draw_rect, text, sound
-from liste_zombies import actualiser, zombie_wave_spawn_rate
+from liste_zombies import actualiser, zombie_wave_spawn_rate, always_spawn
 
 pygame.init()
 BLACK = (0, 0, 0)
@@ -33,6 +33,11 @@ class Zombies(deplace) :
     def __init__(self, type="Z1", temps=0) :
         self.type = type
         self.all_zombies = actualiser(temps)
+        if self.type == "ZD" :
+            self.max_cooldown = 500 # Délais entre chaque utilisation de la compétance spéciale du zombie
+        else :
+            self.max_cooldown = 0
+        self.cooldown = round(self.max_cooldown*random.randint(65, 135)/100) # Cooldown aléatoire (pour rendre l'attaque imprévisible) mais reste proche du cooldown classique en temps
         self.size = 100
         self.SPEED = self.all_zombies[self.type][1][1]
         self.regen_pv = self.all_zombies[self.type][1][3]
@@ -161,11 +166,41 @@ class Zombies(deplace) :
         text(screen, "./FreeSansBold.ttf", 10, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
         # Test de la barre de vie en foction des pv restants
 
+class Projectiles_zombie(deplace) :
+
+    def __init__(self, type="ZD", angle=0, vecteur=[1, 0], x=0, y=0) :
+        self.type = type
+        self.image = pygame.image.load('./images/armes/Projectiles/feu.png')
+        self.size = 50
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.angle = (angle + 180) % 360
+        self.image = pygame.transform.rotate(self.image, self.angle)
+        self.vecteur = vecteur
+        self.speed = 0.8
+        self.life_time = 100
+        self.attaque = 15
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+    
+    def mouvement(self, dt) :
+        if self.life_time > 0 :
+            self.x -= dt*self.speed * self.vecteur[0]
+            self.y -= dt*self.speed * self.vecteur[1]
+            self.life_time -= 1
+
+    def display(self) :
+        screen.blit(self.image, (self.x, self.y))
+    
+    def get_rect(self) :
+        return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
+
 class Construct_Zombies() :
 
     '''Cette classe permet de gérer un ensemble de zombies'''
     def __init__(self, number=0) :
         self.all_zombies = actualiser(0)
+        self.projectiles = []
         self.zombies = []
         self.respawn_cooldown = 350
         for i in range(number) :
@@ -194,7 +229,16 @@ class Construct_Zombies() :
     def add(self, type) :
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
-    def display(self, dt, game_state, score, inventaire, temps) :
+    def competance(self, zomb, game_state) :
+        if game_state :
+            if zomb.cooldown <= 0 :
+                if zomb.type == "ZD" :
+                    self.projectiles.append(Projectiles_zombie(zomb.type, zomb.angle, zomb.vect, zomb.x, zomb.y))
+                zomb.cooldown = round(zomb.max_cooldown*random.randint(65, 135)/100)
+            else :
+                zomb.cooldown -= 1
+
+    def display(self, dt, game_state, score, inventaire, temps, hero=None) :
         if game_state :
             self.respawn(score, temps)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
@@ -202,6 +246,7 @@ class Construct_Zombies() :
             ID += 1 # Chaque ID doit être différentes
             self.mourir(zomb, ID, score, inventaire)
             the_x, the_y = zomb.x, zomb.y
+            self.competance(zomb, game_state)
             zomb.display(dt, game_state, score)
             for zombi in self.zombies :
                 if zomb is zombi :
@@ -210,6 +255,16 @@ class Construct_Zombies() :
                 #elif self.is_next(zomb, zombi) :
                     zomb.x, zomb.y = the_x, the_y
                     break
+        ID = -1 # Permet d'attribuer une ID temporaire à chaque projectile
+        for projectile in self.projectiles :
+            ID += 1 # Chaque ID doit être différentes
+            if projectile.life_time > 0 :
+                if game_state :
+                    projectile.mouvement(dt)
+                projectile.display()
+                self.projectile_touche_hero(projectile, hero, ID, inventaire.stats["Def"])
+            else :
+                self.projectiles.pop(ID)
 
     def mourir(self, zomb, ID, score, inventaire) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
@@ -221,7 +276,7 @@ class Construct_Zombies() :
     def respawn(self, score, temps):
         '''Lorsque le compteur respawn_cooldown atteint 0, on spawn un zombie'''
         if self.respawn_cooldown <= 0 :
-            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau][0] + ["ZL"]*(round((temps/100)**1.3))), temps))
+            self.zombies.append(self.do_again(random.choice(self.zomb_level[score.niveau][0] + always_spawn + ["ZL"]*(round((temps/100)**1.3))), temps))
             self.respawn_cooldown = random.randint(self.zomb_level[score.niveau][1][0], self.zomb_level[score.niveau][1][1])
         else :
             self.respawn_cooldown -= 1
@@ -234,6 +289,12 @@ class Construct_Zombies() :
                 zombie.deplacement_inverse(dt)
                 touche_hero = True
         return touche_hero
+
+    def projectile_touche_hero(self, projectile, hero, ID, stat) :
+        '''Le projectile touche-t-il le héro ?'''
+        if projectile.get_rect().colliderect(hero.get_rect()) :
+            hero.pv -= projectile.attaque*(0.996**stat) # La boulle de feu ignore en partie l'armure (0.996**stat au lieu de 0.99**stat)
+            self.projectiles.pop(ID)
 
     def touch_balle(self, dt, hero: pygame.Rect) -> bool :
         '''Si les zombies touchent une balle.'''
@@ -249,19 +310,19 @@ class Construct_Zombies() :
         return touche_hero, ID, zombie
 
     def haut(self, dt) :
-        for zomb in self.zombies :
+        for zomb in self.zombies + self.projectiles :
             zomb.haut(dt)
 
     def bas(self, dt) :
-        for zomb in self.zombies :
+        for zomb in self.zombies + self.projectiles :
             zomb.bas(dt)
 
     def gauche(self, dt) :
-        for zomb in self.zombies :
+        for zomb in self.zombies + self.projectiles :
             zomb.gauche(dt)
 
     def droite(self, dt) :
-        for zomb in self.zombies :
+        for zomb in self.zombies + self.projectiles :
             zomb.droite(dt)
     
 
