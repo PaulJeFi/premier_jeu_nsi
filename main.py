@@ -391,26 +391,24 @@ class Soin(deplace) :
 
     def __init__(self) :
         '''Appel initial de la classe'''
-        self.x, self.y = random.randint(0, x), random.randint(0, y)
         self.image = pygame.image.load('./images/objets/Pack de soin.png')
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
+        self.place()
 
-    def replace(self) :
+    def place(self) :
         position = random.randint(1,5)
         if position == 1 :
-            self.x, self.y = -x, random.randint(-y, 2*y)
+            self.x, self.y = -2*x, random.randint(-2*y, 3*y)
         elif position == 2 :
-            self.x, self.y = random.randint(-x, 2*x), -y
+            self.x, self.y = random.randint(-2*x, 3*x), -2*y
         elif position == 3 :
-            self.x, self.y = 2*x, random.randint(-y, 2*y)
+            self.x, self.y = 3*x, random.randint(-2*y, 2*y)
         else :
-            self.x, self.y = random.randint(-x, 2*x), 2*y
+            self.x, self.y = random.randint(-2*x, 3*x), 3*y
 
     def display(self) :
         '''Affichage de soi-même'''
-        if (self.x+self.size[0] < -x) or (self.x > 2*x) or (self.y+self.size[1] < -y) or (self.y > 2*y) :
-            self.replace()
         screen.blit(self.image, (self.x, self.y))
 
     '''def get_rect(self) :
@@ -420,13 +418,62 @@ class Soin(deplace) :
     def prendre(self, hero) :
         '''Interraction avec la trousse de premiers secours'''
         if self.x > x/2 - hero.size//2 and self.x < x/2 + hero.size//2 and self.y > y/2 - hero.size//2 and self.y < y/2 + hero.size//2 and hero.pv != hero.max_pv :
-            self.replace()
             valeur = random.randrange(200, 500)*math.sqrt(hero.max_pv)/100
             hero.pv_difference = -valeur
             if hero.pv < hero.max_pv - valeur :
                 hero.pv += valeur
             else :
                 hero.pv = hero.max_pv
+            return True
+        return False
+
+class Soin_construct() :
+    def __init__(self) :
+        self.all_soins = [] # Liste contenant tous les objets soins
+        self.max_soins = 20 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
+        self.max_cooldown = 650 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
+        self.cooldown = self.max_cooldown
+    
+    def spawn_soin(self) :
+        '''Ajoute un objet soin à la liste self.all_soins'''
+        if len(self.all_soins) < self.max_soins :
+            if self.cooldown <= 0 :
+                self.cooldown = self.max_cooldown
+                self.add_soin()
+            else :
+                self.cooldown -= 1
+
+    def add_soin(self) :
+        '''Créer un objet soin'''
+        self.all_soins.append(Soin())
+
+    def display(self, hero) :
+        '''Affichage et actualisation de tous les objets soin'''
+        ID = -1
+        for soin in self.all_soins :
+            ID += 1
+            if (soin.x+soin.size[0] < -3*x) or (soin.x > 4*x) or (soin.y+soin.size[1] < -3*y) or (soin.y > 4*y) :
+                self.all_soins.pop(ID) # Si l'objet soin est trop loin du joueur on le suprime
+            else :
+                soin.display()
+                if soin.prendre(hero) :
+                    self.all_soins.pop(ID) # Si l'objet soin est utilisé on le suprime
+
+    def haut(self, dt) :
+        for soin in self.all_soins :
+            soin.haut(dt)
+
+    def bas(self, dt) :
+        for soin in self.all_soins :
+            soin.bas(dt)
+
+    def gauche(self, dt) :
+        for soin in self.all_soins :
+            soin.gauche(dt)
+
+    def droite(self, dt) :
+        for soin in self.all_soins :
+            soin.droite(dt)
 
 class Arme() :
     '''Classe des armes'''
@@ -612,7 +659,7 @@ def main(score=save.get()["best_score"]) :
     arme = Arme()
     score = Score_actuel()
     temps = Temps()
-    soin = Soin()
+    soin = Soin_construct()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
     game_over = False
@@ -705,7 +752,7 @@ def main(score=save.get()["best_score"]) :
                 if test[0] : # Si elle touche un zombie
                     zombies.zombies[test[1]].pv -= balle.domages # On retire 50 aux PVs du Zombie
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
-            soin.prendre(hero) # Ineterraction avec la trousse de premiers secours
+            soin.spawn_soin()
             hero.regen(inventaire.stats["Reg"]/(dt*10), dt)
             hero.pv_check(inventaire.stats["Vie"])
             hero.change(pygame.mouse.get_pos())
@@ -721,7 +768,7 @@ def main(score=save.get()["best_score"]) :
 
         '''Tous les affichages de sprites'''
         grass.display()
-        soin.display()
+        soin.display(hero) # Ineterraction avec la trousse de premiers secours
         if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
             zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipé
