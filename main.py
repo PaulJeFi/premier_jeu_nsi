@@ -44,7 +44,8 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
-intro.main() # Lancement de l'intro
+if __name__ == '__main__' :
+    intro.main() # Lancement de l'intro
 
 #import et init des musiques d'ambiences 
 pygame.mixer.init()

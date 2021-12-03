@@ -23,7 +23,7 @@ pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
-def main() :
+def etape_1() :
     '''Fonction principale'''
     inventaire = Inventaire()
     grass = Grass()
@@ -38,12 +38,15 @@ def main() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN :
-                balles.add(inventaire.stats["Agi"])
-        
+            if event :
+                balles.add(1000)
+        arme.change(((1+x/2, 0)))
         grass.display()
-        #balles.display(dt, True, None)
+        balles.display(dt, True, 1000)
         hero.display()
         arme.display()
-
+        hero.GUI_display()
         pygame.display.flip()
+
+if __name__ == '__main__' :
+    etape_1()
