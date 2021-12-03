@@ -32,6 +32,32 @@ def text(screen, font, size, string, color, pos) :
 
 def etape_1(Time=time.time()) :
     '''Fonction principale'''
+    grass = Grass()
+    hero = Hero()
+    arme = Arme()
+    while True : # False = le jeu s'arrête
+        dt = clock.tick(144) # IMPORTANT : FPS du jeu
+        screen.fill(WHITE)
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
+        arme.change(((1+x/2, 0)))
+        grass.display()
+        hero.display()
+        arme.display()
+        hero.GUI_display()
+        if time.time()-Time <= 5 :
+            text(screen, './courriernewbold.ttf', 30, 'Bienvenue dans le camp d\'entrainement du jeu.', RED, (x/2-400, 100))
+        else :
+            if time.time()-Time >= 15 :
+                return None
+            text(screen, './courriernewbold.ttf', 30, 'Ici, vous apprendrez comment survivre efficacement', RED, (x/2-450, 100))
+            text(screen, './courriernewbold.ttf', 30, 'face aux zombies.', RED, (x/2-150, 150))
+        pygame.display.flip()
+
+def etape_2(Time=time.time()) :
+    '''Fonction principale'''
     inventaire = Inventaire()
     grass = Grass()
     hero = Hero()
