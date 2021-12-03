@@ -42,7 +42,7 @@ class Inventaire() :
     '''L'inventaire du héro'''
 
     def __init__(self) :
-        self.size_del = 32 # Taille du bouton "suprimer"
+        self.size_del = 32 # Taille du bouton "suprimer" et "équiper"
         self.affichage = 0
         self.base_stats = stats_de_base # Stats de base du héro
         self.stats = self.base_stats.copy() # Stats actuelles du héro
@@ -116,7 +116,7 @@ class Inventaire() :
         for i in range(0, len(self.positions2), 2) :
             if mouse[0] > self.positions2[i] and mouse[1] > self.positions2[i+1] and mouse[0] < self.positions2[i] + self.size and mouse[1] < self.positions2[i+1] + self.size :
                 screen.blit(self.image3, (self.positions2[i], self.positions2[i+1]))
-                return (self.positions2[i], self.positions2[i+1], self.objets_inventaire[i//2], i//2, "inventaire") # Position X et y de la case ainsi que l'objet contenu dans celle-ci
+                return (self.positions2[i], self.positions2[i+1], self.objets_inventaire[i//2], i//2, "inventaire") # Position X et y de la case ainsi que l'objet contenu dans celle-ci et le numéro de la case
         # Partie équipement
         for i in range(0, len(self.positions1), 2) :
             if mouse[0] > self.positions1[i] and mouse[1] > self.positions1[i+1] and mouse[0] < self.positions1[i] + self.size and mouse[1] < self.positions1[i+1] + self.size :
@@ -128,7 +128,7 @@ class Inventaire() :
         if type(infos) == tuple and pygame.mouse.get_pressed()[0] : # Clic gauche
             screen.blit(self.image4, (infos[0], infos[1]))
             self.objet_selection = infos
-        elif pygame.mouse.get_pressed()[0] and not(self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14) :
+        elif pygame.mouse.get_pressed()[0] and not(self.mouse[0] < x-14 and self.mouse[0] > x-2*self.size_del-20 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14) :
             self.objet_selection = ""
         elif pygame.mouse.get_pressed()[2] : # Clic droit
             if type(infos) == tuple and self.objet_selection != "" :
@@ -156,14 +156,21 @@ class Inventaire() :
                 if self.objets_inventaire[i] == "" :
                     self.affichage = 200
                     self.item = item
+                    self.inventaire_plein = False
                     self.objet_trouve()
                     self.objets_inventaire[i] = item
                     return True
+            self.affichage = 200
+            self.inventaire_plein = True
+            self.objet_trouve()
             return False
 
     def objet_trouve(self) :
         self.affichage -= 2
-        self.text2(screen, "./FreeSansBold.ttf", 20, f'Vous avez obtenu {self.item} !', (255, 255, 255-self.affichage), (x/2-len(f'Vous avez obtenu {self.item} !')*5, 500+self.affichage))
+        if not self.inventaire_plein :
+            self.text2(screen, "./FreeSansBold.ttf", 20, f'Vous avez obtenu {self.item} !', (255, 255, 255-self.affichage), (x/2-len(f'Vous avez obtenu {self.item} !')*5, 500+self.affichage))
+        else :
+            self.text2(screen, "./FreeSansBold.ttf", 20, 'Votre inventaire est plein !', (255, 155-self.affichage/2, 155-self.affichage/2), (x/2-len('Votre inventaire est plein !')*5, 500+self.affichage))
 
     def objets_stats(self) :
         '''Réactualise les stats données par les objets équipés'''
@@ -208,11 +215,12 @@ class Inventaire() :
                 else :
                     self.text2(screen, "./FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
                 pos[1] += 25
+            self.mouse = pygame.mouse.get_pos()
             self.suprimer()
+            self.equiper()
 
     def suprimer(self) :
         '''Permet de suprimer un objet depuis l'inventaire grâce à un bouton'''
-        self.mouse = pygame.mouse.get_pos()
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
             screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
@@ -227,6 +235,27 @@ class Inventaire() :
         else :
             screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
 
+    def equiper(self) :
+        if self.mouse[0] < x-self.size_del-20 and self.mouse[0] > x-2*self.size_del-20 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_verte.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas positif
+            if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
+                if type(self.objet_selection) == tuple :
+                    if self.objet_selection[4] == "equipement" :
+                        if "" in self.objets_inventaire :
+                            self.objets[self.objet_selection[3]], self.objets_inventaire[self.objets_inventaire.index("")] = "", self.objets[self.objet_selection[3]]
+                            self.objet_selection = ""
+                            self.objets_stats() # On actualise les stats
+                        else : # Cas inventaire plein
+                            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
+                    elif self.objet_selection[4] == "inventaire" :
+                        if "" in self.objets :
+                            self.objets_inventaire[self.objet_selection[3]], self.objets[self.objets.index("")] = "", self.objets_inventaire[self.objet_selection[3]]
+                            self.objet_selection = ""
+                            self.objets_stats() # On actualise les stats
+                        else : # Cas équipement plein
+                            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
+        else :
+            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas négatif
 
 def main() :
     '''Fonction principale'''
