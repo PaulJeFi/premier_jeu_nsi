@@ -3,6 +3,7 @@ import pygame
 import functions
 import zombies_new
 import sys
+import time
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -22,8 +23,14 @@ pygame.display.set_caption("Friends Royal")
 pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
+pygame.font.init()
 
-def etape_1() :
+def text(screen, font, size, string, color, pos) :
+    '''Permet d'afficher un texte de façon simplifiée'''
+    textsurface = pygame.font.Font(font, size).render(string, False, color)
+    screen.blit(textsurface, pos)
+
+def etape_1(Time=time.time()) :
     '''Fonction principale'''
     inventaire = Inventaire()
     grass = Grass()
@@ -46,6 +53,13 @@ def etape_1() :
         hero.display()
         arme.display()
         hero.GUI_display()
+        if time.time()-Time <= 5 :
+            text(screen, './courriernewbold.ttf', 30, 'Bienvenue dans le camp d\'entrainement du jeu.', RED, (x/2-400, 100))
+        else :
+            if time.time()-Time >= 15 :
+                return None
+            text(screen, './courriernewbold.ttf', 30, 'Ici, vous apprendrez comment survivre efficacement', RED, (x/2-450, 100))
+            text(screen, './courriernewbold.ttf', 30, 'face aux zombies.', RED, (x/2-150, 150))
         pygame.display.flip()
 
 if __name__ == '__main__' :
