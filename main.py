@@ -591,16 +591,27 @@ class Construct_munitions() :
     def add(self, stats) :
         '''Création d'un objet munition (permet au héro de tirer)'''
         # Création de la dispersion individuelle et commune des projectiles
-        if self.arme[1][2][3] :
-            argument = (round(self.spread+(self.arme[1][2][1])*(0.99**stats)), 0)
-        else :
+        if self.arme[1][2][3] and not self.arme[1][2][4]:
+            argument = [round(self.spread+(self.arme[1][2][1])*(0.99**stats)), 0]
+        elif not self.arme[1][2][3] and not self.arme[1][2][4] :
             liste = [round(self.spread), round(self.spread*(-1))]
             if liste[0] > liste[1] :
                 liste[0], liste[1] = liste[1], liste[0]
-            argument = ((self.arme[1][2][1])*(0.99**stats), random.randint(liste[0], liste[1]))
+            argument = [(self.arme[1][2][1])*(0.99**stats), random.randint(liste[0], liste[1])]
+        elif self.arme[1][2][3] and self.arme[1][2][4] :
+            argument = [0, round(self.spread+(self.arme[1][2][1])*(0.99**stats))]
+            argument_original = argument[1]
+        elif not self.arme[1][2][3] and self.arme[1][2][4] :
+            liste = [round(self.spread), round(self.spread*(-1))]
+            if liste[0] > liste[1] :
+                liste[0], liste[1] = liste[1], liste[0]
+            argument = [0, random.randint(liste[0], liste[1]) + round((self.arme[1][2][1])*(0.99**stats))]
+            argument_original = round((self.arme[1][2][1])*(0.99**stats))
         # Ajout des projectiles
         for i in range(self.arme[1][1]) :
             self.balles.append(Munition(argument, self.arme)) # (dispersion individuelle des balles, dispersion commune des balles, stats de l'arme en main
+            if self.arme[1][2][4] and self.arme[1][1] != 1 : # Permet une dispersion régulière pour les armes ayant " self.arme[1][2][4] == True "
+                argument[1] -= round(argument_original)*(1/(self.arme[1][1]-1))*2
         # Ajout de dispersion pour le prochain tir
         if self.spread + (self.arme[1][2][0])*(0.99**stats) < 90 and self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
             self.spread += (self.arme[1][2][0])*(0.99**stats)
@@ -785,6 +796,7 @@ def main(score=save.get()["best_score"]) :
         zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
         marche_arret.display()
         pressed = pygame.key.get_pressed()
+        # Touches pour équiper les différentes armes
         if pressed[pygame.K_1] :
             balles.weapon_stats_update(list(balles.all_weapons.keys())[0])
             arme.actualiser(list(arme.all_weapons.keys())[0])
@@ -797,6 +809,13 @@ def main(score=save.get()["best_score"]) :
         elif pressed[pygame.K_4] :
             balles.weapon_stats_update(list(balles.all_weapons.keys())[3])
             arme.actualiser(list(arme.all_weapons.keys())[3])
+        elif pressed[pygame.K_5] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[4])
+            arme.actualiser(list(arme.all_weapons.keys())[4])
+        elif pressed[pygame.K_6] :
+            balles.weapon_stats_update(list(balles.all_weapons.keys())[5])
+            arme.actualiser(list(arme.all_weapons.keys())[5])
+        # Touches pour l'inventaire
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
@@ -807,6 +826,7 @@ def main(score=save.get()["best_score"]) :
                 inventaire.add_item(random.choice(inventaire.all_items_name))
         elif not inventaire.can_switch :
             inventaire.can_switch = True
+        # Fin des touches
         if inventaire.ouvert :
             inventaire.display() # Affichage
         if inventaire.affichage > 0 :
