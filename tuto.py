@@ -63,6 +63,10 @@ def etape_2(Time=time.time()) :
     hero = Hero()
     arme = Arme()
     balles = Construct_munitions()
+    zombie = zombies_new.Zombies()
+    zombie.x = x-100
+    zombie.y = y/2
+    zombie.SPEED = 0.05
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
@@ -71,22 +75,29 @@ def etape_2(Time=time.time()) :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
+        '''
             if event :
                 balles.add(1000)
+        '''
         arme.change(((1+x/2, 0)))
         grass.display()
         balles.display(dt, True, 1000)
+        zombie.display(dt, True, 0)
         hero.display()
         arme.display()
         hero.GUI_display()
         if time.time()-Time <= 5 :
-            text(screen, './courriernewbold.ttf', 30, 'Bienvenue dans le camp d\'entrainement du jeu.', RED, (x/2-400, 100))
+            text(screen, './courriernewbold.ttf', 30, 'Voici le premier zombie du jeu. Attention !', RED, (x/2-400, 100))
+            zombie.x = x-100
+            zombie.y = y/2
         else :
-            if time.time()-Time >= 15 :
-                return None
-            text(screen, './courriernewbold.ttf', 30, 'Ici, vous apprendrez comment survivre efficacement', RED, (x/2-450, 100))
-            text(screen, './courriernewbold.ttf', 30, 'face aux zombies.', RED, (x/2-150, 150))
+            if time.time()-Time >= 12 :
+                return (zombie.x, zombie.y)
+            text(screen, './courriernewbold.ttf', 30, 'Comme vous le voyez, il a l\'air peu sympatique.', RED, (x/2-450, 100))
+            text(screen, './courriernewbold.ttf', 30, 'Attention, il se dirige vers vous.', RED, (x/2-300, 150))
+            text(screen, './courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', RED, (x/2-200, 200))
         pygame.display.flip()
 
 if __name__ == '__main__' :
     etape_1()
+    zomb = etape_2(time.time())
