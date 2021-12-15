@@ -238,13 +238,13 @@ class Construct_Zombies() :
             else :
                 zomb.cooldown -= 1
 
-    def display(self, dt, game_state, score, inventaire, temps, hero=None) :
+    def display(self, dt, game_state, score, inventaire, temps, power_up, hero=None) :
         if game_state :
             self.respawn(score, temps)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
-            self.mourir(zomb, ID, score, inventaire)
+            self.mourir(zomb, ID, score, inventaire, power_up)
             the_x, the_y = zomb.x, zomb.y
             self.competance(zomb, game_state)
             zomb.display(dt, game_state, score)
@@ -262,15 +262,17 @@ class Construct_Zombies() :
                 if game_state :
                     projectile.mouvement(dt)
                 projectile.display()
-                self.projectile_touche_hero(projectile, hero, ID, inventaire.stats["Def"])
+                self.projectile_touche_hero(projectile, hero, ID, inventaire.stats["Def"], power_up)
             else :
                 self.projectiles.pop(ID)
 
-    def mourir(self, zomb, ID, score, inventaire) :
+    def mourir(self, zomb, ID, score, inventaire, power_up) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
             score.add(self.all_zombies[zomb.type][2])
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
+            if random.randint(0, 60) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
+                power_up.add((zomb.x, zomb.y))
             self.zombies.pop(ID)
             
     def respawn(self, score, temps):
@@ -290,10 +292,10 @@ class Construct_Zombies() :
                 touche_hero = True
         return touche_hero
 
-    def projectile_touche_hero(self, projectile, hero, ID, stat) :
+    def projectile_touche_hero(self, projectile, hero, ID, stat, power_up) :
         '''Le projectile touche-t-il le héro ?'''
         if projectile.get_rect().colliderect(hero.get_rect()) :
-            hero.pv -= projectile.attaque*(0.996**stat) # La boulle de feu ignore en partie l'armure (0.996**stat au lieu de 0.99**stat)
+            hero.pv -= projectile.attaque*(0.997**(stat + 150*power_up.effet_actif("armure"))) # La boulle de feu ignore en partie l'armure (0.998**stat au lieu de 0.99**stat)
             self.projectiles.pop(ID)
 
     def touch_balle(self, dt, hero: pygame.Rect) -> bool :

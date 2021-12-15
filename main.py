@@ -33,7 +33,9 @@ YELLOW = (255, 255, 0)
 
 # Les règlages de base (vitesse du joueur + temps auquel on commence)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
-start_to = 0 # En secondes
+
+start_to = 0 # Temps auquel on débute la partie (en secondes)
+
 # Initialisation de Pygame
 x, y = 1080, 720 # dimensions de l'écran, en pixels
 pygame.init()
@@ -432,7 +434,7 @@ class Soin_construct() :
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
         self.max_soins = 20 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
-        self.max_cooldown = 650 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
+        self.max_cooldown = 600 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
         self.cooldown = self.max_cooldown
     
     def spawn_soin(self) :
@@ -660,6 +662,89 @@ class Construct_munitions() :
         for balle in self.balles :
             balle.droite(dt)
 
+class Power_up(deplace) :
+    '''Classe des powers up'''
+
+    def __init__(self, typ="armure", position=(0, 0), temps_vie=0) :
+        self.type = typ # type de power up
+        self.x, self.y = position # position x et y
+        self.life_time = temps_vie # Temps avant que le power up disparaisse
+
+class Power_up_construct() :
+    '''Constructeur de Power_up(deplace)'''
+
+    def __init__(self) :
+        self.all_power_up = []
+        self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png"} # Tous les powers up et leur image
+        self.image_effet = {"vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écrant, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
+        self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stoque les effets et si ils sont actifs (en frame restantes)
+        self.size = 55 # Taille des powers up
+        for cle in self.image : # Chargement et redimensionnement des images
+            self.image[cle] = pygame.transform.scale(pygame.image.load(self.image[cle]), (self.size, self.size))
+        for cle in self.image_effet : # Chargement et redimensionnement des images des effets visuels
+            self.image_effet[cle][0] = pygame.transform.scale(pygame.image.load(self.image_effet[cle][0]), (self.image_effet[cle][1], self.image_effet[cle][1]))
+        self.duree_effet = 1000 # <= Durée durant laquelle le power up sera actif (durée cumulable) lorsque le héro le récupérera
+        self.duree_vie_power_up = 2000 # <= Durée de vie de l'objet power up (après il est détruit si il n'est pas récupéré)
+
+    def add(self, position) :
+        '''Créer un power up aléatoire à une position déterminé'''
+        self.all_power_up.append(Power_up(random.choice(list(self.power_activated.keys())), position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
+
+    def display(self, hero) :
+        '''Affiche à l'écrant tous les powers up'''
+        for power_up in self.all_power_up : # Permet d'afficher TOUS les powers up
+            '''Détection de si le héro entre en colision avec le power up'''
+            if power_up.x + self.size > x/2 - hero.size//2 and power_up.x < x/2 + hero.size//2 and power_up.y + self.size > y/2 - hero.size//2 and power_up.y < y/2 + hero.size//2 :
+                self.power_activated[power_up.type] += self.duree_effet
+                self.all_power_up.remove(power_up) # Supression du power up
+            elif power_up.life_time <= 0 : # Le power up disparait après un certain temps
+                self.all_power_up.remove(power_up) # Supression du power up
+            else : # Si il n'y a pas collision avec le héro
+                if power_up.life_time*5 > self.duree_vie_power_up or not(power_up.life_time%15 == 0 or (power_up.life_time+1)%15 == 0 or (power_up.life_time+2)%15 == 0 or (power_up.life_time+3)%15 == 0): # Permet de faire clignoter le power up lorsqu'il va disparaitre
+                    screen.blit(self.image[power_up.type], (power_up.x, power_up.y))
+            power_up.life_time -= 1 # Permet de détruire le power up lorsque cette valeur arrive à 0
+
+    def effet_actif(self, effet) :
+        '''Pour les calculs de stats, si l'effet est actif, on multiplie le bonnus qu'il procure par 1, dans le cas contraire par 0 (ce qui revient à ne pas l'appliquer)'''
+        if effet in self.power_activated :
+            if self.power_activated[effet] > 0 :
+                return 1 # Power up actif
+            else :
+                return 0 # Power up inactif
+        else : # Cas où le power up (son nom) n'existe pas ou n'est pas définit
+            print(f'Le power up "{effet}" n\'existe pas.')
+            return 0
+
+    def actualiser_effet(self) :
+        '''Actualise le temps restant pour les powers up'''
+        for cle in self.power_activated :
+            if self.power_activated[cle] > self.duree_effet*2 : # Temps maximum = 2 x durée_effet
+                self.power_activated[cle] = self.duree_effet*2
+            elif self.power_activated[cle] > 0 : # Temps minimum = 0
+                self.power_activated[cle] -= 1
+
+    def effet_display(self) :
+        for cle in self.image_effet :
+            if self.power_activated[cle] > 0 :
+                if self.power_activated[cle]*5 > self.duree_effet or not(self.power_activated[cle]%15 == 0 or (self.power_activated[cle]+1)%15 == 0 or (self.power_activated[cle]+2)%15 == 0 or (self.power_activated[cle]+3)%15 == 0) : # L'effet visuel clignote lorsqu'il va s'arrêter
+                    screen.blit(self.image_effet[cle][0], ((x-self.image_effet[cle][1])/2, (y-self.image_effet[cle][1])/2))
+
+    def haut(self, dt) :
+        for power_up in self.all_power_up :
+            power_up.haut(dt)
+
+    def bas(self, dt) :
+        for power_up in self.all_power_up :
+            power_up.bas(dt)
+
+    def gauche(self, dt) :
+        for power_up in self.all_power_up :
+            power_up.gauche(dt)
+
+    def droite(self, dt) :
+        for power_up in self.all_power_up :
+            power_up.droite(dt)
+
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
@@ -674,6 +759,7 @@ def main(score=save.get()["best_score"]) :
     soin = Soin_construct()
     zombies = Construct_Zombies()
     balles = Construct_munitions()
+    power_up = Power_up_construct()
     game_over = False
     sons.play(0)
     while True : # False = le jeu s'arrête
@@ -689,7 +775,9 @@ def main(score=save.get()["best_score"]) :
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
                 balles.add(inventaire.stats["Agi"])
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
+
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
+
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
             # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
@@ -697,78 +785,91 @@ def main(score=save.get()["best_score"]) :
                 speed_hero = math.sqrt(2)/2*dt
             else :
                 speed_hero = dt
-            speed_hero *= inventaire.stats["Spe"] # Vitesse du héro en fonction du stat "Spe"
+            speed_hero *= inventaire.stats["Spe"] * (power_up.effet_actif("vitesse")*0.5 + 1) # Vitesse du héro en fonction du stat "Spe" et de si le power up speed est actif
             can_be_hit = True # Permet de faire en sorte que le héro se fasse toucher qu'une seul fois
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(speed_hero)
                 soin.bas(speed_hero)
                 zombies.bas(speed_hero)
                 balles.bas(speed_hero)
+                power_up.bas(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
                     grass.haut(speed_hero)
                     soin.haut(speed_hero)
                     zombies.haut(speed_hero)
                     balles.haut(speed_hero)
+                    power_up.haut(speed_hero)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(speed_hero)
                 soin.haut(speed_hero)
                 zombies.haut(speed_hero)
                 balles.haut(speed_hero)
+                power_up.haut(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
                     grass.bas(speed_hero)
                     soin.bas(speed_hero)
                     zombies.bas(speed_hero)
                     balles.bas(speed_hero)
+                    power_up.bas(speed_hero)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(speed_hero)
                 soin.gauche(speed_hero)
                 zombies.gauche(speed_hero)
                 balles.gauche(speed_hero)
+                power_up.gauche(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
                     grass.droite(speed_hero)
                     soin.droite(speed_hero)
                     zombies.droite(speed_hero)
                     balles.droite(speed_hero)
+                    power_up.droite(speed_hero)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(speed_hero)
                 soin.droite(speed_hero)
                 zombies.droite(speed_hero)
                 balles.droite(speed_hero)
+                power_up.droite(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
-                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
+                        hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
                     grass.gauche(speed_hero)
                     soin.gauche(speed_hero)
                     zombies.gauche(speed_hero)
                     balles.gauche(speed_hero)
+                    power_up.gauche(speed_hero)
             touche = zombies.touch_balle(dt, hero.get_rect())
             if touche[0] and can_be_hit :
-                hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**inventaire.stats["Def"]
+                hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                 can_be_hit = False
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
                     zombies.zombies[test[1]].pv -= balle.domages # On retire 50 aux PVs du Zombie
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
+
+            '''Ci-dessous mettre tout ce qui est affecté par le bouton pause ou l'ouverture de l'inventaire'''
+            # Ils ne s'exécuteront que si le jeu est en marche
             soin.spawn_soin()
             hero.regen(inventaire.stats["Reg"]/(dt*10), dt)
             hero.pv_check(inventaire.stats["Vie"])
             hero.change(pygame.mouse.get_pos())
             arme.change(pygame.mouse.get_pos())
+            power_up.actualiser_effet()
+
         if hero.pv <= 0 :
             game_over = True
             marche_arret.status = False
@@ -785,9 +886,11 @@ def main(score=save.get()["best_score"]) :
             zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, hero)
+        power_up.display(hero)
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
+        power_up.effet_display()
         arme.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
