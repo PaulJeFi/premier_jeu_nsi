@@ -486,7 +486,8 @@ class Arme() :
         '''Appel initial de la classe'''
         # taille = 1105 x 682
         self.all_weapons = all_weapons
-        self.actualiser(list(self.all_weapons.keys())[3]) # Modifiez la valeur (de 0 à 3) entre [crochet] pour avoir une autre arme en lançant le jeu
+        self.weapon_equiped = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
+        self.actualiser(self.weapon_equiped[2])
  
     def actualiser(self, arme) :
         self.arme_en_main = arme
@@ -589,6 +590,8 @@ class Construct_munitions() :
         '''Permet de mettre à jour l'arme (ses caractéristiques) en main'''
         if arme in self.all_weapons.keys() :
             self.arme = self.all_weapons[arme]
+        else : # Message d'erreur
+            print(f'L\'arme "{arme}" n\'existe pas.')
 
     def add(self, stats) :
         '''Création d'un objet munition (permet au héro de tirer)'''
