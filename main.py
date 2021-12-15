@@ -690,7 +690,7 @@ class Power_up_construct() :
         '''Créer un power up aléatoire à une position déterminé'''
         self.all_power_up.append(Power_up(random.choice(list(self.power_activated.keys())), position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
 
-    def display(self, hero) :
+    def display(self, hero, marche) :
         '''Affiche à l'écrant tous les powers up'''
         for power_up in self.all_power_up : # Permet d'afficher TOUS les powers up
             '''Détection de si le héro entre en colision avec le power up'''
@@ -702,7 +702,8 @@ class Power_up_construct() :
             else : # Si il n'y a pas collision avec le héro
                 if power_up.life_time*5 > self.duree_vie_power_up or not(power_up.life_time%15 == 0 or (power_up.life_time+1)%15 == 0 or (power_up.life_time+2)%15 == 0 or (power_up.life_time+3)%15 == 0): # Permet de faire clignoter le power up lorsqu'il va disparaitre
                     screen.blit(self.image[power_up.type], (power_up.x, power_up.y))
-            power_up.life_time -= 1 # Permet de détruire le power up lorsque cette valeur arrive à 0
+            if marche :
+                power_up.life_time -= 1 # Permet de détruire le power up lorsque cette valeur arrive à 0
 
     def effet_actif(self, effet) :
         '''Pour les calculs de stats, si l'effet est actif, on multiplie le bonnus qu'il procure par 1, dans le cas contraire par 0 (ce qui revient à ne pas l'appliquer)'''
@@ -886,7 +887,7 @@ def main(score=save.get()["best_score"]) :
             zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
-        power_up.display(hero)
+        power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert))
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
