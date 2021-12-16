@@ -584,6 +584,7 @@ class Construct_munitions() :
     def __init__(self) :
         self.all_weapons = all_weapons
         self.spread = 0 # Dispersion des balles
+        self.spread_reduction_cooldown = 0 # Temps d'attente avant d'avoir une réduction du spread après avoir tiré
         self.balles = []
 
     def weapon_stats_update(self, arme) :
@@ -595,6 +596,8 @@ class Construct_munitions() :
 
     def add(self, stats) :
         '''Création d'un objet munition (permet au héro de tirer)'''
+        # Cooldown de la réduction de spread
+        self.spread_reduction_cooldown = 0
         # Création de la dispersion individuelle et commune des projectiles
         if self.arme[1][2][3] and not self.arme[1][2][4]:
             argument = [round(self.spread+(self.arme[1][2][1])*(0.99**stats)), 0]
@@ -640,13 +643,19 @@ class Construct_munitions() :
                 self.balles.pop(self.balles.index(balle))
 
     def spread_reduction(self, marche_arret, stats) :
-        if marche_arret :
-            self.spread -= (0.02 + 0.05*self.spread)*(1.01**stats)
-            if self.spread < 0 :
+        if marche_arret : # Réduction du spread seulement si le jeu est en marche
+            print(self.spread_reduction_cooldown)
+            # Réduction du spread si l'on a pas tiré juste avant
+            if self.spread_reduction_cooldown >= self.arme[1][2][5] :
+                self.spread -= (0.05 + 0.05*self.spread)*(1.01**stats)
+            else :
+                self.spread_reduction_cooldown += 1
+            # Partie ci-dessous permet de limiter le spread maximum et minimum
+            if self.spread < 0 : # Minimum = 0°
                 self.spread = 0
-            elif self.spread >= 90 :
+            elif self.spread >= 90 : # Stricte maximum = 90°
                 self.spread = 90
-            elif self.spread > (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
+            elif self.spread > (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) : # Maximum (varie en fonction de l'arme et des stats du joueur)
                 self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
 
     def haut(self, dt) :
@@ -891,10 +900,10 @@ def main(score=save.get()["best_score"]) :
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert))
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
         power_up.effet_display()
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
         arme.display()
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
         hero.GUI_display()
