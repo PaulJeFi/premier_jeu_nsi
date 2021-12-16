@@ -191,7 +191,7 @@ class Temps() :
         self.affichage()
 
     def affichage(self) :
-        '''Affichage du temps à l'écrant'''
+        '''Affichage du temps à l'écran'''
         self.texte_temps = []
         # On fait des strings pour afficher le temps
         for i in range(len(self.h_min_s)) :
@@ -478,6 +478,63 @@ class Soin_construct() :
         for soin in self.all_soins :
             soin.droite(dt)
 
+class Boite(deplace) :
+    '''Les boites contiennent des armes et munitions pour le joueur'''
+
+    def __init__(self, arme="", munitions=0, pos_x=0, pos_y=0) : # Arme contenue, nombre de munitions, coordonnées x, y de la boite
+        self.global_size = 16 # Pour modifier la taille de la boite et de la bulle, modifiez CETTE valeur (pas celle en dessous)
+        self.boite_size = (self.global_size*3, self.global_size*4) # Le sprite de la boite n'est pas un carré (24 x 32)
+        self.bulle_size = (self.global_size*8, self.global_size*6) # Le sprite de la bulle n'est pas carré (39 x 30)
+        self.image_boite = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Boite.png'), self.boite_size)
+        self.image_bulle = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Bulle.png'), self.bulle_size)
+        self.x, self.y = pos_x, pos_y
+        self.arme = ""
+        self.munitions = 10
+
+    def display(self) :
+        '''Affichage de la boite'''
+        screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
+        if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
+            self.display_bulle()
+    
+    def display_bulle(self) :
+        '''Affichage de la bulle'''
+        screen.blit(self.image_bulle, (self.x-self.bulle_size[0]//2, self.y-self.bulle_size[1]//2-64))
+
+
+class Construct_boite() :
+    '''Classe permettant de créer et gérer les boites ( la classe Boite() )'''
+
+    def __init__(self) :
+        self.all_weapons = all_weapons
+        self.all_boites = [] # Groupe contenant toutes les boites
+        self.add()
+    
+    def display(self) :
+        '''Affichage de toutes les boites'''
+        for boite in self.all_boites :
+            boite.display()
+    
+    def add(self) :
+        '''Création d'une boite'''
+        self.all_boites.append(Boite())
+    
+    def haut(self, dt) :
+        for boite in self.all_boites :
+            boite.haut(dt)
+
+    def bas(self, dt) :
+        for boite in self.all_boites :
+            boite.bas(dt)
+
+    def gauche(self, dt) :
+        for boite in self.all_boites :
+            boite.gauche(dt)
+
+    def droite(self, dt) :
+        for boite in self.all_boites :
+            boite.droite(dt)
+
 class Arme() :
     '''Classe des armes'''
     # PS : va bientôt disparaitre car la classe héro va fusionner avec celle ci
@@ -644,7 +701,6 @@ class Construct_munitions() :
 
     def spread_reduction(self, marche_arret, stats) :
         if marche_arret : # Réduction du spread seulement si le jeu est en marche
-            print(self.spread_reduction_cooldown)
             # Réduction du spread si l'on a pas tiré juste avant
             if self.spread_reduction_cooldown >= self.arme[1][2][5] :
                 self.spread -= (0.05 + 0.05*self.spread)*(1.01**stats)
@@ -688,7 +744,7 @@ class Power_up_construct() :
     def __init__(self) :
         self.all_power_up = []
         self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png"} # Tous les powers up et leur image
-        self.image_effet = {"vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écrant, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
+        self.image_effet = {"vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
         self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stoque les effets et si ils sont actifs (en frame restantes)
         self.size = 55 # Taille des powers up
         for cle in self.image : # Chargement et redimensionnement des images
@@ -703,7 +759,7 @@ class Power_up_construct() :
         self.all_power_up.append(Power_up(random.choice(list(self.power_activated.keys())), position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
 
     def display(self, hero, marche) :
-        '''Affiche à l'écrant tous les powers up'''
+        '''Affiche à l'écran tous les powers up'''
         for power_up in self.all_power_up : # Permet d'afficher TOUS les powers up
             '''Détection de si le héro entre en colision avec le power up'''
             if power_up.x + self.size > x/2 - hero.size//2 and power_up.x < x/2 + hero.size//2 and power_up.y + self.size > y/2 - hero.size//2 and power_up.y < y/2 + hero.size//2 :
@@ -773,6 +829,7 @@ def main(score=save.get()["best_score"]) :
     zombies = Construct_Zombies()
     balles = Construct_munitions()
     power_up = Power_up_construct()
+    boite = Construct_boite()
     game_over = False
     sons.play(0)
     while True : # False = le jeu s'arrête
@@ -806,6 +863,7 @@ def main(score=save.get()["best_score"]) :
                 zombies.bas(speed_hero)
                 balles.bas(speed_hero)
                 power_up.bas(speed_hero)
+                boite.bas(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
@@ -816,12 +874,14 @@ def main(score=save.get()["best_score"]) :
                     zombies.haut(speed_hero)
                     balles.haut(speed_hero)
                     power_up.haut(speed_hero)
+                    boite.haut(speed_hero)
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(speed_hero)
                 soin.haut(speed_hero)
                 zombies.haut(speed_hero)
                 balles.haut(speed_hero)
                 power_up.haut(speed_hero)
+                boite.haut(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
@@ -832,12 +892,14 @@ def main(score=save.get()["best_score"]) :
                     zombies.bas(speed_hero)
                     balles.bas(speed_hero)
                     power_up.bas(speed_hero)
+                    boite.bas(speed_hero)
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(speed_hero)
                 soin.gauche(speed_hero)
                 zombies.gauche(speed_hero)
                 balles.gauche(speed_hero)
                 power_up.gauche(speed_hero)
+                boite.gauche(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
@@ -848,12 +910,14 @@ def main(score=save.get()["best_score"]) :
                     zombies.droite(speed_hero)
                     balles.droite(speed_hero)
                     power_up.droite(speed_hero)
+                    boite.droite(speed_hero)
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(speed_hero)
                 soin.droite(speed_hero)
                 zombies.droite(speed_hero)
                 balles.droite(speed_hero)
                 power_up.droite(speed_hero)
+                boite.droite(speed_hero)
                 touche =  zombies.touch_balle(dt, hero.get_rect())
                 if touche[0] :
                     if can_be_hit :
@@ -864,6 +928,7 @@ def main(score=save.get()["best_score"]) :
                     zombies.gauche(speed_hero)
                     balles.gauche(speed_hero)
                     power_up.gauche(speed_hero)
+                    boite.gauche(speed_hero)
             touche = zombies.touch_balle(dt, hero.get_rect())
             if touche[0] and can_be_hit :
                 hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -900,6 +965,7 @@ def main(score=save.get()["best_score"]) :
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert))
+        boite.display()
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
         power_up.effet_display()

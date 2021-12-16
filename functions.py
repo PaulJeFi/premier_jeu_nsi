@@ -40,10 +40,13 @@ def sound(sound) :
 
 def curseur(screen) :
     '''Affichage du curseur personnalisé'''
+    # On récupère la position de la souris
     pos = pygame.mouse.get_pos()
+    # On définit une taille pour la nouvelle image du curseur
     size = (30, 30)
-    image = pygame.image.load('./images/curseur/Croix_avec_carre.png')
-    image = pygame.transform.scale(image,(size[0], size[1]))
+    # Attribution et ajustement de la taille de l'image en une étape
+    image = pygame.transform.scale(pygame.image.load('./images/curseur/Croix_avec_carre.png'),(size[0], size[1]))
+    # Affichage du nouveau curseur
     screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 
 def convert_degrees(angle) :
