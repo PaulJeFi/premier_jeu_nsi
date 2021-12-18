@@ -150,7 +150,6 @@ class Sound() :
     def is_playing(self, indexe_son) :
         pygame.mixer.Channel(indexe_son).get_busy()
 
-
 class Temps() :
     '''Permet d'afficher la durée de la partie'''
 
@@ -503,7 +502,19 @@ class Boite(deplace) :
         '''Affichage de la bulle'''
         screen.blit(self.image_bulle, (self.x-self.bulle_size[0]//2, self.y-self.bulle_size[1]//2-64))
         screen.blit(pygame.transform.scale(pygame.image.load(all_weapons[self.arme][2][0]), (round(self.boite_size[0]*2), round(self.boite_size[0]*2))), (self.x-self.bulle_size[0]//2+15, self.y-self.bulle_size[1]//2-78))
-
+        # Affichage du nombre de munitions contenue
+        if self.arme != "No weapon" : # On affiche le nombre de munition seulement si l'on a une arme
+                # Attribution de la couleur d'affichage
+                if self.munitions == float('inf') :
+                    couleur = (255, 255, 0)
+                elif self.munitions > 100 :
+                    couleur = (255, 255, 255)
+                elif self.munitions >= 0 :
+                    couleur = (255, round(2.55*self.munitions), round(2.55*self.munitions))
+                else :
+                    couleur = (255, 0, 0)
+                # Affichage du nombre de munitions
+                text(screen, './FreeSansBold.ttf', 16, str(self.munitions), couleur, (self.x+self.bulle_size[0]*0.22, self.y+self.bulle_size[1]*0.19-64))
 
 class Construct_boite() :
     '''Classe permettant de créer et gérer les boites ( la classe Boite() )'''
@@ -512,11 +523,14 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
-        self.add("Pistolet mitrailleur", 0, 500, 100)
-        self.add("Fusil de chasse", 0, 100, 500)
-        self.add("Arc", 0, 100, 100)
-        self.add("Blastmater", 0, 900, 100)
-        self.add("Supra-fusil", 0, 900, 500)
+        self.add("Pistolet mitrailleur", 300, 500, 100)
+        self.add("Fusil de chasse", 200, 100, 500)
+        self.add("Arc", 60, 100, 100)
+        self.add("Blastmater", float('inf'), 900, 100)
+        self.add("Blastmater", 30, 500, 900)
+        self.add("Blastmater", 30, 900, 900)
+        self.add("Blastmater", 30, 100, 900)
+        self.add("Supra-fusil", 30, 900, 500)
     
     def display(self) :
         '''Affichage de toutes les boites'''
@@ -534,7 +548,7 @@ class Construct_boite() :
             return "No box in range"
     
     def add(self, arme="", munitions=0, pos_x=0, pos_y=0) :
-        '''Création d'une boite'''
+        '''Création d'une boite (arme, munitions, position x, position y)'''
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
@@ -723,6 +737,7 @@ class Arme() :
         # Partie données de l'inventaire des armes
         self.all_weapons = all_weapons
         self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
+        self.munitions = [0, 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
         self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipé
         self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipé (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
         # Variable permettant d'échanger une arme 1 seul fois
@@ -769,6 +784,20 @@ class Arme() :
                 screen.blit(self.case_image[0], (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i, y-self.case_size[1]-10))
             # Affichage des armes (en fait tout en une ligne)
             screen.blit(pygame.transform.scale(pygame.image.load(self.all_weapons[self.weapon_inventory[i]][2][0]), (round(self.case_size[0]*0.7), round(self.case_size[0]*0.7))), (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i + 10, y-self.case_size[1]-10 - round(self.case_size[0]*0.3)//2))
+            # Affichage du nombre de munitions
+            valeur = self.munitions[i]
+            if self.weapon_inventory[i] != "No weapon" : # On affiche le nombre de munition seulement si l'on a une arme
+                # Attribution de la couleur d'affichage
+                if valeur == float('inf') :
+                    couleur = (255, 255, 0)
+                elif valeur > 100 :
+                    couleur = (255, 255, 255)
+                elif valeur >= 0 :
+                    couleur = (255, round(2.55*valeur), round(2.55*valeur))
+                else :
+                    couleur = (255, 0, 0)
+                # Affichage
+                text(screen, './FreeSansBold.ttf', 16, str(valeur), couleur, (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i+self.case_size[0]*0.8, y-self.case_size[1]*0.65-10))
 
 class Power_up(deplace) :
     '''Classe des powers up'''
@@ -878,6 +907,7 @@ class FPS() :
                 self.frame_nb = 0
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {self.FPS}', BLACK, (x-150, y-50))
 
+
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
@@ -895,19 +925,24 @@ def main(score=save.get()["best_score"]) :
     power_up = Power_up_construct()
     boite = Construct_boite()
     fps = FPS()
+
     game_over = False
     sons.play(0)
+
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
+
         if score.score > save.get()["best_score"] :
             save.set_score(score.score)
+        
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
+            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 :
                 balles.add(inventaire.stats["Agi"])
+                arme.munitions[arme.weapon_equiped] -= 1
 
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
@@ -926,6 +961,7 @@ def main(score=save.get()["best_score"]) :
                 speed_hero = dt
             speed_hero *= inventaire.stats["Spe"] * (power_up.effet_actif("vitesse")*0.5 + 1) # Vitesse du héro en fonction du stat "Spe" et de si le power up speed est actif
             can_be_hit = True # Permet de faire en sorte que le héro se fasse toucher qu'une seul fois
+
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(speed_hero)
                 soin.bas(speed_hero)
@@ -944,6 +980,7 @@ def main(score=save.get()["best_score"]) :
                     balles.haut(speed_hero)
                     power_up.haut(speed_hero)
                     boite.haut(speed_hero)
+
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(speed_hero)
                 soin.haut(speed_hero)
@@ -962,6 +999,7 @@ def main(score=save.get()["best_score"]) :
                     balles.bas(speed_hero)
                     power_up.bas(speed_hero)
                     boite.bas(speed_hero)
+
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(speed_hero)
                 soin.gauche(speed_hero)
@@ -980,6 +1018,7 @@ def main(score=save.get()["best_score"]) :
                     balles.droite(speed_hero)
                     power_up.droite(speed_hero)
                     boite.droite(speed_hero)
+
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(speed_hero)
                 soin.droite(speed_hero)
@@ -998,6 +1037,7 @@ def main(score=save.get()["best_score"]) :
                     balles.gauche(speed_hero)
                     power_up.gauche(speed_hero)
                     boite.gauche(speed_hero)
+
             touche = zombies.touch_balle(dt, hero.get_rect())
             if touche[0] and can_be_hit :
                 hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -1027,37 +1067,56 @@ def main(score=save.get()["best_score"]) :
             return score.score
 
         '''Tous les affichages de sprites'''
-        grass.display()
+        grass.display() # Affichage de l'herbe
         soin.display(hero) # Ineterraction avec la trousse de premiers secours
+
         if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
             zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
-        power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert))
+        
+        power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert)) # Affichage des powers up
+
         # Intéraction avec les boites + affichage
         the_boite = boite.display()
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_e] and marche_arret.game_state() and not inventaire.ouvert and arme.can_switch and arme.weapon_equiped != 2 :
-            arme.weapon_inventory[arme.weapon_equiped], the_boite.arme = the_boite.arme, arme.weapon_inventory[arme.weapon_equiped]
-            arme.can_switch = False
-            arme.previous_weapon_equiped = None # Petite astuce pour actualiser l'arme
+        if pressed[pygame.K_e] and marche_arret.game_state() and not inventaire.ouvert and arme.can_switch and the_boite != "No box in range" :
+            # Si on possède déjà l'arme, alors on combine les munitions
+            if the_boite.arme in arme.weapon_inventory and the_boite.arme != "No weapon" :
+                arme.munitions[arme.weapon_inventory.index(the_boite.arme)], the_boite.munitions = arme.munitions[arme.weapon_inventory.index(the_boite.arme)] + the_boite.munitions, 0
+                arme.can_switch = False
+            # On ne peut pas déséquiper le pistolet
+            elif arme.weapon_equiped != 2 :
+                arme.weapon_inventory[arme.weapon_equiped], the_boite.arme = the_boite.arme, arme.weapon_inventory[arme.weapon_equiped]
+                arme.munitions[arme.weapon_equiped], the_boite.munitions = the_boite.munitions, arme.munitions[arme.weapon_equiped]
+                arme.can_switch = False
+                arme.previous_weapon_equiped = None # Petite astuce pour actualiser l'arme
+            # Si l'arme équipé est le pistolet, on essaye d'ajouter l'arme dans un espace vide de l'inventaire d'arme s'il y en a un
+            else :
+                for i in range(len(arme.weapon_inventory)-1) :
+                    if arme.weapon_inventory[i] == "No weapon" :
+                        arme.weapon_inventory[i], the_boite.arme = the_boite.arme, arme.weapon_inventory[i]
+                        arme.munitions[i], the_boite.munitions = the_boite.munitions, arme.munitions[i]
+                        arme.can_switch = False
+        # Permet de limiter le nombre d'interraction à une par touche " e " pressé
         elif not pressed[pygame.K_e] :
             arme.can_switch = True
         # Fin de la partie intéraction avec les boites + affichage
-        balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
-        hero.display()
-        power_up.effet_display()
+
+        balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"]) # Affichage des projectiles
+        hero.display() # Affichage du héro
+        power_up.effet_display() # Affichage de l'effet visuel des powers up
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
-        arme.display()
-        # Début de l'affichage des FPS
-        fps.display(temps.time)
-        # Fin de l'affichage des FPS
-        hero.GUI_display()
-        arme.display_cases()
-        score.display()
-        temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
+        arme.display() # Affichage de l'arme
+        fps.display(temps.time) # Affichage des FPS
+        hero.GUI_display() # Affichage de la bare de vie
+        if not inventaire.ouvert : # On cache l'affichage quand l'inventaire est ouvert (pour rendre le tout plus lisible)
+            arme.display_cases() # Affichage de l'inventaire pour les armes
+        score.display() # Affichage du score
+        temps.display(marche_arret.game_state() and not inventaire.ouvert, score) # Affichage du temps
         zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
-        marche_arret.display()
+        marche_arret.display() # Affichage du bouton pause
+
         pressed = pygame.key.get_pressed()
         # Touches pour équiper les différentes armes
         if pressed[pygame.K_1] :
@@ -1066,6 +1125,7 @@ def main(score=save.get()["best_score"]) :
             arme.weapon_equiped = 1
         elif pressed[pygame.K_3] :
             arme.weapon_equiped = 2
+        
         # Touches pour l'inventaire
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
@@ -1078,18 +1138,22 @@ def main(score=save.get()["best_score"]) :
         elif not inventaire.can_switch :
             inventaire.can_switch = True
         # Fin des touches
+
         if inventaire.ouvert :
             inventaire.display() # Affichage
         if inventaire.affichage > 0 :
             inventaire.objet_trouve()
         inventaire.stats_display()
         curseur(screen)
+
         if game_over :
             sons.pause(0)
             sons.play(1)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
             text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
+
         pygame.display.flip()
+
 
 if __name__ == '__main__' :
     while True :
