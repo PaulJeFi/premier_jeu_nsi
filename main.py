@@ -199,7 +199,7 @@ class Temps() :
                 self.texte_temps.append("0" + str(self.h_min_s[i]))
             else :
                 self.texte_temps.append(str(self.h_min_s[i]))
-        text(screen, "./FreeSansBold.ttf", 20, ' : '.join(self.texte_temps), WHITE, (x/2-50, 100))
+        text(screen, "./FreeSansBold.ttf", 20, ' : '.join(self.texte_temps), WHITE, (380, 20))
 
 class Score_actuel() :
     '''Classe pour le score'''
@@ -488,36 +488,54 @@ class Boite(deplace) :
         self.image_boite = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Boite.png'), self.boite_size)
         self.image_bulle = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Bulle.png'), self.bulle_size)
         self.x, self.y = pos_x, pos_y
-        self.arme = ""
-        self.munitions = 10
+        self.arme = arme
+        self.munitions = munitions
 
     def display(self) :
         '''Affichage de la boite'''
         screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
         if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
             self.display_bulle()
+            return self
+        return ""
     
     def display_bulle(self) :
         '''Affichage de la bulle'''
         screen.blit(self.image_bulle, (self.x-self.bulle_size[0]//2, self.y-self.bulle_size[1]//2-64))
+        screen.blit(pygame.transform.scale(pygame.image.load(all_weapons[self.arme][2][0]), (round(self.boite_size[0]*2), round(self.boite_size[0]*2))), (self.x-self.bulle_size[0]//2+15, self.y-self.bulle_size[1]//2-78))
 
 
 class Construct_boite() :
     '''Classe permettant de créer et gérer les boites ( la classe Boite() )'''
 
     def __init__(self) :
+        self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
-        self.add()
+        self.add("Pistolet mitrailleur", 0, 500, 100)
+        self.add("Fusil de chasse", 0, 100, 500)
+        self.add("Arc", 0, 100, 100)
+        self.add("Blastmater", 0, 900, 100)
+        self.add("Supra-fusil", 0, 900, 500)
     
     def display(self) :
         '''Affichage de toutes les boites'''
+        self.boite_in_range = []
+        # Affichage des boites
         for boite in self.all_boites :
-            boite.display()
+            self.boite_in_range.append(boite.display())
+        # Supression de tous les "" dans self.boite_in_range
+        while "" in self.boite_in_range :
+            self.boite_in_range.remove("")
+        # On retourne la première boite (si il y en à une)
+        if len(self.boite_in_range) > 0 :
+            return self.boite_in_range[0]
+        else :
+            return "No box in range"
     
-    def add(self) :
+    def add(self, arme="", munitions=0, pos_x=0, pos_y=0) :
         '''Création d'une boite'''
-        self.all_boites.append(Boite())
+        self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
         for boite in self.all_boites :
@@ -534,43 +552,6 @@ class Construct_boite() :
     def droite(self, dt) :
         for boite in self.all_boites :
             boite.droite(dt)
-
-class Arme() :
-    '''Classe des armes'''
-    # PS : va bientôt disparaitre car la classe héro va fusionner avec celle ci
-
-    def __init__(self) :
-        '''Appel initial de la classe'''
-        # taille = 1105 x 682
-        self.all_weapons = all_weapons
-        self.weapon_equiped = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
-        self.actualiser(self.weapon_equiped[2])
- 
-    def actualiser(self, arme) :
-        self.arme_en_main = arme
-        self.image = pygame.image.load(self.all_weapons[self.arme_en_main][0][0])
-        self.size = [self.all_weapons[self.arme_en_main][0][2][1]]*2 # Taille de l'arme
-        self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
-        self.rotated = self.image
-        self.rect = self.image.get_rect()
-        self.x = x//2 - self.size[0]//2
-        self.y = y//2 - self.size[0]//2
-    
-    def change(self, mousepos) :
-        '''Tourne le personnage pour qu'il ragarde la souris'''
-        if mousepos[0]-x/2 != 0 :
-            self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
-            self.angle = convert_degrees(self.angle)
-            if mousepos[0] < x/2 :
-                self.angle = 180-self.angle
-            else :
-                self.angle = -self.angle
-
-    def display(self) :
-        '''Affichage du sprite tourné dans le bon sens'''
-        rotated_image = pygame.transform.rotate(self.image, self.angle)
-        new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
-        screen.blit(rotated_image, new_rect.topleft)
 
 class Munition(deplace) :
     '''Les munitions.'''
@@ -685,7 +666,6 @@ class Construct_munitions() :
         else :
             self.spread = 90
 
-    
     def display(self, dt, marche_arret, stats) :
         '''Affichage de tous les projectiles du héro'''
         self.update()
@@ -729,6 +709,66 @@ class Construct_munitions() :
     def droite(self, dt) :
         for balle in self.balles :
             balle.droite(dt)
+
+class Arme() :
+    '''Classe des armes'''
+    # PS : va bientôt disparaitre car la classe héro va fusionner avec celle ci
+
+    def __init__(self) :
+        '''Appel initial de la classe'''
+        # Partie affichage pour l'inventaire des armes
+        self.case_size = 30 # Facteur de taille pour les cases
+        self.case_size = (self.case_size*5, self.case_size*2) # Taille des cases (elles ont une taille de 40 x 16 ce qui revient à un ration 5:2)
+        self.case_image = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
+        # Partie données de l'inventaire des armes
+        self.all_weapons = all_weapons
+        self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
+        self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipé
+        self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipé (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
+        # Variable permettant d'échanger une arme 1 seul fois
+        self.can_switch = True
+
+    def actualiser(self) :
+        '''On actualise le sprite de l'arme en main'''
+        # On atribue l'arme ainsi que toute ses caractéristiques à self.arme_en_main
+        self.arme_en_main = self.weapon_inventory[self.weapon_equiped]
+        # Création du sprite et attribution de de sa position
+        self.image = pygame.image.load(self.all_weapons[self.arme_en_main][0][0])
+        self.size = [self.all_weapons[self.arme_en_main][0][2][1]]*2 # Taille de l'arme
+        self.image = pygame.transform.scale(self.image, (int(self.size[0]), int(self.size[1])))
+        self.rotated = self.image
+        self.rect = self.image.get_rect()
+        self.x = x//2 - self.size[0]//2
+        self.y = y//2 - self.size[0]//2
+        # On retourne l'arme actuellement utilisée
+        return self.arme_en_main
+    
+    def change(self, mousepos) :
+        '''Tourne le personnage pour qu'il ragarde la souris'''
+        if mousepos[0]-x/2 != 0 :
+            self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
+            self.angle = convert_degrees(self.angle)
+            if mousepos[0] < x/2 :
+                self.angle = 180-self.angle
+            else :
+                self.angle = -self.angle
+
+    def display(self) :
+        '''Affichage du sprite tourné dans le bon sens'''
+        rotated_image = pygame.transform.rotate(self.image, self.angle)
+        new_rect = rotated_image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
+        screen.blit(rotated_image, new_rect.topleft)
+
+    def display_cases(self) :
+        '''Affichage de l'inventaire des armes'''
+        for i in range(len(self.weapon_inventory)) :
+            # Affichage des cases
+            if self.weapon_equiped == i :
+                screen.blit(self.case_image[1], (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i, y-self.case_size[1]-10))
+            else :
+                screen.blit(self.case_image[0], (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i, y-self.case_size[1]-10))
+            # Affichage des armes (en fait tout en une ligne)
+            screen.blit(pygame.transform.scale(pygame.image.load(self.all_weapons[self.weapon_inventory[i]][2][0]), (round(self.case_size[0]*0.7), round(self.case_size[0]*0.7))), (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i + 10, y-self.case_size[1]-10 - round(self.case_size[0]*0.3)//2))
 
 class Power_up(deplace) :
     '''Classe des powers up'''
@@ -814,6 +854,30 @@ class Power_up_construct() :
         for power_up in self.all_power_up :
             power_up.droite(dt)
 
+class FPS() :
+    '''Fonction permettant l'affichage des FPS'''
+
+    def __init__(self) :
+        '''Temps1 correspond au temps actuel et temps2 au temps enregistré à la dernière frame'''
+        self.time1, self.time2 = 0, 0
+        self.frame_nb = 0 # Permet un affichage plus fluide des FPS
+        self.FPS_recorded = [] # Liste des dernières valeurs de FPS
+        self.FPS = 0 # Valeur affiché à l'écran
+        self.refresh_speed = 5 # L'intervalle de frame avant de rafréchir le nombre de FPS
+
+    def display(self, time) :
+        '''Calcul et affichage des FPS'''
+        self.time2 = self.time1
+        self.time1 = time
+        if self.time1 != self.time2 : # Empèche une division par 0
+            self.FPS_recorded.append(0.5/(self.time1-self.time2))
+            self.frame_nb += 1
+            if self.frame_nb >= self.refresh_speed :
+                self.FPS = round(sum(self.FPS_recorded)/len(self.FPS_recorded), 1)
+                self.FPS_recorded = []
+                self.frame_nb = 0
+        text(screen, "./FreeSansBold.ttf", 15, f'FPS : {self.FPS}', BLACK, (x-150, y-50))
+
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
@@ -830,6 +894,7 @@ def main(score=save.get()["best_score"]) :
     balles = Construct_munitions()
     power_up = Power_up_construct()
     boite = Construct_boite()
+    fps = FPS()
     game_over = False
     sons.play(0)
     while True : # False = le jeu s'arrête
@@ -837,16 +902,20 @@ def main(score=save.get()["best_score"]) :
         screen.fill(WHITE)
         if score.score > save.get()["best_score"] :
             save.set_score(score.score)
-        balles.weapon_stats_update(arme.arme_en_main)
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert :
                 balles.add(inventaire.stats["Agi"])
-        marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
 
+        marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
+
+            # Actualisation de l'arme (image et statistiques)
+            if arme.weapon_equiped != arme.previous_weapon_equiped :
+                arme.previous_weapon_equiped = arme.weapon_equiped
+                balles.weapon_stats_update(arme.actualiser())
 
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
@@ -965,14 +1034,26 @@ def main(score=save.get()["best_score"]) :
         else : # Cas où tu n'as pas de lessive équipé
             zombie_temps = temps.time
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert))
-        boite.display()
+        # Intéraction avec les boites + affichage
+        the_boite = boite.display()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_e] and marche_arret.game_state() and not inventaire.ouvert and arme.can_switch and arme.weapon_equiped != 2 :
+            arme.weapon_inventory[arme.weapon_equiped], the_boite.arme = the_boite.arme, arme.weapon_inventory[arme.weapon_equiped]
+            arme.can_switch = False
+            arme.previous_weapon_equiped = None # Petite astuce pour actualiser l'arme
+        elif not pressed[pygame.K_e] :
+            arme.can_switch = True
+        # Fin de la partie intéraction avec les boites + affichage
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"])
         hero.display()
         power_up.effet_display()
         zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
         arme.display()
-        text(screen, "./FreeSansBold.ttf", 15, f'FPS : {dt}', BLACK, (x-150, y-50)) # Affichage des FPS
+        # Début de l'affichage des FPS
+        fps.display(temps.time)
+        # Fin de l'affichage des FPS
         hero.GUI_display()
+        arme.display_cases()
         score.display()
         temps.display(marche_arret.game_state() and not inventaire.ouvert, score)
         zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
@@ -980,29 +1061,17 @@ def main(score=save.get()["best_score"]) :
         pressed = pygame.key.get_pressed()
         # Touches pour équiper les différentes armes
         if pressed[pygame.K_1] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[0])
-            arme.actualiser(list(arme.all_weapons.keys())[0])
+            arme.weapon_equiped = 0
         elif pressed[pygame.K_2] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[1])
-            arme.actualiser(list(arme.all_weapons.keys())[1])
+            arme.weapon_equiped = 1
         elif pressed[pygame.K_3] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[2])
-            arme.actualiser(list(arme.all_weapons.keys())[2])
-        elif pressed[pygame.K_4] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[3])
-            arme.actualiser(list(arme.all_weapons.keys())[3])
-        elif pressed[pygame.K_5] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[4])
-            arme.actualiser(list(arme.all_weapons.keys())[4])
-        elif pressed[pygame.K_6] :
-            balles.weapon_stats_update(list(balles.all_weapons.keys())[5])
-            arme.actualiser(list(arme.all_weapons.keys())[5])
+            arme.weapon_equiped = 2
         # Touches pour l'inventaire
         if pressed[pygame.K_a] :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
                 inventaire.can_switch = False
-        elif pressed[pygame.K_e] :
+        elif pressed[pygame.K_r] :
             if inventaire.can_switch :
                 inventaire.can_switch = False
                 inventaire.add_item(random.choice(inventaire.all_items_name))
