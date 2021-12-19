@@ -42,6 +42,9 @@ def etape_1(Time=time.time()) :
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
+        if arme.weapon_equiped != arme.previous_weapon_equiped :
+                arme.previous_weapon_equiped = arme.weapon_equiped
+                arme.actualiser()
         arme.change(((1+x/2, 0)))
         grass.display()
         hero.display()
@@ -70,7 +73,9 @@ def etape_2(Time=time.time()) :
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
         screen.fill(WHITE)
-        balles.weapon_stats_update(arme.arme_en_main)
+        if arme.weapon_equiped != arme.previous_weapon_equiped :
+                arme.previous_weapon_equiped = arme.weapon_equiped
+                balles.weapon_stats_update(arme.actualiser())
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
@@ -100,4 +105,6 @@ def etape_2(Time=time.time()) :
 
 if __name__ == '__main__' :
     etape_1()
+    arme = Arme()
+    arme.previous_weapon_equiped = None
     zomb = etape_2(time.time())
