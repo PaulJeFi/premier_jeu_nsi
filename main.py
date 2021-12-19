@@ -632,10 +632,17 @@ class Munition(deplace) :
         return pygame.Rect(self.x, self.y, self.size, self.size)
 
 class Construct_munitions() :
-    '''Classe de gestion des munitions'''
+    '''Classe de gestion des projectilles'''
+
     def __init__(self) :
+        # Partie affichage de l'indicateur de dispersion
+        self.size_facteur_indicateur = 32 # Facteur de taille de l'indicateur de dispersion
+        self.size_indicateur = (self.size_facteur_indicateur, self.size_facteur_indicateur*4) # Taille de l'indicateur de dispersion
+        self.image_indicateur = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Indicateur.png'), self.size_indicateur) # Sprite
+        # Partie gestion des projectilles
         self.all_weapons = all_weapons
         self.spread = 0 # Dispersion des balles
+        self.stats = 0 # Valeur de l'agilité du héro
         self.spread_reduction_cooldown = 0 # Temps d'attente avant d'avoir une réduction du spread après avoir tiré
         self.balles = []
 
@@ -648,35 +655,36 @@ class Construct_munitions() :
 
     def add(self, stats) :
         '''Création d'un objet munition (permet au héro de tirer)'''
+        self.stats = stats
         # Cooldown de la réduction de spread
         self.spread_reduction_cooldown = 0
         # Création de la dispersion individuelle et commune des projectiles
         if self.arme[1][2][3] and not self.arme[1][2][4]:
-            argument = [round(self.spread+(self.arme[1][2][1])*(0.99**stats)), 0]
+            argument = [round(self.spread+(self.arme[1][2][1])*(0.99**self.stats)), 0]
         elif not self.arme[1][2][3] and not self.arme[1][2][4] :
             liste = [round(self.spread), round(self.spread*(-1))]
             if liste[0] > liste[1] :
                 liste[0], liste[1] = liste[1], liste[0]
-            argument = [(self.arme[1][2][1])*(0.99**stats), random.randint(liste[0], liste[1])]
+            argument = [(self.arme[1][2][1])*(0.99**self.stats), random.randint(liste[0], liste[1])]
         elif self.arme[1][2][3] and self.arme[1][2][4] :
-            argument = [0, round(self.spread+(self.arme[1][2][1])*(0.99**stats))]
+            argument = [0, round(self.spread+(self.arme[1][2][1])*(0.99**self.stats))]
             argument_original = argument[1]
         elif not self.arme[1][2][3] and self.arme[1][2][4] :
             liste = [round(self.spread), round(self.spread*(-1))]
             if liste[0] > liste[1] :
                 liste[0], liste[1] = liste[1], liste[0]
-            argument = [0, random.randint(liste[0], liste[1]) + round((self.arme[1][2][1])*(0.99**stats))]
-            argument_original = round((self.arme[1][2][1])*(0.99**stats))
+            argument = [0, random.randint(liste[0], liste[1]) + round((self.arme[1][2][1])*(0.99**self.stats))]
+            argument_original = round((self.arme[1][2][1])*(0.99**self.stats))
         # Ajout des projectiles
         for i in range(self.arme[1][1]) :
             self.balles.append(Munition(argument, self.arme)) # (dispersion individuelle des balles, dispersion commune des balles, stats de l'arme en main
             if self.arme[1][2][4] and self.arme[1][1] != 1 : # Permet une dispersion régulière pour les armes ayant " self.arme[1][2][4] == True "
                 argument[1] -= round(argument_original)*(1/(self.arme[1][1]-1))*2
         # Ajout de dispersion pour le prochain tir
-        if self.spread + (self.arme[1][2][0])*(0.99**stats) < 90 and self.spread + (self.arme[1][2][0])*(0.99**stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) :
-            self.spread += (self.arme[1][2][0])*(0.99**stats)
-        elif self.spread + (self.arme[1][2][0])*(0.99**stats) < 90 :
-            self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
+        if self.spread + (self.arme[1][2][0])*(0.99**self.stats) < 90 and self.spread + (self.arme[1][2][0])*(0.99**self.stats) < (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats) :
+            self.spread += (self.arme[1][2][0])*(0.99**self.stats)
+        elif self.spread + (self.arme[1][2][0])*(0.99**self.stats) < 90 :
+            self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats)
         else :
             self.spread = 90
 
@@ -686,6 +694,36 @@ class Construct_munitions() :
         self.spread_reduction(marche_arret, stats)
         for balle in self.balles :
             balle.display(dt, marche_arret)
+
+    def display_dispersion(self) :
+        '''Affichage d'un indicateur pour la dispersion'''
+        # Calcul des valeurs ainsi que des couleurs
+        # Valeur1
+        if (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats) != 0 :
+            valeur1 = self.spread/((self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats))
+            if 0 <= 255*valeur1 <= 255 :
+                couleur1 = (255, 150*(1-valeur1), 0)
+            else :
+                couleur1 = (255, 0, 0)
+        else :
+            valeur1 = 0
+            couleur1 = (255, 0, 0)
+        # Valeur2
+        if self.arme[1][2][5] != 0 :
+            valeur2 = self.spread_reduction_cooldown/self.arme[1][2][5]
+            if 0 <= 255*valeur2 <= 255 :
+                couleur2 = (255*(1-valeur2), 0, 0)
+            else :
+                couleur2 = (0, 0, 0)
+        else :
+            couleur2 = (0, 0, 0)
+        # Affichage :
+        # Rectange en bas de l'indicateur
+        draw_rect(screen, (x-self.size_indicateur[0]*(13/16)-10, (y-self.size_indicateur[1])/2+self.size_indicateur[1]*(51/64)), (self.size_indicateur[0]*(10/16), self.size_indicateur[1]*(10/64)), couleur2)
+        # Rectangle en haut de l'indicateur
+        draw_rect(screen, (x-self.size_indicateur[0]*0.75-10, (y-self.size_indicateur[1]*(31/32))/2+self.size_indicateur[1]*(1-valeur1)*0.78), (self.size_indicateur[0]/2, self.size_indicateur[1]*(50/64)*valeur1), couleur1)
+        # L'image de l'incateur
+        screen.blit(self.image_indicateur, (x-self.size_indicateur[0]-10, (y-self.size_indicateur[1])/2))
 
     def update(self) :
         '''Supprime les balles qui doivent être supprimées.'''
@@ -1116,6 +1154,7 @@ def main(score=save.get()["best_score"]) :
         temps.display(marche_arret.game_state() and not inventaire.ouvert, score) # Affichage du temps
         zombies.actualiser_all_zombies(temps.time) # Doit être mis après temps.display()
         marche_arret.display() # Affichage du bouton pause
+        balles.display_dispersion()
 
         pressed = pygame.key.get_pressed()
         # Touches pour équiper les différentes armes
