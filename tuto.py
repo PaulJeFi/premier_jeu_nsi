@@ -129,11 +129,8 @@ def etape3(zomb_coord, Time=time.time()) :
         arme.display()
         hero.GUI_display()
 
-        if time.time()-Time >= 12 :
-            return (zombie.x, zombie.y)
-        text(screen, './courriernewbold.ttf', 30, 'Comme vous le voyez, il a l\'air peu sympatique.', RED, (x/2-450, 100))
-        text(screen, './courriernewbold.ttf', 30, 'Attention, il se dirige vers vous.', RED, (x/2-300, 150))
-        text(screen, './courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', RED, (x/2-200, 200))
+        text(screen, './courriernewbold.ttf', 30, 'Utilisez ZQSD pour vous déplacer.', RED, (x/2-450, 100))
+        text(screen, './courriernewbold.ttf', 30, 'Attention, le zombie vous attaque.', RED, (x/2-300, 150))
         pygame.display.flip()
 
 
@@ -148,6 +145,5 @@ if __name__ == '__main__' :
     # Actualisation de l'arme
     arme = Arme()
     arme.previous_weapon_equiped = None
-    zomb = etape_2(time.time())
     # Etape n°3
-    etape3(zomb)
+    etape3(zomb, time.time())
