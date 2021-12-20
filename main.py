@@ -21,7 +21,6 @@ import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
 from liste_armes import all_weapons, weapon_spawn_chance
-import pyglet
 
 # TKT
 import subprocess
