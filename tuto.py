@@ -137,7 +137,6 @@ def etape3(zomb_coord, Time=time.time()) :
         pygame.display.flip()
 
 
-
 if __name__ == '__main__' :
     # Etape n°1
     etape_1()
@@ -149,5 +148,6 @@ if __name__ == '__main__' :
     # Actualisation de l'arme
     arme = Arme()
     arme.previous_weapon_equiped = None
+    zomb = etape_2(time.time())
     # Etape n°3
     etape3(zomb)
