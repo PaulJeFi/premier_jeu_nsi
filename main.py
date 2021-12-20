@@ -817,12 +817,14 @@ class Arme() :
         self.case_image = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
         # Partie données de l'inventaire des armes
         self.all_weapons = all_weapons
-        self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
-        self.munitions = [0, 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
+        self.weapon_inventory = ["Cidnam", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
+        self.munitions = [float('inf'), 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
         self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipé
         self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipé (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
         # Variable permettant d'échanger une arme 1 seul fois
         self.can_switch = True
+        # Angle d'affichage
+        self.angle = 0
 
     def actualiser(self) :
         '''On actualise le sprite de l'arme en main'''
