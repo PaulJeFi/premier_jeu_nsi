@@ -495,7 +495,7 @@ class Boite(deplace) :
         self.x, self.y = pos_x, pos_y
         self.arme = arme
         self.munitions = munitions
-        self.life_time = 10000 # Temps de vie de la boite
+        self.life_time = 5000 # Temps de vie de la boite
 
     def display(self) :
         '''Affichage de la boite'''
@@ -531,7 +531,15 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
+        self.cooldown = 0 # Temps avant l'apparition d'une nouvelle boite
     
+    def make_boite(self) :
+        '''Création de boite tous les certains intervalles de temps'''
+        if self.cooldown <= 0 :
+            self.add()
+            self.cooldown = 1500
+        self.cooldown -= 1
+
     def display(self, marche) :
         '''Affichage de toutes les boites'''
         self.boite_in_range = []
@@ -561,10 +569,10 @@ class Construct_boite() :
             munitions = random.randint(all_weapons[arme][2][1][0], all_weapons[arme][2][1][1])
         # Génération aléatoire de la position x
         if pos_x == "Random" :
-            pos_x = random.randint(round(x*0.75), 2000) * random.choice([-1, 1]) + x/5
+            pos_x = random.randint(round(x*0.75), x) * random.choice([-1, 1]) + x/2
         # Génération aléatoire de la position y
         if pos_y == "Random" :
-            pos_y = random.randint(round(y*0.75), 2000) * random.choice([-1, 1]) + y/5
+            pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
@@ -1117,6 +1125,7 @@ def main(score=save.get()["best_score"]) :
             hero.change(pygame.mouse.get_pos())
             arme.change(pygame.mouse.get_pos())
             power_up.actualiser_effet()
+            boite.make_boite()
 
         if hero.pv <= 0 :
             game_over = True
