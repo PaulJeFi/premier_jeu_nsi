@@ -59,6 +59,7 @@ if __name__ == '__main__' :
 pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
+#importdes musiques du jeu
 mus_mort = pygame.mixer.Sound("./musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
@@ -139,18 +140,24 @@ class Marche_Arret() :
                 self.status = True
 
 class Sound() :
+    #gère tout le son du jeu 
+
     def __init__(self, *args) :
+        """initialise pygame mixer"""
         self.sons = [arg for arg in args]
         self.chanels = len(args)
         pygame.mixer.set_num_channels(self.chanels)
 
     def play(self, index_son) :
+        """pou r lancer la musique"""
         pygame.mixer.Channel(index_son).play(self.sons[index_son])
 
     def pause(self, index_son) :
+        """mettre en pause"""
         pygame.mixer.Channel(index_son).pause()
 
     def unpause(self, indexe_son) :
+        "relancer la musique apres la pause"
         pygame.mixer.Channel(indexe_son).unpause()
 
     def is_playing(self, indexe_son) :
@@ -160,6 +167,7 @@ class Temps() :
     '''Permet d'afficher la durée de la partie'''
 
     def __init__(self) :
+        """initialisation du temps au démarrage du jeu """
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
         self.all_pause_time = -start_to # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
@@ -223,6 +231,7 @@ class Score_actuel() :
         #'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
+        """permet d'afficher le score à l'utilisateur """
         text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
         #text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
@@ -234,6 +243,7 @@ class Score_actuel() :
         #        self.niveau += 1
 
     def niveau_zombie(self, temps) :
+        """change le niveau des zombies en fonction du temps """
         if self.niveau < len(self.paliers)-1 :
             while temps.time/60 >= self.paliers[self.niveau+1][2] :
                 self.niveau += 1
@@ -264,6 +274,7 @@ class Grass() :
 
     '''Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement'''
 
+    #permet le depalcemen des tuiles en fonction des déplacements 
     def droite(self, dt) :
         for Image in self.images :
             self.replacer(Image)
@@ -436,6 +447,7 @@ class Soin(deplace) :
         return False
 
 class Soin_construct() :
+    """initialise les objects de soins"""
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
         self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
@@ -467,6 +479,8 @@ class Soin_construct() :
                 if soin.prendre(hero) :
                     self.all_soins.pop(ID) # Si l'objet soin est utilisé on le suprime
 
+
+    #permet le déplacement des balises de soins par rapport aux déplacements du joueur
     def haut(self, dt) :
         for soin in self.all_soins :
             soin.haut(dt)
@@ -575,6 +589,7 @@ class Construct_boite() :
             pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
+    #déplacement des boites par rapports aux déplacements du joueur
     def haut(self, dt) :
         for boite in self.all_boites :
             boite.haut(dt)
@@ -610,6 +625,7 @@ class Munition(deplace) :
     def calculer(self, mousepos) :
         '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
         chemin.'''
+        """calcule l'angle pour la trajectoire des balles"""
         self.angle = 0
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
@@ -756,6 +772,7 @@ class Construct_munitions() :
                 self.balles.pop(self.balles.index(balle))
 
     def spread_reduction(self, marche_arret, stats) :
+        '''reduit les spread'''
         if marche_arret : # Réduction du spread seulement si le jeu est en marche
             # Réduction du spread si l'on a pas tiré juste avant
             if self.spread_reduction_cooldown >= self.arme[1][2][5] :
@@ -924,6 +941,7 @@ class Power_up_construct() :
                 self.power_activated[cle] -= 1
 
     def effet_display(self) :
+        '''Affichage de l'effet'''
         for cle in self.image_effet :
             if self.power_activated[cle] > 0 :
                 if self.power_activated[cle]*5 > self.duree_effet or not(self.power_activated[cle]%15 == 0 or (self.power_activated[cle]+1)%15 == 0 or (self.power_activated[cle]+2)%15 == 0 or (self.power_activated[cle]+3)%15 == 0) : # L'effet visuel clignote lorsqu'il va s'arrêter
