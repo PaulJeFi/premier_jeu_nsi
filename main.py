@@ -61,7 +61,7 @@ pygame.mixer.get_num_channels()
 
 mus_game_over = pygame.mixer.Sound("musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
-mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
+mus_jeu = pygame.mixer.Sound("./musiques/musique_bien.mp3")
 jouer_son = 0
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
@@ -955,6 +955,7 @@ class FPS() :
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
+    Time = time.time()
     sons = Sound(mus_jeu, mus_game_over)
     marche_arret = Marche_Arret()
     inventaire = Inventaire()
@@ -979,6 +980,10 @@ def main(score=save.get()["best_score"]) :
 
         if score.score > save.get()["best_score"] :
             save.set_score(score.score)
+
+        if time.time() - Time > 235:
+           sons.play(0)
+           Time = time.time()
         
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :

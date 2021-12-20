@@ -1,1 +1,1 @@
-table = {'games': 5, 'best_score': 2050}
+table = {'games': 14, 'best_score': 80250}
