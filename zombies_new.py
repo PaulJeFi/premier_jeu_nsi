@@ -238,13 +238,13 @@ class Construct_Zombies() :
             else :
                 zomb.cooldown -= 1
 
-    def display(self, dt, game_state, score, inventaire, temps, power_up, hero=None) :
+    def display(self, dt, game_state, score, inventaire, temps, power_up, boite, hero=None) :
         if game_state :
             self.respawn(score, temps)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
             ID += 1 # Chaque ID doit être différentes
-            self.mourir(zomb, ID, score, inventaire, power_up)
+            self.mourir(zomb, ID, score, inventaire, power_up, boite)
             the_x, the_y = zomb.x, zomb.y
             self.competance(zomb, game_state)
             zomb.display(dt, game_state, score)
@@ -266,13 +266,15 @@ class Construct_Zombies() :
             else :
                 self.projectiles.pop(ID)
 
-    def mourir(self, zomb, ID, score, inventaire, power_up) :
+    def mourir(self, zomb, ID, score, inventaire, power_up, boite) :
         '''Vérifie si le zombie est supposé mourir --> le suprime si c'est le cas'''
         if zomb.pv <= 0 :
             score.add(self.all_zombies[zomb.type][2])
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
             if random.randint(0, 60) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
                 power_up.add((zomb.x, zomb.y))
+            if random.randint(0, 15) == 0 :
+                boite.add()
             self.zombies.pop(ID)
             
     def respawn(self, score, temps):

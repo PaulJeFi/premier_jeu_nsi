@@ -495,10 +495,12 @@ class Boite(deplace) :
         self.x, self.y = pos_x, pos_y
         self.arme = arme
         self.munitions = munitions
+        self.life_time = 10000 # Temps de vie de la boite
 
     def display(self) :
         '''Affichage de la boite'''
-        screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
+        if self.life_time > 1000 or not((self.life_time)%10 == 0 or (self.life_time+1)%10 == 0 or (self.life_time+2)%10 == 0):
+            screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
         if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
             self.display_bulle()
             return self
@@ -529,15 +531,17 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
-        for i in range(30) :
-            self.add()
     
-    def display(self) :
+    def display(self, marche) :
         '''Affichage de toutes les boites'''
         self.boite_in_range = []
         # Affichage des boites
         for boite in self.all_boites :
             self.boite_in_range.append(boite.display())
+            if boite.life_time <= 0 :
+                self.all_boites.remove(boite)
+            elif marche :
+                boite.life_time -= 1
         # Supression de tous les "" dans self.boite_in_range
         while "" in self.boite_in_range :
             self.boite_in_range.remove("")
@@ -1138,7 +1142,7 @@ def main(score=save.get()["best_score"]) :
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert)) # Affichage des powers up
 
         # Intéraction avec les boites + affichage
-        the_boite = boite.display()
+        the_boite = boite.display((marche_arret.game_state() and not inventaire.ouvert))
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_e] and marche_arret.game_state() and not inventaire.ouvert and arme.can_switch and the_boite != "No box in range" :
             # Si on possède déjà l'arme, alors on combine les munitions
@@ -1166,7 +1170,7 @@ def main(score=save.get()["best_score"]) :
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"]) # Affichage des projectiles
         hero.display() # Affichage du héro
         power_up.effet_display() # Affichage de l'effet visuel des powers up
-        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, hero)
+        zombies.display(dt, (marche_arret.game_state() and not inventaire.ouvert), score, inventaire, zombie_temps, power_up, boite, hero)
         arme.display() # Affichage de l'arme
         fps.display(temps.time) # Affichage des FPS
         hero.GUI_display() # Affichage de la bare de vie
