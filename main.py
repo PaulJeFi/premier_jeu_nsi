@@ -1136,7 +1136,6 @@ def main(score=save.get()["best_score"]) :
             sons.pause(1)
             return score.score
         elif pressed[1] and time.time()-Time > 300:
-            pyglet.ressource.media('./musiques/gameOver.mp3').play()
             Time = time.time()
 
         '''Tous les affichages de sprites'''
