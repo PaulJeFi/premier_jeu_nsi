@@ -273,8 +273,7 @@ class Construct_Zombies() :
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
             if random.randint(0, 60) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
                 power_up.add((zomb.x, zomb.y))
-            if random.randint(0, 15) == 0 :
-                boite.add()
+            boite.add()
             self.zombies.pop(ID)
             
     def respawn(self, score, temps):
