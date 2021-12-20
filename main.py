@@ -140,7 +140,7 @@ class Marche_Arret() :
                 self.status = True
 
 class Sound() :
-    #gère tout le son du jeu 
+    """gère tout le son du jeu """
 
     def __init__(self, *args) :
         """initialise pygame mixer"""
@@ -149,15 +149,15 @@ class Sound() :
         pygame.mixer.set_num_channels(self.chanels)
 
     def play(self, index_son) :
-        """pou r lancer la musique"""
+        """pour lancer la musique"""
         pygame.mixer.Channel(index_son).play(self.sons[index_son])
 
     def pause(self, index_son) :
-        """mettre en pause"""
+        """mettre la musique en pause"""
         pygame.mixer.Channel(index_son).pause()
 
     def unpause(self, indexe_son) :
-        "relancer la musique apres la pause"
+        """relancer la musique apres la pause"""
         pygame.mixer.Channel(indexe_son).unpause()
 
     def is_playing(self, indexe_son) :
@@ -274,7 +274,7 @@ class Grass() :
 
     '''Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement'''
 
-    #permet le depalcemen des tuiles en fonction des déplacements 
+    #permet le deplacement des tuiles en fonction des déplacements 
     def droite(self, dt) :
         for Image in self.images :
             self.replacer(Image)
@@ -448,6 +448,7 @@ class Soin(deplace) :
 
 class Soin_construct() :
     """initialise les objects de soins"""
+
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
         self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
@@ -589,7 +590,8 @@ class Construct_boite() :
             pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
-    #déplacement des boites par rapports aux déplacements du joueur
+    # déplacement des boites par rapports aux déplacements du joueur
+
     def haut(self, dt) :
         for boite in self.all_boites :
             boite.haut(dt)
