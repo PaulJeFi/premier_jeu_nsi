@@ -9,7 +9,8 @@ all_weapons = {"No weapon" : [["./images/Nothing.png", "./images/Nothing.png", [
             "Supra-fusil" : [["./images/armes/Supra_fusil/Supra_fusil.png", "./images/armes/Projectiles/Laser.png", [20, 200], [30, 93]], [[20, 20], 25, [4, 0, 90, False, False, 100], [0.5, 2.5], 10], ["./images/armes/Supra_fusil/Supra_fusil_inventaire.png", [20, 120], 6]],
             "Pistolet" : [["./images/armes/Pistolet/pistolet.png", "./images/armes/Projectiles/Projectile_pistolet.png", [20, 250], [0, 105]], [[30, 40], 1, [10, 10, 25, True, False, 5], [1.2, 1.6], 40], ["./images/armes/Pistolet/pistolet_inventaire.png", [0, 0], 0]],
             "Blastmater" : [["./images/armes/Golden_blaster/golden_blaster.png", "./images/armes/Projectiles/Golden_wave.png", [40, 200], [30, 95]], [[20, 20], 7, [3, 0, 90, True, True, 100], [1.3, 1.3], 35], ["./images/armes/Golden_blaster/golden_blaster_inventaire.png", [40, 140], 4]],
-            "Arc" : [["./images/armes/Arc/arc.png", "./images/armes/Projectiles/Fleche.png", [50, 200], [0, 60]], [[20, 40], 4, [20, 20, 80, False, True, 20], [1, 2], 30], ["./images/armes/Arc/arc_inventaire.png", [30, 110], 10]]}
+            "Arc" : [["./images/armes/Arc/arc.png", "./images/armes/Projectiles/Fleche.png", [50, 200], [0, 60]], [[20, 40], 4, [20, 20, 80, False, True, 20], [1, 2], 30], ["./images/armes/Arc/arc_inventaire.png", [30, 110], 10]],
+            "Cidnam" : [["./images/armes/The_cidnam.png", "./images/armes/Projectiles/Gros_projectile.png", [30, 200], [0, 60]], [[20, 60], 8, [20, 10, 70, True, False, 200], [1, 2], 40], ["./images/armes/Arc/arc_inventaire.png", [0, 0], 0]]}
 
 weapon_spawn_chance = []
 for i in all_weapons :
