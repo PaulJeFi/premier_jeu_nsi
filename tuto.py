@@ -122,6 +122,30 @@ def etape3(zomb_coord, Time=time.time()) :
                 pygame.quit()
                 sys.exit()
 
+        pressed = pygame.key.get_pressed()
+        # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
+        if pressed[pygame.K_z] and pressed[pygame.K_q] or pressed[pygame.K_z] and pressed[pygame.K_d] or pressed[pygame.K_s] and pressed[pygame.K_q] or pressed[pygame.K_s] and pressed[pygame.K_d] or pressed[pygame.K_UP] and pressed[pygame.K_LEFT] or pressed[pygame.K_UP] and pressed[pygame.K_RIGHT] or pressed[pygame.K_DOWN] and pressed[pygame.K_LEFT] or pressed[pygame.K_DOWN] and pressed[pygame.K_RIGHT] :
+                speed_hero = ((2)**1/2)/2*dt
+        else :
+            speed_hero = dt
+
+
+        if pressed[pygame.K_UP] or pressed[pygame.K_z] :
+            grass.bas(speed_hero)
+            zombie.bas(speed_hero)
+
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
+            grass.haut(speed_hero)
+            zombie.haut(speed_hero)
+
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
+            grass.gauche(speed_hero)
+            zombie.gauche(speed_hero)
+
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
+            grass.droite(speed_hero)
+            zombie.droite(speed_hero)
+
         arme.change(((1+x/2, 0)))
         grass.display()
         zombie.display(dt, True, 0)
