@@ -1,0 +1,6 @@
+Les choses qu'il faut faire :
+
+- finir le tuto
+- rajouter le nuage
+- utiliser le fichier de sauvegarde
+- 
