@@ -529,14 +529,8 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
-        self.add("Random_weapon", "Base_ammo", 500, 100)
-        self.add("Random_weapon", "Base_ammo", 100, 500)
-        self.add("Random_weapon", "Base_ammo", 100, 100)
-        self.add("Random_weapon", "Base_ammo", 900, 100)
-        self.add("Random_weapon", "Base_ammo", 500, 900)
-        self.add("Random_weapon", "Base_ammo", 900, 900)
-        self.add("Random_weapon", "Base_ammo", 100, 900)
-        self.add("Random_weapon", "Base_ammo", 900, 500)
+        for i in range(30) :
+            self.add()
     
     def display(self) :
         '''Affichage de toutes les boites'''
@@ -553,7 +547,7 @@ class Construct_boite() :
         else :
             return "No box in range"
     
-    def add(self, arme="", munitions=0, pos_x=0, pos_y=0) :
+    def add(self, arme="Random_weapon", munitions="Base_ammo", pos_x="Random", pos_y="Random") :
         '''Création d'une boite (arme, munitions, position x, position y)'''
         # Choix aléatoire de l'arme
         if arme == "Random_weapon" :
@@ -561,6 +555,12 @@ class Construct_boite() :
         # Choix, en fonction de l'arme, du nombre de munitions
         if munitions == "Base_ammo" :
             munitions = random.randint(all_weapons[arme][2][1][0], all_weapons[arme][2][1][1])
+        # Génération aléatoire de la position x
+        if pos_x == "Random" :
+            pos_x = random.randint(round(x*0.75), 2000) * random.choice([-1, 1]) + x/5
+        # Génération aléatoire de la position y
+        if pos_y == "Random" :
+            pos_y = random.randint(round(y*0.75), 2000) * random.choice([-1, 1]) + y/5
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
