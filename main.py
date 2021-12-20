@@ -20,7 +20,7 @@ from zombies_new import Construct_Zombies
 import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
-from liste_armes import all_weapons, weapon_spawn_chance
+from liste_armes import all_weapons
 
 # TKT
 import subprocess
@@ -59,7 +59,7 @@ if __name__ == '__main__' :
 pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
-mus_game_over = pygame.mixer.Sound("musiques/gameOver.mp3")
+mus_mort = pygame.mixer.Sound("musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/musique_bien.mp3")
 jouer_son = 0
@@ -438,8 +438,8 @@ class Soin(deplace) :
 class Soin_construct() :
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
-        self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
-        self.max_cooldown = 200 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
+        self.max_soins = 20 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
+        self.max_cooldown = 600 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
         self.cooldown = self.max_cooldown
     
     def spawn_soin(self) :
@@ -529,8 +529,19 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
+<<<<<<< Updated upstream
         for i in range(30) :
             self.add()
+=======
+        self.add("Pistolet mitrailleur", 300, 500, 100)
+        self.add("Fusil de chasse", 200, 100, 500)
+        self.add("Arc", 60, 100, 100)
+        self.add("Blastmater", float('inf'), 900, 100)
+        self.add("Blastmater", 30, 500, 900)
+        self.add("Blastmater", 30, 900, 900)
+        self.add("Blastmater", 30, 100, 900)
+        self.add("Supra-fusil", 30, 900, 500)
+>>>>>>> Stashed changes
     
     def display(self) :
         '''Affichage de toutes les boites'''
@@ -549,6 +560,7 @@ class Construct_boite() :
     
     def add(self, arme="Random_weapon", munitions="Base_ammo", pos_x="Random", pos_y="Random") :
         '''Création d'une boite (arme, munitions, position x, position y)'''
+<<<<<<< Updated upstream
         # Choix aléatoire de l'arme
         if arme == "Random_weapon" :
             arme = random.choice(weapon_spawn_chance)
@@ -561,6 +573,8 @@ class Construct_boite() :
         # Génération aléatoire de la position y
         if pos_y == "Random" :
             pos_y = random.randint(round(y*0.75), 2000) * random.choice([-1, 1]) + y/5
+=======
+>>>>>>> Stashed changes
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
@@ -962,7 +976,7 @@ def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
     save.add_game()
     Time = time.time()
-    sons = Sound(mus_jeu, mus_game_over)
+    sons = Sound(mus_jeu, mus_mort, mus_victoire)
     marche_arret = Marche_Arret()
     inventaire = Inventaire()
     grass = Grass()
@@ -1122,6 +1136,9 @@ def main(score=save.get()["best_score"]) :
         if pressed[0][pygame.K_n] and pressed[1] :
             sons.pause(1)
             return score.score
+        elif pressed[1] and time.time()-Time > 300:
+            sons.play(1)
+            Time = time.time()
 
         '''Tous les affichages de sprites'''
         grass.display() # Affichage de l'herbe
@@ -1205,6 +1222,7 @@ def main(score=save.get()["best_score"]) :
         curseur(screen)
 
         if game_over :
+            Time = 0
             sons.pause(0)
             sons.play(1)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
