@@ -55,11 +55,10 @@ clock = pygame.time.Clock()
 if __name__ == '__main__' :
     intro.main() # Lancement de l'intro
 
-# initialisation de mixer 
+#import et init des musiques d'ambiences 
 pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
-# import des musiques d'ambiences
 mus_mort = pygame.mixer.Sound("./musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
@@ -68,14 +67,14 @@ jouer_son = 0
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
 
-# Police d'écriture ci-dessous      
+# Police d'écriture ci-dessous
 # doc :
 #pygame.font.get_default_font()
 #pygame.font.get_fonts()
 '''  Les polices actuelles sont "./FreeSansBold.ttf" et "./courriernewbold.ttf".  '''
 
 def text(screen, font, size, string, color, pos) :
-    '''Permet d'afficher un texte de façon simplifiée dans le jeu'''
+    '''Permet d'afficher un texte de façon simplifiée'''
     textsurface = pygame.font.Font(font, size).render(string, False, color)
     screen.blit(textsurface, pos)
 
@@ -84,7 +83,7 @@ class Marche_Arret() :
     '''Classe du bouton pause/marche'''
 
     def __init__(self) :
-        '''Appel et initialisation de la classe'''
+        '''Appel initial de la classe'''
         self.status = True # <-- True pour MARCHE ; False pour PAUSE
         self.image = pygame.image.load('./images/interface/Bouton_pause_stop.png')
         self.size = 50
@@ -140,22 +139,17 @@ class Marche_Arret() :
                 self.status = True
 
 class Sound() :
-    # permet de faire fonctionner toute la musique
-
     def __init__(self, *args) :
         self.sons = [arg for arg in args]
         self.chanels = len(args)
         pygame.mixer.set_num_channels(self.chanels)
 
-    # commencer a jouer la musique 
     def play(self, index_son) :
         pygame.mixer.Channel(index_son).play(self.sons[index_son])
 
-    # mettre la musique sur pause
     def pause(self, index_son) :
         pygame.mixer.Channel(index_son).pause()
 
-    # continuer a jouer la musique 
     def unpause(self, indexe_son) :
         pygame.mixer.Channel(indexe_son).unpause()
 
@@ -165,15 +159,14 @@ class Sound() :
 class Temps() :
     '''Permet d'afficher la durée de la partie'''
 
-    # initialisation du temps 
     def __init__(self) :
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
         self.all_pause_time = -start_to # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
         self.pause = False # Permet de n'atribuer certaines varibles qu'une seul fois (ne pas toucher)
     
-    # affiche le compteur de temps 
     def display(self, marche, score) :
+        '''Affichage du temps en "heures : minutes : secondes" '''
         self.pause_time(marche)
         if marche :
             self.actualiser()
@@ -181,6 +174,7 @@ class Temps() :
         self.affichage()
     
     def pause_time(self, marche) :
+        '''Permet de ne pas faire avancer le temps'''
         if marche and self.pause == True :
             self.all_pause_time += time.time() - self.time_stop
             self.pause = False
@@ -188,13 +182,12 @@ class Temps() :
             self.time_stop = time.time()
             self.pause = True
 
-    # actualisation du temps 
     def actualiser(self) :
+        '''On actualise le temps'''
         self.time = time.time() - self.starting_time - self.all_pause_time # Permet de connaitre le temps passé sur une partie de notre jeu
         heure = math.floor(self.time//3600)
         minute = math.floor((self.time//60)%60)
         seconde = math.floor(self.time%60)
-
         # On affiche seulement le nombres d'heurs passés si on joue plus d'une heure
         if heure == 0 :
             self.h_min_s = [minute, seconde]
@@ -230,7 +223,6 @@ class Score_actuel() :
         #'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
-        """afficher le score sur l'écran"""
         text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
         #text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
@@ -242,7 +234,6 @@ class Score_actuel() :
         #        self.niveau += 1
 
     def niveau_zombie(self, temps) :
-        """met a jour le niveau des zombies en fonction du temps"""
         if self.niveau < len(self.paliers)-1 :
             while temps.time/60 >= self.paliers[self.niveau+1][2] :
                 self.niveau += 1
@@ -274,25 +265,21 @@ class Grass() :
     '''Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement'''
 
     def droite(self, dt) :
-        """deplacement de la tuile vers la droite """
         for Image in self.images :
             self.replacer(Image)
             Image[0] -= SPEED*dt
     
     def haut(self, dt) :
-        """deplacement de la tuile vers le haut"""
         for Image in self.images :
             self.replacer(Image)
             Image[1] -= SPEED*dt
 
     def gauche(self, dt) :
-        """deplacement de la tuile vers la gauche"""
         for Image in self.images :
             self.replacer(Image)
             Image[0] += SPEED*dt
     
     def bas(self, dt) :
-        """deplacement de la tuile vers le bas"""
         for Image in self.images :
             self.replacer(Image)
             Image[1] += SPEED*dt
@@ -418,7 +405,6 @@ class Soin(deplace) :
         self.place()
 
     def place(self) :
-        """determiner une position alléatoire hors de l'écran"""
         position = random.randint(1,5)
         if position == 1 :
             self.x, self.y = -2*x, random.randint(-2*y, 3*y)
@@ -430,7 +416,7 @@ class Soin(deplace) :
             self.x, self.y = random.randint(-2*x, 3*x), 3*y
 
     def display(self) :
-        #affiche la borne de soin
+        '''Affichage de soi-même'''
         screen.blit(self.image, (self.x, self.y))
 
     '''def get_rect(self) :
@@ -439,7 +425,6 @@ class Soin(deplace) :
 
     def prendre(self, hero) :
         '''Interraction avec la trousse de premiers secours'''
-        """zone de detection de la balise de soin"""
         if self.x > x/2 - hero.size//2 and self.x < x/2 + hero.size//2 and self.y > y/2 - hero.size//2 and self.y < y/2 + hero.size//2 and hero.pv != hero.max_pv :
             valeur = random.randrange(200, 500)*math.sqrt(hero.max_pv)/100
             hero.pv_difference = -valeur
@@ -451,7 +436,6 @@ class Soin(deplace) :
         return False
 
 class Soin_construct() :
-
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
         self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
@@ -483,7 +467,6 @@ class Soin_construct() :
                 if soin.prendre(hero) :
                     self.all_soins.pop(ID) # Si l'objet soin est utilisé on le suprime
 
-    # déplacement de la trousse de soin par rapport au deplacments du joueur
     def haut(self, dt) :
         for soin in self.all_soins :
             soin.haut(dt)
@@ -515,8 +498,7 @@ class Boite(deplace) :
         self.life_time = 5000 # Temps de vie de la boite
 
     def display(self) :
-        
-        """affichage de la boite """
+        '''Affichage de la boite'''
         if self.life_time > 1000 or not((self.life_time)%10 == 0 or (self.life_time+1)%10 == 0 or (self.life_time+2)%10 == 0):
             screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
         if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
@@ -593,7 +575,6 @@ class Construct_boite() :
             pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
-    """déplacements des boites par rapport au joueur"""
     def haut(self, dt) :
         for boite in self.all_boites :
             boite.haut(dt)
@@ -611,8 +592,7 @@ class Construct_boite() :
             boite.droite(dt)
 
 class Munition(deplace) :
-    
-    #initialisation des munitions
+    '''Les munitions.'''
     def __init__(self, spread=(0, 0), arme=all_weapons["Pistolet mitrailleur"]) :
         self.type_stats = arme # Stats de l'arme utilisé
         self.domages = self.type_stats[1][4]
@@ -630,7 +610,6 @@ class Munition(deplace) :
     def calculer(self, mousepos) :
         '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
         chemin.'''
-        """calcule la trajectoire de la balle"""
         self.angle = 0
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
@@ -662,7 +641,6 @@ class Munition(deplace) :
         self.rect = self.image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
     
     def move(self, dt, marche_arret) :
-        ''''''
         if marche_arret and self.life_time > 0 :
             self.x += self.vect[0]*self.speed*dt
             self.y += self.vect[1]*self.speed*dt
@@ -994,7 +972,6 @@ class FPS() :
 
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
-    """fait fonctionner tout le jeu"""
     save.add_game()
     Time = time.time()
     sons = Sound(mus_jeu, mus_mort, mus_victoire)
