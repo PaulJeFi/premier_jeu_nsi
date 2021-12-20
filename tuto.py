@@ -103,8 +103,51 @@ def etape_2(Time=time.time()) :
             text(screen, './courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', RED, (x/2-200, 200))
         pygame.display.flip()
 
+def etape3(zomb_coord, Time=time.time()) :
+    grass = Grass()
+    hero = Hero()
+    arme = Arme()
+    arme.actualiser()
+    zombie = zombies_new.Zombies()
+    zombie.x = zomb_coord[0]
+    zombie.y = zomb_coord[1]
+    zombie.SPEED = 0.05
+    while True : # False = le jeu s'arrête
+        dt = clock.tick(144) # IMPORTANT : FPS du jeu
+        screen.fill(WHITE)
+        if arme.weapon_equiped != arme.previous_weapon_equiped :
+                arme.previous_weapon_equiped = arme.weapon_equiped
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
+
+        arme.change(((1+x/2, 0)))
+        grass.display()
+        zombie.display(dt, True, 0)
+        hero.display()
+        arme.display()
+        hero.GUI_display()
+
+        if time.time()-Time >= 12 :
+            return (zombie.x, zombie.y)
+        text(screen, './courriernewbold.ttf', 30, 'Comme vous le voyez, il a l\'air peu sympatique.', RED, (x/2-450, 100))
+        text(screen, './courriernewbold.ttf', 30, 'Attention, il se dirige vers vous.', RED, (x/2-300, 150))
+        text(screen, './courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', RED, (x/2-200, 200))
+        pygame.display.flip()
+
+
+
 if __name__ == '__main__' :
+    # Etape n°1
     etape_1()
+    # Actualisation de l'arme
     arme = Arme()
     arme.previous_weapon_equiped = None
+    # Etape n°2
     zomb = etape_2(time.time())
+    # Actualisation de l'arme
+    arme = Arme()
+    arme.previous_weapon_equiped = None
+    # Etape n°3
+    etape3(zomb)
