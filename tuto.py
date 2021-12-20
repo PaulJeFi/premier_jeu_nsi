@@ -129,7 +129,7 @@ def etape3(zomb_coord, Time=time.time()) :
         arme.display()
         hero.GUI_display()
 
-        text(screen, './courriernewbold.ttf', 30, '         Utilisez ZQSD pour vous déplacer.', RED, (x/2-450, 100))
+        text(screen, './courriernewbold.ttf', 30, 'Utilisez ZQSD pour vous déplacer.', RED, (x/2-450, 100))
         text(screen, './courriernewbold.ttf', 30, 'Attention, le zombie vous attaque.', RED, (x/2-300, 150))
         pygame.display.flip()
 
