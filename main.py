@@ -995,6 +995,8 @@ def main(score=save.get()["best_score"]) :
             if arme.weapon_equiped != arme.previous_weapon_equiped :
                 arme.previous_weapon_equiped = arme.weapon_equiped
                 balles.weapon_stats_update(arme.actualiser())
+                balles.spread = (balles.arme[1][2][2]-balles.arme[1][2][1])*(0.99**inventaire.stats["Agi"])
+                balles.spread_reduction_cooldown = 0
 
             '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
