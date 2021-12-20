@@ -21,6 +21,7 @@ import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
 from liste_armes import all_weapons, weapon_spawn_chance
+import os
 
 # TKT
 import subprocess
@@ -1127,7 +1128,7 @@ def main(score=save.get()["best_score"]) :
             sons.pause(1)
             return score.score
         elif pressed[1] and time.time()-Time > 300:
-            sons.play(1)
+            os.system("start C:\\Users\\anato\\Documents\\GitHub\\premier_jeu_nsi\\musiques\\gameOver.mp3")
             Time = time.time()
 
         '''Tous les affichages de sprites'''
@@ -1214,7 +1215,6 @@ def main(score=save.get()["best_score"]) :
         if game_over :
             Time = 0
             sons.pause(0)
-            sons.play(1)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
             text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
 
