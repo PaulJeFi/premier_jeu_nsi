@@ -21,7 +21,7 @@ import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
 from liste_armes import all_weapons, weapon_spawn_chance
-import os
+import pyglet
 
 # TKT
 import subprocess
@@ -60,7 +60,7 @@ if __name__ == '__main__' :
 pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
-mus_mort = pygame.mixer.Sound("musiques/gameOver.mp3")
+mus_mort = pygame.mixer.Sound("./musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
 jouer_son = 0
@@ -1137,7 +1137,7 @@ def main(score=save.get()["best_score"]) :
             sons.pause(1)
             return score.score
         elif pressed[1] and time.time()-Time > 300:
-            os.system("start C:\\Users\\anato\\Documents\\GitHub\\premier_jeu_nsi\\musiques\\gameOver.mp3")
+            pyglet.ressource.media('./musiques/gameOver.mp3').play()
             Time = time.time()
 
         '''Tous les affichages de sprites'''
