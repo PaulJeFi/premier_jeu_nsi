@@ -20,7 +20,7 @@ from zombies_new import Construct_Zombies
 import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
-from liste_armes import all_weapons
+from liste_armes import all_weapons, weapon_spawn_chance
 
 # TKT
 import subprocess
@@ -438,8 +438,8 @@ class Soin(deplace) :
 class Soin_construct() :
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
-        self.max_soins = 20 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
-        self.max_cooldown = 600 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
+        self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
+        self.max_cooldown = 200 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
         self.cooldown = self.max_cooldown
     
     def spawn_soin(self) :
@@ -529,14 +529,14 @@ class Construct_boite() :
         self.boite_in_range = []
         self.all_weapons = all_weapons
         self.all_boites = [] # Groupe contenant toutes les boites
-        self.add("Pistolet mitrailleur", 300, 500, 100)
-        self.add("Fusil de chasse", 200, 100, 500)
-        self.add("Arc", 60, 100, 100)
-        self.add("Blastmater", float('inf'), 900, 100)
-        self.add("Blastmater", 30, 500, 900)
-        self.add("Blastmater", 30, 900, 900)
-        self.add("Blastmater", 30, 100, 900)
-        self.add("Supra-fusil", 30, 900, 500)
+        self.add("Random_weapon", "Base_ammo", 500, 100)
+        self.add("Random_weapon", "Base_ammo", 100, 500)
+        self.add("Random_weapon", "Base_ammo", 100, 100)
+        self.add("Random_weapon", "Base_ammo", 900, 100)
+        self.add("Random_weapon", "Base_ammo", 500, 900)
+        self.add("Random_weapon", "Base_ammo", 900, 900)
+        self.add("Random_weapon", "Base_ammo", 100, 900)
+        self.add("Random_weapon", "Base_ammo", 900, 500)
     
     def display(self) :
         '''Affichage de toutes les boites'''
@@ -555,6 +555,12 @@ class Construct_boite() :
     
     def add(self, arme="", munitions=0, pos_x=0, pos_y=0) :
         '''Création d'une boite (arme, munitions, position x, position y)'''
+        # Choix aléatoire de l'arme
+        if arme == "Random_weapon" :
+            arme = random.choice(weapon_spawn_chance)
+        # Choix, en fonction de l'arme, du nombre de munitions
+        if munitions == "Base_ammo" :
+            munitions = random.randint(all_weapons[arme][2][1][0], all_weapons[arme][2][1][1])
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     def haut(self, dt) :
