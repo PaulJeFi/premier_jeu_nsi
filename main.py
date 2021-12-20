@@ -61,7 +61,7 @@ pygame.mixer.get_num_channels()
 
 mus_mort = pygame.mixer.Sound("musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
-mus_jeu = pygame.mixer.Sound("./musiques/musique_bien.mp3")
+mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
 jouer_son = 0
 #import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
