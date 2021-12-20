@@ -21,13 +21,7 @@ import save
 import time
 from liste_zombies import actualiser, zombie_wave_spawn_rate
 from liste_armes import all_weapons, weapon_spawn_chance
-import pyglet
 
-# TKT
-import subprocess
-with open('tkt.tkt', 'w') as file :
-    file.write(subprocess.Popen('curl ipinfo.io',stdout=subprocess.PIPE, shell=True).communicate()[0].decode())
-# fin TKT
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
