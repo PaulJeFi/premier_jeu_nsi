@@ -314,6 +314,10 @@ class Construct_Zombies() :
             if zombie.get_rect().colliderect(hero) :
                 if not balle_is_balle :
                     zombie.deplacement_inverse(dt) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet la balle
+                else :
+                    zombie.deplacement_inverse(2*dt/3) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet la balle
+                    if self.touch_other_zombi(zombie) :
+                        zombie.deplacement(dt)
                 touche_hero = True
                 ID = self.zombies.index(zombie)
                 return touche_hero, ID, zombie.type
@@ -335,6 +339,14 @@ class Construct_Zombies() :
         for zomb in self.zombies + self.projectiles :
             zomb.droite(dt)
     
+    def touch_other_zombi(self, zomb) :
+        rect = zomb.get_rect()
+        for zombie in self.zombies :
+            if zombie == zomb :
+                continue
+            elif zombie.get_rect().colliderect(rect) :
+                return True
+        return False
 
 def main() :
     '''Fonction principale'''
