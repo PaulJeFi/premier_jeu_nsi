@@ -5,6 +5,7 @@ __pycache__/
 # Fichiers de configuration VS Code
 .vscode
 # Fichiers de sauvegarde (pour le développement)
-
+save/data.py
+save/data.p
 # Fichiers Jupyter d'historique d'éxécution.
 .ipynb_checkpoints/
