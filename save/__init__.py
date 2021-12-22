@@ -30,6 +30,9 @@ def set_score(score) :
     write(table["games"], score)
     compiler()
 
-if __name__ == '__main__' :
+def main() :
     reset()
     compiler()
+
+if __name__ == '__main__' :
+    main()
