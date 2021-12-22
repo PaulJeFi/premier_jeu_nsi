@@ -906,9 +906,11 @@ class Power_up_construct() :
         self.duree_effet = 1000 # <= Durée durant laquelle le power up sera actif (durée cumulable) lorsque le héro le récupérera
         self.duree_vie_power_up = 2000 # <= Durée de vie de l'objet power up (après il est détruit si il n'est pas récupéré)
 
-    def add(self, position) :
+    def add(self, position, type="Random") :
         '''Créer un power up aléatoire à une position déterminé'''
-        self.all_power_up.append(Power_up(random.choice(list(self.power_activated.keys())), position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
+        if type == "Random" or type not in self.power_activated.keys() :
+            type = random.choice(list(self.power_activated.keys()))
+        self.all_power_up.append(Power_up(type, position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
 
     def display(self, hero, marche) :
         '''Affiche à l'écran tous les powers up'''
