@@ -817,8 +817,8 @@ class Arme() :
         self.case_image = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
         # Partie données de l'inventaire des armes
         self.all_weapons = all_weapons
-        self.weapon_inventory = ["Cidnam", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
-        self.munitions = [float('inf'), 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
+        self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
+        self.munitions = [0, 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
         self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipé
         self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipé (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
         # Variable permettant d'échanger une arme 1 seul fois
@@ -895,8 +895,8 @@ class Power_up_construct() :
 
     def __init__(self) :
         self.all_power_up = []
-        self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png"} # Tous les powers up et leur image
-        self.image_effet = {"vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
+        self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png", "gatling" : "./images/power_up/gatling.png"} # Tous les powers up et leur image
+        self.image_effet = {"gatling" : ["./images/Nothing.png", 0], "vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
         self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stoque les effets et si ils sont actifs (en frame restantes)
         self.size = 55 # Taille des powers up
         for cle in self.image : # Chargement et redimensionnement des images
@@ -1038,6 +1038,22 @@ def main(score=save.get()["best_score"]) :
 
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
+
+            # Effet du power up "gatling"
+            # Le "Cidnam" est le nom de la gatling
+            if power_up.power_activated["gatling"] > 0 and not arme.weapon_inventory[len(arme.weapon_inventory) - 1] == "Cidnam" :
+                arme.munitions.append(power_up.power_activated["gatling"])
+                arme.weapon_inventory.append("Cidnam")
+                arme.weapon_equiped = len(arme.weapon_inventory) - 1
+            # On affiche le temps restant du power up
+            elif power_up.power_activated["gatling"] > 0 and arme.weapon_inventory[len(arme.weapon_inventory) - 1] == "Cidnam" :
+                arme.munitions[len(arme.munitions) - 1] = round(power_up.power_activated["gatling"]/10)
+            # On désactive le power up "gatling"
+            elif power_up.power_activated["gatling"] <= 0 and arme.weapon_inventory[len(arme.weapon_inventory) - 1] == "Cidnam" :
+                if arme.weapon_inventory[arme.weapon_equiped] == "Cidnam" :
+                    arme.weapon_equiped = len(arme.weapon_inventory) - 2
+                arme.weapon_inventory.pop()
+                arme.munitions.pop()
 
             # Actualisation de l'arme (image et statistiques)
             if arme.weapon_equiped != arme.previous_weapon_equiped :
@@ -1183,7 +1199,7 @@ def main(score=save.get()["best_score"]) :
                 arme.munitions[arme.weapon_inventory.index(the_boite.arme)], the_boite.munitions = arme.munitions[arme.weapon_inventory.index(the_boite.arme)] + the_boite.munitions, 0
                 arme.can_switch = False
             # On ne peut pas déséquiper le pistolet
-            elif arme.weapon_equiped != 2 :
+            elif arme.weapon_inventory[arme.weapon_equiped] != "Pistolet" and arme.weapon_inventory[arme.weapon_equiped] != "Cidnam" :
                 arme.weapon_inventory[arme.weapon_equiped], the_boite.arme = the_boite.arme, arme.weapon_inventory[arme.weapon_equiped]
                 arme.munitions[arme.weapon_equiped], the_boite.munitions = the_boite.munitions, arme.munitions[arme.weapon_equiped]
                 arme.can_switch = False
@@ -1219,10 +1235,16 @@ def main(score=save.get()["best_score"]) :
         # Touches pour équiper les différentes armes
         if pressed[pygame.K_1] :
             arme.weapon_equiped = 0
-        elif pressed[pygame.K_2] :
+        elif pressed[pygame.K_2] and len(arme.weapon_inventory) > 1 :
             arme.weapon_equiped = 1
-        elif pressed[pygame.K_3] :
+        elif pressed[pygame.K_3] and len(arme.weapon_inventory) > 2 :
             arme.weapon_equiped = 2
+        elif pressed[pygame.K_4] and len(arme.weapon_inventory) > 3 :
+            arme.weapon_equiped = 3
+        elif pressed[pygame.K_5] and len(arme.weapon_inventory) > 4 :
+            arme.weapon_equiped = 4
+        elif pressed[pygame.K_6] and len(arme.weapon_inventory) > 5 :
+            arme.weapon_equiped = 5
         
         # Touches pour l'inventaire
         if pressed[pygame.K_a] :

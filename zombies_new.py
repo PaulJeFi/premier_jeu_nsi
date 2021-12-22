@@ -278,7 +278,7 @@ class Construct_Zombies() :
         if zomb.pv <= 0 :
             score.add(self.all_zombies[zomb.type][2])
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
-            if random.randint(0, 60) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
+            if random.randint(0, 25) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
                 power_up.add((zomb.x, zomb.y))
             self.zombies.pop(ID)
             
