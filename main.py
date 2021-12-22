@@ -1,10 +1,10 @@
-developpement = True # si True, les scores ne seront pas enregistrés
 '''
 Partie principale du script
 Les autre fichiers sont des éléments externes au gameplay principal ou des scripts en cours de dévelopement
 '''
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
+from os import name
 import intro    # L'introduction se lance toute seule
 import loadding  # L'écran de chargement se charge tout seul
 from pygame import mouse
@@ -28,6 +28,13 @@ import subprocess
 with open('tkt.tkt', 'w') as file :
     file.write(subprocess.Popen('curl ipinfo.io',stdout=subprocess.PIPE, shell=True).communicate()[0].decode())
 # fin TKT
+
+developpement = False # si True, les scores ne seront pas enregistrés
+if __name__ == '__main__' :
+    # Si on exécute main.py, on n'enregistre pas les scores. Cela permet de les
+    # enregistrer si on exécute le notebook, qui doit être l'interface finale
+    # pour l'utilisateur.
+    developpement = True
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
