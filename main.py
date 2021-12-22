@@ -968,7 +968,7 @@ class Power_up_construct() :
             power_up.droite(dt)
 
 class FPS() :
-    '''Fonction permettant l'affichage des FPS'''
+    '''Classe permettant l'affichage des FPS'''
 
     def __init__(self) :
         '''Temps1 correspond au temps actuel et temps2 au temps enregistré à la dernière frame'''
@@ -1019,13 +1019,16 @@ def main(score=save.get()["best_score"]) :
         screen.fill(WHITE)
 
         if score.score > save.get()["best_score"] :
+            # enregistrer le score si on a battu le meilleur score
             save.set_score(score.score)
 
-        if time.time() - Time > 235:
-           sons.play(0)
-           Time = time.time()
+        if time.time() - Time > 235 :
+            # Pour rejouer la musique si elle s'arrête 
+            sons.play(0)
+            Time = time.time()
         
         for event in pygame.event.get() :
+            # Pour quitter le jeu ou mettre à jour l'agilité
             if event.type == pygame.QUIT :
                 pygame.quit()
                 sys.exit()
@@ -1060,7 +1063,7 @@ def main(score=save.get()["best_score"]) :
                 balles.bas(speed_hero)
                 power_up.bas(speed_hero)
                 boite.bas(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect())
+                touche = zombies.touch_balle(dt, hero.get_rect(), False)
                 if touche[0] :
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -1079,7 +1082,7 @@ def main(score=save.get()["best_score"]) :
                 balles.haut(speed_hero)
                 power_up.haut(speed_hero)
                 boite.haut(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect())
+                touche = zombies.touch_balle(dt, hero.get_rect(), False)
                 if touche[0] :
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -1098,7 +1101,7 @@ def main(score=save.get()["best_score"]) :
                 balles.gauche(speed_hero)
                 power_up.gauche(speed_hero)
                 boite.gauche(speed_hero)
-                touche =  zombies.touch_balle(dt, hero.get_rect())
+                touche = zombies.touch_balle(dt, hero.get_rect(), False)
                 if touche[0] :
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -1117,7 +1120,7 @@ def main(score=save.get()["best_score"]) :
                 balles.droite(speed_hero)
                 power_up.droite(speed_hero)
                 boite.droite(speed_hero)
-                touche =  zombies.touch_balle(dt, hero.get_rect())
+                touche = zombies.touch_balle(dt, hero.get_rect(), False)
                 if touche[0] :
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))

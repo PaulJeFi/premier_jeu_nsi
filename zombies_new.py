@@ -165,6 +165,14 @@ class Zombies(deplace) :
         text(screen, "./FreeSansBold.ttf", 10, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
         # Test de la barre de vie en foction des pv restants
 
+    def touch_hero(self, dt, hero: pygame.Rect) -> bool :
+        '''Si le zombie touche le héro.'''
+        touche_hero = False
+        if self.get_rect().colliderect(hero) :
+            self.deplacement_inverse(dt)
+            touche_hero = True
+        return touche_hero
+
 class Projectiles_zombie(deplace) :
 
     def __init__(self, type="ZD", angle=0, vecteur=[1, 0], x=0, y=0) :
@@ -297,14 +305,15 @@ class Construct_Zombies() :
             hero.pv -= projectile.attaque*(0.997**(stat + 150*power_up.effet_actif("armure"))) # La boulle de feu ignore en partie l'armure (0.998**stat au lieu de 0.99**stat)
             self.projectiles.pop(ID)
 
-    def touch_balle(self, dt, hero: pygame.Rect) -> bool :
+    def touch_balle(self, dt, hero: pygame.Rect, balle_is_balle=True) -> bool :
         '''Si les zombies touchent une balle.'''
         touche_hero = False
         zombie = None
         ID = None
         for zombie in self.zombies :
             if zombie.get_rect().colliderect(hero) :
-                zombie.deplacement_inverse(dt)
+                if not balle_is_balle :
+                    zombie.deplacement_inverse(dt) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet la balle
                 touche_hero = True
                 ID = self.zombies.index(zombie)
                 return touche_hero, ID, zombie.type

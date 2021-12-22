@@ -146,6 +146,10 @@ def etape3(zomb_coord, Time=time.time()) :
             grass.droite(speed_hero)
             zombie.droite(speed_hero)
 
+        touche = zombie.touch_hero(dt, hero.get_rect())
+        if touche and hero.pv > 50 :
+            hero.pv -= 2
+
         grass.display()
         zombie.display(dt, True, 0)
         hero.change(pygame.mouse.get_pos())
@@ -159,12 +163,13 @@ def etape3(zomb_coord, Time=time.time()) :
         functions.curseur(screen)
         pygame.display.flip()
         if time.time()-Time > 7 :
-            return zombie
+            return zombie, hero.pv
 
-def etape4(zombie) :
+def etape4(zombie, pv) :
     Time = time.time()
     grass = Grass()
     hero = Hero()
+    hero.pv = pv
     arme = Arme()
     arme.actualiser()
     zombie.SPEED = 0.05
@@ -202,6 +207,10 @@ def etape4(zombie) :
             grass.droite(speed_hero)
             zombie.droite(speed_hero)
 
+        touche = zombie.touch_hero(dt, hero.get_rect())
+        if touche and hero.pv > 50 :
+            hero.pv -= 2
+
         grass.display()
         zombie.display(dt, True, 0)
         hero.change(pygame.mouse.get_pos())
@@ -233,9 +242,9 @@ def main() :
     arme = Arme()
     arme.previous_weapon_equiped = None
     # Etape n°3
-    zomb = etape3(zomb, time.time())
+    zomb, pv = etape3(zomb, time.time())
     # Etape n°4
-    etape4(zomb)
+    etape4(zomb, pv)
 
 if __name__ == '__main__' :
         main()
