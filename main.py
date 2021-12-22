@@ -62,16 +62,16 @@ clock = pygame.time.Clock()
 if __name__ == '__main__' :
     intro.main() # Lancement de l'intro
 
-#import et init des musiques d'ambiences 
+# import et init des musiques d'ambiences 
 pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
-#importdes musiques du jeu
+#import des musiques du jeu
 mus_mort = pygame.mixer.Sound("./musiques/gameOver.mp3")
 mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
 mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
 jouer_son = 0
-#import des sons additionels 
+# import des sons additionels 
 tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
 sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
 
@@ -136,45 +136,47 @@ class Marche_Arret() :
             if self.status == True and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
                 for i in range(len(sons.sons)) :
-                    if i != 1 : #Si on ne joue pas la défaite
+                    if i != 1 : # Si on ne joue pas la défaite
                         sons.pause(i)
                 self.status = False
             elif self.status == False and pygame.mouse.get_pressed()[0] :
                 self.cooldown = 0
                 for i in range(len(sons.sons)) :
-                    if i != 1 : #Si on ne joue pas la défaite
+                    if i != 1 : # Si on ne joue pas la défaite
                         sons.unpause(i)
                 self.status = True
 
 class Sound() :
-    """gère tout le son du jeu """
+    '''Gère tout le son du jeu'''
 
     def __init__(self, *args) :
-        """initialise pygame mixer"""
+        '''Initialise une channel par pygame.mixer.Sound donné en argument'''
         self.sons = [arg for arg in args]
         self.chanels = len(args)
         pygame.mixer.set_num_channels(self.chanels)
 
     def play(self, index_son) :
-        """pour lancer la musique"""
+        '''Lance la musique indexe_son'''
         pygame.mixer.Channel(index_son).play(self.sons[index_son])
 
     def pause(self, index_son) :
-        """mettre la musique en pause"""
+        '''Met la musique index_son en pause'''
         pygame.mixer.Channel(index_son).pause()
 
     def unpause(self, indexe_son) :
-        """relancer la musique apres la pause"""
+        '''Unpause la musique indexe_son'''
         pygame.mixer.Channel(indexe_son).unpause()
 
     def is_playing(self, indexe_son) :
-        pygame.mixer.Channel(indexe_son).get_busy()
+        '''Return True si index_son est en train de jouer. N'est pas totalement
+        fonctionnel'''
+        return pygame.mixer.Channel(indexe_son).get_busy()
 
 class Temps() :
     '''Permet d'afficher la durée de la partie'''
 
     def __init__(self) :
-        """initialisation du temps au démarrage du jeu """
+        '''Initialisation du temps au démarrage du jeu'''
         self.time = 0 # Est définit plus tard (ne pas suprimer, permet de régler des bugs)
         self.starting_time = time.time() # Permet de savoir le temps passé jusqu'à présent
         self.all_pause_time = -start_to # Temps passé en ayant le jeu en pause ou l'inventaire ouvert
@@ -230,6 +232,11 @@ class Score_actuel() :
         self.niveau = 0 # Plus le niveau est élevé, plus le jeu devient difficile
         self.paliers = zombie_wave_spawn_rate
         # Palier de score requis pour passer au niveau de difficulté supérieur
+
+        # Ci dessous l'ancien système de score, par niveau nommé en fonnction
+        # du score et non en fonction du temps comme actuellement.
+        # Notons que le niveau maximum avait pour nom 'SEIGNEUR MANDIC'.
+
         #self.score_min_pour_niveau = [1000, 2500, 4500, 7000, 10000, 14000,
         #20000, 28000, 38000, 50000, 65000, 80000, 100000, float('inf')]
         #self.nom_niveau = ['Jeu d\'enfant', 'Simplissime', 'Facile',
@@ -238,19 +245,21 @@ class Score_actuel() :
         #'Impossible', 'SEIGNEUR MANDIC']
 
     def display(self) :
-        """permet d'afficher le score à l'utilisateur """
+        '''Affichage du score'''
         text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
+        # Old système de score :
         #text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
         self.score += score
+        # Old système de score :
         #if self.niveau < len(self.score_min_pour_niveau)-1 :
         #    while self.score >= self.score_min_pour_niveau[self.niveau] :
         #        self.niveau += 1
 
     def niveau_zombie(self, temps) :
-        """change le niveau des zombies en fonction du temps """
+        '''Change le niveau des zombies en fonction du temps'''
         if self.niveau < len(self.paliers)-1 :
             while temps.time/60 >= self.paliers[self.niveau+1][2] :
                 self.niveau += 1
@@ -279,9 +288,8 @@ class Grass() :
         for Image in self.images :
             screen.blit(self.image, (Image[0], Image[1]))
 
-    '''Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement'''
+    # Les fontions suivantes permettent le déplacement des tuiles pour donner l'illusion de mouvement
 
-    #permet le deplacement des tuiles en fonction des déplacements 
     def droite(self, dt) :
         for Image in self.images :
             self.replacer(Image)
@@ -356,8 +364,8 @@ class Hero() :
             self.pv_difference = -100
 
     def pv_check(self, vie) :
-        '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; self.max_pv ]'''
-        # Permet aussi d'actualiser le nombre maximal de pv
+        '''Permet au pv du personnage de rester dans l'interval suivant   -->   [ 0 ; self.max_pv ]  \n
+        Permet aussi d'actualiser le nombre maximal de pv '''
         Inventaire().objets_stats()
         if self.pv > self.max_pv :
             self.pv = self.max_pv
@@ -382,7 +390,7 @@ class Hero() :
         if self.max_pv == 0.001 : # Easter egg pour avoir self.max_pv = 0
             HP_GREEN = (100, 0, 0)
         elif self.pv > 0 : # <-- La division par 0 cause une ERREUR
-            HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restant
+            HP_GREEN = (200-(self.pv/self.max_pv*200), self.pv/self.max_pv*255, 0) # <-- La barre de vie change de couleur en fonction du nombre de pv restants
         else :
             HP_GREEN = (200, 0, 0)
         draw_rect(screen, (25, 25), (300, 25), BLACK)
@@ -416,7 +424,6 @@ class Soin(deplace) :
     '''Classe de la trousse de premiers secours'''
 
     def __init__(self) :
-        '''Appel initial de la classe'''
         self.image = pygame.image.load('./images/objets/Pack de soin.png')
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
@@ -437,13 +444,14 @@ class Soin(deplace) :
         '''Affichage de soi-même'''
         screen.blit(self.image, (self.x, self.y))
 
-    '''def get_rect(self) :
+    def get_rect(self) :
         # Donne les infos du rectangle de la trousse de premiers secours (abscisse, ordonnée, longueur)
-        return pygame.Rect(self.x, self.y, *self.size)'''
+        return pygame.Rect(self.x, self.y, *self.size)
 
     def prendre(self, hero) :
         '''Interraction avec la trousse de premiers secours'''
-        if self.x > x/2 - hero.size//2 and self.x < x/2 + hero.size//2 and self.y > y/2 - hero.size//2 and self.y < y/2 + hero.size//2 and hero.pv != hero.max_pv :
+
+        if self.get_rect().colliderect(hero.get_rect()) and hero.pv != hero.max_pv :
             valeur = random.randrange(200, 500)*math.sqrt(hero.max_pv)/100
             hero.pv_difference = -valeur
             if hero.pv < hero.max_pv - valeur :
@@ -454,7 +462,7 @@ class Soin(deplace) :
         return False
 
 class Soin_construct() :
-    """initialise les objects de soins"""
+    '''Classe de gestion des trousses de soin'''
 
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
@@ -463,7 +471,7 @@ class Soin_construct() :
         self.cooldown = self.max_cooldown
     
     def spawn_soin(self) :
-        '''Ajoute un objet soin à la liste self.all_soins'''
+        '''Ajoute un objet ```Soin``` à la liste ```self.all_soins```'''
         if len(self.all_soins) < self.max_soins :
             if self.cooldown <= 0 :
                 self.cooldown = self.max_cooldown
@@ -488,7 +496,7 @@ class Soin_construct() :
                     self.all_soins.pop(ID) # Si l'objet soin est utilisé on le suprime
 
 
-    #permet le déplacement des balises de soins par rapport aux déplacements du joueur
+    # Permet le déplacement des balises de soins par rapport aux déplacements du joueur
     def haut(self, dt) :
         for soin in self.all_soins :
             soin.haut(dt)
@@ -532,8 +540,8 @@ class Boite(deplace) :
         '''Affichage de la bulle'''
         screen.blit(self.image_bulle, (self.x-self.bulle_size[0]//2, self.y-self.bulle_size[1]//2-64))
         screen.blit(pygame.transform.scale(pygame.image.load(all_weapons[self.arme][2][0]), (round(self.boite_size[0]*2), round(self.boite_size[0]*2))), (self.x-self.bulle_size[0]//2+15, self.y-self.bulle_size[1]//2-78))
-        # Affichage du nombre de munitions contenue
-        if self.arme != "No weapon" : # On affiche le nombre de munition seulement si l'on a une arme
+        # Affichage du nombre de munitions contenues
+        if self.arme != "No weapon" : # On affiche le nombre de munitions seulement si l'on a une arme
                 # Attribution de la couleur d'affichage
                 if self.munitions == float('inf') :
                     couleur = (255, 255, 0)
@@ -556,7 +564,7 @@ class Construct_boite() :
         self.cooldown = 0 # Temps avant l'apparition d'une nouvelle boite
     
     def make_boite(self) :
-        '''Création de boite tous les certains intervalles de temps'''
+        '''Création de boites tous les certains intervalles de temps'''
         if self.cooldown <= 0 :
             self.add()
             self.cooldown = 1500
@@ -573,9 +581,9 @@ class Construct_boite() :
             elif marche :
                 boite.life_time -= 1
         # Supression de tous les "" dans self.boite_in_range
-        while "" in self.boite_in_range :
+        while "" in self.boite_in_range : # on peut aussi faire ```for i in range(self.boite_in_range.count(""))```
             self.boite_in_range.remove("")
-        # On retourne la première boite (si il y en à une)
+        # On retourne la première boite (si il y en a une)
         if len(self.boite_in_range) > 0 :
             return self.boite_in_range[0]
         else :
@@ -597,7 +605,7 @@ class Construct_boite() :
             pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
-    # déplacement des boites par rapports aux déplacements du joueur
+    # déplacement des boites par rapport aux déplacements du joueur
 
     def haut(self, dt) :
         for boite in self.all_boites :
@@ -617,8 +625,9 @@ class Construct_boite() :
 
 class Munition(deplace) :
     '''Les munitions.'''
+
     def __init__(self, spread=(0, 0), arme=all_weapons["Pistolet mitrailleur"]) :
-        self.type_stats = arme # Stats de l'arme utilisé
+        self.type_stats = arme # Stats de l'arme utilisée
         self.domages = self.type_stats[1][4]
         self.spread = spread # Dispersion des projectiles
         self.life_time = random.randint(self.type_stats[1][0][0], self.type_stats[1][0][1]) # Durée de vie du projectile
@@ -633,8 +642,11 @@ class Munition(deplace) :
 
     def calculer(self, mousepos) :
         '''Si vous n'aimez pas la trigonométrie ou les vecteurs, passez votre
-        chemin.'''
-        """calcule l'angle pour la trajectoire des balles"""
+        chemin ! \n
+        Calcule l'angle pour la trajectoire de la balle, puis crée un vecteur
+        direction de la balle, oriente l'image, crée le décalage latéral et en
+        avant de la balle, en fonction de l'arme équipée et de l'orientation du
+        personnage.'''
         self.angle = 0
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
@@ -666,6 +678,7 @@ class Munition(deplace) :
         self.rect = self.image.get_rect(center = self.image.get_rect(topleft = (self.x, self.y)).center)
     
     def move(self, dt, marche_arret) :
+        '''Mouvement de la balle par son vecteur direction et sa vitesse'''
         if marche_arret and self.life_time > 0 :
             self.x += self.vect[0]*self.speed*dt
             self.y += self.vect[1]*self.speed*dt
@@ -703,7 +716,7 @@ class Construct_munitions() :
             print(f'L\'arme "{arme}" n\'existe pas.')
 
     def add(self, stats) :
-        '''Création d'un objet munition (permet au héro de tirer)'''
+        '''Création d'un objet Munition (permet au héro de tirer)'''
         self.stats = stats
         # Cooldown de la réduction de spread
         self.spread_reduction_cooldown = 0
@@ -781,7 +794,7 @@ class Construct_munitions() :
                 self.balles.pop(self.balles.index(balle))
 
     def spread_reduction(self, marche_arret, stats) :
-        '''reduit les spread'''
+        '''Réduit les spread'''
         if marche_arret : # Réduction du spread seulement si le jeu est en marche
             # Réduction du spread si l'on a pas tiré juste avant
             if self.spread_reduction_cooldown >= self.arme[1][2][5] :
@@ -791,7 +804,7 @@ class Construct_munitions() :
             # Partie ci-dessous permet de limiter le spread maximum et minimum
             if self.spread < 0 : # Minimum = 0°
                 self.spread = 0
-            elif self.spread >= 90 : # Stricte maximum = 90°
+            elif self.spread >= 90 : # Strict maximum = 90°
                 self.spread = 90
             elif self.spread > (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats) : # Maximum (varie en fonction de l'arme et des stats du joueur)
                 self.spread = (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**stats)
@@ -820,15 +833,15 @@ class Arme() :
         '''Appel initial de la classe'''
         # Partie affichage pour l'inventaire des armes
         self.case_size = 30 # Facteur de taille pour les cases
-        self.case_size = (self.case_size*5, self.case_size*2) # Taille des cases (elles ont une taille de 40 x 16 ce qui revient à un ration 5:2)
+        self.case_size = (self.case_size*5, self.case_size*2) # Taille des cases (elles ont une taille de 40 x 16 ce qui revient à un ratio 5:2)
         self.case_image = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
         # Partie données de l'inventaire des armes
         self.all_weapons = all_weapons
         self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
         self.munitions = [0, 0, float('inf')] # Munitions (correspondants aux armes stockées dans self.weapon_inventory)
-        self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipé
-        self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipé (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
-        # Variable permettant d'échanger une arme 1 seul fois
+        self.weapon_equiped = 2 # Position (dans self.weapon_inventory) de l'arme équipée
+        self.previous_weapon_equiped = None # Permet de savoir quelle est la dernière arme équipée (afin d'actualiser l'arme si cette valeur est différente de self.weapon_equiped)
+        # Variable permettant d'échanger une arme 1 seule fois
         self.can_switch = True
         # Angle d'affichage
         self.angle = 0
@@ -849,7 +862,7 @@ class Arme() :
         return self.arme_en_main
     
     def change(self, mousepos) :
-        '''Tourne le personnage pour qu'il ragarde la souris'''
+        '''Tourne l'arme pour qu'il ragarde la souris'''
         if mousepos[0]-x/2 != 0 :
             self.angle = math.atan((mousepos[1]-y/2)/(mousepos[0]-x/2))
             self.angle = convert_degrees(self.angle)
@@ -876,7 +889,7 @@ class Arme() :
             screen.blit(pygame.transform.scale(pygame.image.load(self.all_weapons[self.weapon_inventory[i]][2][0]), (round(self.case_size[0]*0.7), round(self.case_size[0]*0.7))), (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i + 10, y-self.case_size[1]-10 - round(self.case_size[0]*0.3)//2))
             # Affichage du nombre de munitions
             valeur = self.munitions[i]
-            if self.weapon_inventory[i] != "No weapon" : # On affiche le nombre de munition seulement si l'on a une arme
+            if self.weapon_inventory[i] != "No weapon" : # On affiche le nombre de munitions seulement si l'on a une arme
                 # Attribution de la couleur d'affichage
                 if valeur == float('inf') :
                     couleur = (255, 255, 0)
@@ -904,7 +917,7 @@ class Power_up_construct() :
         self.all_power_up = []
         self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png", "gatling" : "./images/power_up/gatling.png"} # Tous les powers up et leur image
         self.image_effet = {"gatling" : ["./images/Nothing.png", 0], "vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
-        self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stoque les effets et si ils sont actifs (en frame restantes)
+        self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stocke les effets et si ils sont actifs (en frame restantes)
         self.size = 55 # Taille des powers up
         for cle in self.image : # Chargement et redimensionnement des images
             self.image[cle] = pygame.transform.scale(pygame.image.load(self.image[cle]), (self.size, self.size))
@@ -914,7 +927,7 @@ class Power_up_construct() :
         self.duree_vie_power_up = 2000 # <= Durée de vie de l'objet power up (après il est détruit si il n'est pas récupéré)
 
     def add(self, position, type="Random") :
-        '''Créer un power up aléatoire à une position déterminé'''
+        '''Crée un power up aléatoire à une position déterminé'''
         if type == "Random" or type not in self.power_activated.keys() :
             type = random.choice(list(self.power_activated.keys()))
         self.all_power_up.append(Power_up(type, position, self.duree_vie_power_up)) # type de power up ; position d'apparition ; durée de vie
@@ -923,7 +936,8 @@ class Power_up_construct() :
         '''Affiche à l'écran tous les powers up'''
         for power_up in self.all_power_up : # Permet d'afficher TOUS les powers up
             '''Détection de si le héro entre en colision avec le power up'''
-            if power_up.x + self.size > x/2 - hero.size//2 and power_up.x < x/2 + hero.size//2 and power_up.y + self.size > y/2 - hero.size//2 and power_up.y < y/2 + hero.size//2 :
+            rect = pygame.Rect(power_up.x, power_up.y, self.size, self.size)
+            if rect.colliderect(hero.get_rect()) :
                 self.power_activated[power_up.type] += self.duree_effet
                 self.all_power_up.remove(power_up) # Supression du power up
             elif power_up.life_time <= 0 : # Le power up disparait après un certain temps
@@ -960,6 +974,7 @@ class Power_up_construct() :
                 if self.power_activated[cle]*5 > self.duree_effet or not(self.power_activated[cle]%15 == 0 or (self.power_activated[cle]+1)%15 == 0 or (self.power_activated[cle]+2)%15 == 0 or (self.power_activated[cle]+3)%15 == 0) : # L'effet visuel clignote lorsqu'il va s'arrêter
                     screen.blit(self.image_effet[cle][0], ((x-self.image_effet[cle][1])/2, (y-self.image_effet[cle][1])/2))
 
+    # déplacements des power-up
     def haut(self, dt) :
         for power_up in self.all_power_up :
             power_up.haut(dt)
@@ -1003,6 +1018,8 @@ class FPS() :
 
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
+
+    # Initialisation des objets
     save.add_game()
     Time = time.time()
     sons = Sound(mus_jeu, mus_mort, mus_victoire)
@@ -1037,7 +1054,7 @@ def main(score=save.get()["best_score"]) :
             Time = time.time()
         
         for event in pygame.event.get() :
-            # Pour quitter le jeu ou de tirer
+            # Pour quitter le jeu ou tirer
 
             # Si l'on quite le jeu
             if event.type == pygame.QUIT :
@@ -1052,7 +1069,7 @@ def main(score=save.get()["best_score"]) :
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 and not marche_arret.highlight() :
                 balles.add(inventaire.stats["Agi"]) # Création de l'objet (du projectile)
                 arme.munitions[arme.weapon_equiped] -= 1 # On retire une munition (car on vient de tirer)
-                # Changement automatique de l'arme équipé si elle n'a plus de munitions
+                # Changement automatique de l'arme équipée si elle n'a plus de munitions
                 if arme.munitions[arme.weapon_equiped] <= 0 :
                     arme.weapon_equiped = len(arme.weapon_inventory) - 1 # On équipe la dernière arme (le pistolet normalement)
 
@@ -1090,7 +1107,7 @@ def main(score=save.get()["best_score"]) :
             else :
                 speed_hero = dt
             speed_hero *= inventaire.stats["Spe"] * (power_up.effet_actif("vitesse")*0.5 + 1) # Vitesse du héro en fonction du stat "Spe" et de si le power up speed est actif
-            can_be_hit = True # Permet de faire en sorte que le héro se fasse toucher qu'une seul fois
+            can_be_hit = True # Permet de faire en sorte que le héro ne se fasse toucher qu'une seul fois
 
             # Déplacement vers le haut
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
@@ -1101,7 +1118,7 @@ def main(score=save.get()["best_score"]) :
                 power_up.bas(speed_hero)
                 boite.bas(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect(), False)
-                if touche[0] :
+                if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
@@ -1121,7 +1138,7 @@ def main(score=save.get()["best_score"]) :
                 power_up.haut(speed_hero)
                 boite.haut(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect(), False)
-                if touche[0] :
+                if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
@@ -1141,7 +1158,7 @@ def main(score=save.get()["best_score"]) :
                 power_up.gauche(speed_hero)
                 boite.gauche(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect(), False)
-                if touche[0] :
+                if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
@@ -1161,7 +1178,7 @@ def main(score=save.get()["best_score"]) :
                 power_up.droite(speed_hero)
                 boite.droite(speed_hero)
                 touche = zombies.touch_balle(dt, hero.get_rect(), False)
-                if touche[0] :
+                if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
@@ -1180,7 +1197,7 @@ def main(score=save.get()["best_score"]) :
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
-                    zombies.zombies[test[1]].pv -= balle.domages # On retire autant de PVs au Zombie que de DOMAGES que possède le projectile
+                    zombies.zombies[test[1]].pv -= balle.domages # On retire autant de PVs au Zombie que de DOMMAGES que possède le projectile
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
 
             '''Ci-dessous mettre tout ce qui est affecté par le bouton pause ou l'ouverture de l'inventaire'''
@@ -1217,7 +1234,7 @@ def main(score=save.get()["best_score"]) :
         
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert)) # Affichage des powers up
 
-        # Intéraction avec les boites + affichage
+        # Interaction avec les boites + affichage
         the_boite = boite.display((marche_arret.game_state() and not inventaire.ouvert))
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_e] and marche_arret.game_state() and not inventaire.ouvert and arme.can_switch and the_boite != "No box in range" :
@@ -1231,17 +1248,19 @@ def main(score=save.get()["best_score"]) :
                 arme.munitions[arme.weapon_equiped], the_boite.munitions = the_boite.munitions, arme.munitions[arme.weapon_equiped]
                 arme.can_switch = False
                 arme.previous_weapon_equiped = None # Petite astuce pour actualiser l'arme
-            # Si l'arme équipé est le pistolet, on essaye d'ajouter l'arme dans un espace vide de l'inventaire d'arme s'il y en a un
+            # Si l'arme équipée est le pistolet, on essaye d'ajouter l'arme dans un espace vide de l'inventaire d'arme s'il y en a un
             else :
                 for i in range(len(arme.weapon_inventory)-1) :
                     if arme.weapon_inventory[i] == "No weapon" :
                         arme.weapon_inventory[i], the_boite.arme = the_boite.arme, arme.weapon_inventory[i]
                         arme.munitions[i], the_boite.munitions = the_boite.munitions, arme.munitions[i]
                         arme.can_switch = False
-        # Permet de limiter le nombre d'interraction à une par touche " e " pressé
+        # Permet de limiter le nombre d'interaction à une par touche " e " pressée
         elif not pressed[pygame.K_e] :
             arme.can_switch = True
-        # Fin de la partie intéraction avec les boites + affichage
+        # Fin de la partie interaction avec les boites + affichage
+
+        # Affichage des différents objets
 
         balles.display(dt, (marche_arret.game_state() and not inventaire.ouvert), inventaire.stats["Agi"]) # Affichage des projectiles
         hero.display() # Affichage du héro
@@ -1301,7 +1320,7 @@ def main(score=save.get()["best_score"]) :
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
             text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
 
-        pygame.display.flip() # Affichage
+        pygame.display.flip() # Affichage / actualisation de l'écran
 
 # Si main.py est exécuté, on lance la boucle main()
 if __name__ == '__main__' :
