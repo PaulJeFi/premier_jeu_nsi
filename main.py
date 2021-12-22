@@ -1022,7 +1022,7 @@ def main(score=save.get()["best_score"]) :
         screen.fill(WHITE)
 
         if score.score > save.get()["best_score"] :
-            # enregistrer le score si on a battu le meilleur score
+            # Enregistrer le score si on a battu le meilleur score
             save.set_score(score.score)
 
         if time.time() - Time > 235 :
@@ -1031,15 +1031,24 @@ def main(score=save.get()["best_score"]) :
             Time = time.time()
         
         for event in pygame.event.get() :
-            # Pour quitter le jeu ou mettre à jour l'agilité
+            # Pour quitter le jeu ou de tirer
+
+            # Si l'on quite le jeu
             if event.type == pygame.QUIT :
+                # Si le mode développement est activé, on réinitialise le fichier de sauvegarde
                 if developpement :
                     save.main()
+                # Arrêt du jeu
                 pygame.quit()
                 sys.exit()
+            
+            # Système de tir
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 and not marche_arret.highlight() :
-                balles.add(inventaire.stats["Agi"])
-                arme.munitions[arme.weapon_equiped] -= 1
+                balles.add(inventaire.stats["Agi"]) # Création de l'objet (du projectile)
+                arme.munitions[arme.weapon_equiped] -= 1 # On retire une munition (car on vient de tirer)
+                # Changement automatique de l'arme équipé si elle n'a plus de munitions
+                if arme.munitions[arme.weapon_equiped] <= 0 :
+                    arme.weapon_equiped = len(arme.weapon_inventory) - 1 # On équipe la dernière arme (le pistolet normalement)
 
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
@@ -1077,6 +1086,7 @@ def main(score=save.get()["best_score"]) :
             speed_hero *= inventaire.stats["Spe"] * (power_up.effet_actif("vitesse")*0.5 + 1) # Vitesse du héro en fonction du stat "Spe" et de si le power up speed est actif
             can_be_hit = True # Permet de faire en sorte que le héro se fasse toucher qu'une seul fois
 
+            # Déplacement vers le haut
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
                 grass.bas(speed_hero)
                 soin.bas(speed_hero)
@@ -1096,6 +1106,7 @@ def main(score=save.get()["best_score"]) :
                     power_up.haut(speed_hero)
                     boite.haut(speed_hero)
 
+            # Déplacement vers le bas
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
                 grass.haut(speed_hero)
                 soin.haut(speed_hero)
@@ -1115,6 +1126,7 @@ def main(score=save.get()["best_score"]) :
                     power_up.bas(speed_hero)
                     boite.bas(speed_hero)
 
+            # Déplacement vers la gauche
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
                 grass.gauche(speed_hero)
                 soin.gauche(speed_hero)
@@ -1134,6 +1146,7 @@ def main(score=save.get()["best_score"]) :
                     power_up.droite(speed_hero)
                     boite.droite(speed_hero)
 
+            # Déplacement vers la droite
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
                 grass.droite(speed_hero)
                 soin.droite(speed_hero)
@@ -1153,6 +1166,7 @@ def main(score=save.get()["best_score"]) :
                     power_up.gauche(speed_hero)
                     boite.gauche(speed_hero)
 
+            # Test pour voir si le héro touche un zombie
             touche = zombies.touch_balle(dt, hero.get_rect())
             if touche[0] and can_be_hit :
                 hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
@@ -1160,7 +1174,7 @@ def main(score=save.get()["best_score"]) :
             for balle in balles.balles : # Pour chaque balle
                 test = zombies.touch_balle(dt, balle.get_rect())
                 if test[0] : # Si elle touche un zombie
-                    zombies.zombies[test[1]].pv -= balle.domages # On retire 50 aux PVs du Zombie
+                    zombies.zombies[test[1]].pv -= balle.domages # On retire autant de PVs au Zombie que de DOMAGES que possède le projectile
                     balles.balles.pop(balles.balles.index(balle)) # Et on supprime la balle
 
             '''Ci-dessous mettre tout ce qui est affecté par le bouton pause ou l'ouverture de l'inventaire'''
@@ -1172,7 +1186,9 @@ def main(score=save.get()["best_score"]) :
             arme.change(pygame.mouse.get_pos())
             power_up.actualiser_effet()
             boite.make_boite()
+            '''Fin des choses affectées par le bouton pause ou l'ouverture de l'inventaire'''
 
+        # Condition de game over (qui engendre l'écran de game over)
         if hero.pv <= 0 :
             game_over = True
             marche_arret.status = False
@@ -1237,7 +1253,7 @@ def main(score=save.get()["best_score"]) :
         balles.display_dispersion()
 
         pressed = pygame.key.get_pressed()
-        # Touches pour équiper les différentes armes
+        # Touches pour équiper les différentes armes (1, 2, 3, 4, 5 et 6)
         if pressed[pygame.K_1] :
             arme.weapon_equiped = 0
         elif pressed[pygame.K_2] and len(arme.weapon_inventory) > 1 :
@@ -1267,19 +1283,21 @@ def main(score=save.get()["best_score"]) :
         if inventaire.ouvert :
             inventaire.display() # Affichage
         if inventaire.affichage > 0 :
-            inventaire.objet_trouve()
-        inventaire.stats_display()
-        curseur(screen)
+            inventaire.objet_trouve() # Message indiquant que l'on à trouvé un objet
+        inventaire.stats_display() # Affichage des stats du héro
 
+        curseur(screen) # Affichage du curseur (customisé)
+
+        # L'écran de game over
         if game_over :
             Time = 0
             sons.pause(0)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
             text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
 
-        pygame.display.flip()
+        pygame.display.flip() # Affichage
 
-
+# Si main.py est exécuté, on lance la boucle main()
 if __name__ == '__main__' :
-    while True :
+    while True : # Le while True permet de relancer le jeu sans avoir à quiter et revenir
         main()
