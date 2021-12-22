@@ -1033,7 +1033,8 @@ def main(score=save.get()["best_score"]) :
         for event in pygame.event.get() :
             # Pour quitter le jeu ou mettre à jour l'agilité
             if event.type == pygame.QUIT :
-                save.main()
+                if developpement :
+                    save.main()
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 and not marche_arret.highlight() :
