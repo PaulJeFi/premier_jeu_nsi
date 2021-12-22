@@ -1,4 +1,3 @@
-from typing import Type
 import pygame
 if __name__ == '__main__' :
     from main import Grass, Marche_Arret, Score_actuel, Temps, Inventaire

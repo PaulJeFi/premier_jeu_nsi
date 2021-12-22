@@ -1165,8 +1165,8 @@ def main(score=save.get()["best_score"]) :
         soin.display(hero) # Ineterraction avec la trousse de premiers secours
 
         if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
-            zombie_temps = temps.time * 2 # Plus de zombies laissives, et ils sont plus forts
-        else : # Cas où tu n'as pas de lessive équipé
+            zombie_temps = temps.time * 2 # Plus de zombies lessive, et ils sont plus forts
+        else : # Cas où tu n'as pas de lessive équipée
             zombie_temps = temps.time
         
         power_up.display(hero, (marche_arret.game_state() and not inventaire.ouvert)) # Affichage des powers up

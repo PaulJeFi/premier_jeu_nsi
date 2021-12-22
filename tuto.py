@@ -146,19 +146,82 @@ def etape3(zomb_coord, Time=time.time()) :
             grass.droite(speed_hero)
             zombie.droite(speed_hero)
 
-        arme.change(((1+x/2, 0)))
         grass.display()
         zombie.display(dt, True, 0)
+        hero.change(pygame.mouse.get_pos())
+        arme.change(pygame.mouse.get_pos())
         hero.display()
         arme.display()
         hero.GUI_display()
 
-        text(screen, './courriernewbold.ttf', 30, '         Utilisez ZQSD pour vous déplacer.', RED, (x/2-450, 100))
+        text(screen, './courriernewbold.ttf', 30, '         Utilisez ZQSD pour vous déplacer.', RED, (x/2-450, 100)) # oui, mettredes espaces la technique de fou
         text(screen, './courriernewbold.ttf', 30, 'Attention, le zombie vous attaque.', RED, (x/2-300, 150))
+        functions.curseur(screen)
+        pygame.display.flip()
+        if time.time()-Time > 7 :
+            return zombie
+
+def etape4(zombie) :
+    Time = time.time()
+    grass = Grass()
+    hero = Hero()
+    arme = Arme()
+    arme.actualiser()
+    zombie.SPEED = 0.05
+    while True : # False = le jeu s'arrête
+        dt = clock.tick(144) # IMPORTANT : FPS du jeu
+        screen.fill(WHITE)
+        if arme.weapon_equiped != arme.previous_weapon_equiped :
+                arme.previous_weapon_equiped = arme.weapon_equiped
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                pygame.quit()
+                sys.exit()
+
+        pressed = pygame.key.get_pressed()
+        # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
+        if pressed[pygame.K_z] and pressed[pygame.K_q] or pressed[pygame.K_z] and pressed[pygame.K_d] or pressed[pygame.K_s] and pressed[pygame.K_q] or pressed[pygame.K_s] and pressed[pygame.K_d] or pressed[pygame.K_UP] and pressed[pygame.K_LEFT] or pressed[pygame.K_UP] and pressed[pygame.K_RIGHT] or pressed[pygame.K_DOWN] and pressed[pygame.K_LEFT] or pressed[pygame.K_DOWN] and pressed[pygame.K_RIGHT] :
+                speed_hero = ((2)**1/2)/2*dt
+        else :
+            speed_hero = dt
+
+
+        if pressed[pygame.K_UP] or pressed[pygame.K_z] :
+            grass.bas(speed_hero)
+            zombie.bas(speed_hero)
+
+        if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
+            grass.haut(speed_hero)
+            zombie.haut(speed_hero)
+
+        if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
+            grass.gauche(speed_hero)
+            zombie.gauche(speed_hero)
+
+        if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
+            grass.droite(speed_hero)
+            zombie.droite(speed_hero)
+
+        grass.display()
+        zombie.display(dt, True, 0)
+        hero.change(pygame.mouse.get_pos())
+        arme.change(pygame.mouse.get_pos())
+        hero.display()
+        arme.display()
+        hero.GUI_display()
+
+        text(screen, './courriernewbold.ttf', 30, '              Tirez sur le zombie !', RED, (x/2-450, 100)) # oui, mettredes espaces la technique de fou
+        text(screen, './courriernewbold.ttf', 30, 'Visez-le puis cliquer pour tirer !', RED, (x/2-300, 150))
+        functions.curseur(screen)
+
         pygame.display.flip()
 
+'''
+        if time.time()-Time > 7 :
+            return zombie
+'''
 
-if __name__ == '__main__' :
+def main() :
     # Etape n°1
     etape_1()
     # Actualisation de l'arme
@@ -170,4 +233,9 @@ if __name__ == '__main__' :
     arme = Arme()
     arme.previous_weapon_equiped = None
     # Etape n°3
-    etape3(zomb, time.time())
+    zomb = etape3(zomb, time.time())
+    # Etape n°4
+    etape4(zomb)
+
+if __name__ == '__main__' :
+        main()
