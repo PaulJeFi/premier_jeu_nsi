@@ -1,5 +1,11 @@
+'''
+Ce fichier fait partie du jeu. Il répertorie les fonctions, classes, … de
+gestion et de génération des zoimbies, ainsi que leurs interactions avec les
+autres objets du jeu.
+'''
+
 import pygame
-if __name__ == '__main__' :
+if __name__ == '__main__' : # Pour les tests (et éviter les erreurs générées par l'éditeur de texte)
     from main import Grass, Marche_Arret, Score_actuel, Temps, Inventaire
 import sys
 import math
@@ -15,7 +21,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# Les règlages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
+# Les réglages de base (vitesse du joueur + set-up affichage + set-up frame-rate)
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -27,13 +33,15 @@ pygame.font.init()
 myfont = pygame.font.Font("./FreeSansBold.ttf", 15)
 
 class Zombies(deplace) :
+    '''Classe des zombies : gestion d'UN SEUL zombie'''
 
-    """ intialisation de classe : image, pv et taille """
     def __init__(self, type="Z1", temps=0) :
+        '''Intialisation de l'objet Zombies par le type de zombie et son temps (pour la difficulté). \n
+        Tous les principaux attributs d'un objet Zombies sont déclarés ici.'''
         self.type = type
         self.all_zombies = actualiser(temps)
         if self.type == "ZD" :
-            self.max_cooldown = 500 # Délais entre chaque utilisation de la compétance spéciale du zombie
+            self.max_cooldown = 500 # Délai entre chaque utilisation de la compétance spéciale du zombie
         else :
             self.max_cooldown = 0
         self.cooldown = round(self.max_cooldown*random.randint(65, 135)/100) # Cooldown aléatoire (pour rendre l'attaque imprévisible) mais reste proche du cooldown classique en temps
@@ -53,19 +61,21 @@ class Zombies(deplace) :
         self.rect = self.image.get_rect()
 
     def change_to_type(self, type) :
+        '''Petite méthode qui fut utile pour changer rapidement le type d'un Zombies. N'est plus utilisée il me semble.'''
         if type in list(self.all_zombies.keys()) :
             self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.image = pygame.transform.rotate(self.image, 180)
 
-    def nbrPV(self) : 
+    def nbrPV(self) :
+        '''Réajustement des pv du zombie dans l'intervalle [0, self.pv_maxi]'''
         if self.pv > self.pv_maxi :
             self.pv = self.pv_maxi
         elif self.pv < 0 :
             self.pv = 0
 
     def spawn(self) :
-        '''Fait naître les Zombies par la grâce de [REDACTED]. N'oublions pas sa supériorité totale.'''
+        '''Fait naître les Zombies par la grâce de [REDACTED][TERENCE]. N'oublions pas sa supériorité totale.'''
         position = random.randint(1,4)
         if position == 1 :
             self.x, self.y = 0-self.size, random.randint(0-self.size, y+self.size)
@@ -77,11 +87,11 @@ class Zombies(deplace) :
             self.x, self.y = random.randint(0-self.size, x+self.size), y+self.size
 
     def deplacement (self, dt) :
-        '''Le déplacement de l'IA'''
+        '''Le déplacement de l'IA
 
-        '''
         Un code naïf serait le suivant :
 
+        ```
         if self.x > x/2 :
             self.x -= 1
         elif self.x < x/2 :
@@ -90,16 +100,19 @@ class Zombies(deplace) :
             self.y -= 1
         elif self.y < y/2 :
             self.y += 1
-        
+        ```
+
         Mais le problème est que le zombie ne se déplace pas DIRECTEMENT vers le
         centre, mais vers les axes centraux, donc au final vers le centre.
         If faut donc utiliser des VECTEURS.
         On peut alors utiliser le code suivant :
 
+        ```
         l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
         self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
         self.x -= self.SPEED * self.vect[0]
         self.y -= self.SPEED * self.vect[1]
+        ```
 
         Mais ce code, bien qu'il soit FONCTIONNEL, est tès LENT. En effet, les
         racines et les divisions sont des opérations lentes par les ordinateurs.
@@ -111,16 +124,18 @@ class Zombies(deplace) :
         self.y -= dt*self.SPEED * self.vect[1]
 
     def deplacement_inverse(self, dt):
-        l = math.sqrt((self.x - x/2)**2 + (self.y - y/2)**2 )
-        self.vect = [1/l * (self.x - x/2), 1/l * (self.y - y/2)]
+        '''Pour faire reculer le zombie. Utile si il touche le héros, touche une munition (peut-être aussi si il touche un autre zombie).'''
+        un_sur_l = Q_rsqrt((self.x - x/2)**2 + (self.y - y/2)**2)
+        self.vect = [un_sur_l * (self.x - x/2), un_sur_l * (self.y - y/2)]
         self.x += dt*self.SPEED * self.vect[0]
-        self.y += dt*self.SPEED * self.vect[0]
+        self.y += dt*self.SPEED * self.vect[1]
 
     def degatZomb(self) :
-        # Si le zombie est touché
+        '''Infliger des dégâts au zombie si il est touché'''
         self.pv -= 1
     
     def display(self, dt, game_state, score) :
+        '''Affichage du zombie'''
         if game_state :
             self.deplacement(dt)
             self.change()
@@ -130,6 +145,7 @@ class Zombies(deplace) :
         self.barreVie()
 
     def regen(self, dt) :
+        '''Régénération naturelle des pv du zombie'''
         valeur_regen = self.regen_pv/dt/6
         if self.pv + valeur_regen >= self.pv_maxi :
             self.pv = self.pv_maxi
@@ -148,6 +164,7 @@ class Zombies(deplace) :
             self.rotated = pygame.transform.rotate(self.image, self.angle)
     
     def get_rect(self) :
+        '''Retourne un ```pygame.Rect``` pour le zombie. Utile pour les collisions.'''
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
     def barreVie(self) :
@@ -174,8 +191,10 @@ class Zombies(deplace) :
         return touche_hero
 
 class Projectiles_zombie(deplace) :
+    '''Classe des projectiles des zombies (oui il y a des zombies qui nous tirent dessus !).'''
 
     def __init__(self, type="ZD", angle=0, vecteur=[1, 0], x=0, y=0) :
+        '''Initialisation de l'objet. Le type est un zombie deymon (type de zombie qui tire).'''
         self.type = type
         self.image = pygame.image.load('./images/armes/Projectiles/feu.png')
         self.size = 50
@@ -191,20 +210,23 @@ class Projectiles_zombie(deplace) :
         self.y = y
     
     def mouvement(self, dt) :
+        '''Pour le mouvement du projectile'''
         if self.life_time > 0 :
             self.x -= dt*self.speed * self.vecteur[0]
             self.y -= dt*self.speed * self.vecteur[1]
             self.life_time -= 1
 
     def display(self) :
+        '''Affichage du projectile'''
         screen.blit(self.image, (self.x, self.y))
     
     def get_rect(self) :
+        '''Retourne un ```pygame.Rect``` pour le projectile. Utile pour les collisions.'''
         return pygame.Rect(self.x-self.size/2, self.y-self.size/2, *2*[self.size])
 
 class Construct_Zombies() :
-
     '''Cette classe permet de gérer un ensemble de zombies'''
+
     def __init__(self, number=0) :
         self.all_zombies = actualiser(0)
         self.projectiles = []
@@ -219,6 +241,8 @@ class Construct_Zombies() :
         self.all_zombies = actualiser(temps)
 
     def do_again(self, type, temps=0) :
+        '''Trouve des coordonnées pour un nouveau zombie en vérifiant qu'il ne
+        tombe pas sur un zombie existant. Attention, méthode récursive.'''
         zombie = Zombies(type, temps)
         for zomb in self.zombies :
             if self.is_next(zombie, zomb) :
@@ -226,6 +250,8 @@ class Construct_Zombies() :
         return zombie
     
     def is_next(self, zomb, zombi) :
+        '''Vérifie que deux zombies ne se superposent pas (si ils se superposent
+        ils ne pourront plus bouger jusqu'à ce que l'un d'eux meure).'''
         size = Zombies().size
         longueur_max = size*v2 # la distance maximale d'éligibilité
         if math.sqrt((zomb.x-zombi.x)**2+(zomb.y-zombi.y)**2) <= longueur_max :
@@ -234,9 +260,11 @@ class Construct_Zombies() :
             return False
 
     def add(self, type) :
+        '''Ajoute un zombie'''
         self.zombies.append(self.do_again(type))#.change_to_type(type))
 
     def competance(self, zomb, game_state) :
+        '''Si le zombie est de type deymon et qu'il peut tirer, faisons-le tirer !'''
         if game_state :
             if zomb.cooldown <= 0 :
                 if zomb.type == "ZD" :
@@ -246,11 +274,12 @@ class Construct_Zombies() :
                 zomb.cooldown -= 1
 
     def display(self, dt, game_state, score, inventaire, temps, power_up, boite, hero=None) :
+        '''Affichage de tous les zombies'''
         if game_state :
             self.respawn(score, temps)
         ID = -1 # Permet d'attribuer une ID temporaire à chaque zombie
         for zomb in self.zombies :
-            ID += 1 # Chaque ID doit être différentes
+            ID += 1 # Chaque ID doit être différente des autres
             self.mourir(zomb, ID, score, inventaire, power_up, boite)
             the_x, the_y = zomb.x, zomb.y
             self.competance(zomb, game_state)
@@ -264,7 +293,7 @@ class Construct_Zombies() :
                     break
         ID = -1 # Permet d'attribuer une ID temporaire à chaque projectile
         for projectile in self.projectiles :
-            ID += 1 # Chaque ID doit être différentes
+            ID += 1 # Chaque ID doit être différente des autres
             if projectile.life_time > 0 :
                 if game_state :
                     projectile.mouvement(dt)
@@ -278,7 +307,7 @@ class Construct_Zombies() :
         if zomb.pv <= 0 :
             score.add(self.all_zombies[zomb.type][2])
             inventaire.add_item(random.choice(self.all_zombies[zomb.type][3]))
-            if random.randint(0, 25) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie à de chance de droper un power up
+            if random.randint(0, 25) == 0 : # <= Plus la deuxième valeur du random.randint() est élevé, moins le zombie a de chance de droper un power up
                 power_up.add((zomb.x, zomb.y))
             self.zombies.pop(ID)
             
@@ -313,7 +342,7 @@ class Construct_Zombies() :
         for zombie in self.zombies :
             if zombie.get_rect().colliderect(hero) :
                 if not balle_is_balle :
-                    zombie.deplacement_inverse(dt) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet la balle
+                    zombie.deplacement_inverse(dt) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet le héro
                 else :
                     zombie.deplacement_inverse(2*dt/3) # cette ligne fait déplacer les zombies dans le sens inverse si ils touchet la balle
                     if self.touch_other_zombi(zombie) :
@@ -323,6 +352,8 @@ class Construct_Zombies() :
                 return touche_hero, ID, zombie.type
         return touche_hero, ID, zombie
 
+
+    # les déplacements des zombies selon le mouvement du joueur:
     def haut(self, dt) :
         for zomb in self.zombies + self.projectiles :
             zomb.haut(dt)
@@ -349,7 +380,8 @@ class Construct_Zombies() :
         return False
 
 def main() :
-    '''Fonction principale'''
+    '''Fonction de test des zombies.  \n
+    ATTENTION : n'est plus à jour, génère des erreurs !!!'''
     grass = Grass()
     score = Score_actuel()
     temps = Temps()
@@ -402,4 +434,3 @@ def main() :
 
 if __name__ == '__main__' :
     main()
-
