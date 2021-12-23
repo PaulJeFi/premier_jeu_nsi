@@ -430,7 +430,7 @@ class Soin(deplace) :
         self.place()
 
     def place(self) :
-        position = random.randint(1,5)
+        position = random.randint(1,4)
         if position == 1 :
             self.x, self.y = -2*x, random.randint(-2*y, 3*y)
         elif position == 2 :
@@ -591,18 +591,25 @@ class Construct_boite() :
     
     def add(self, arme="Random_weapon", munitions="Base_ammo", pos_x="Random", pos_y="Random") :
         '''Création d'une boite (arme, munitions, position x, position y)'''
+        '''pos_x et pos_y doivent obligatoirement avoir tout deux des valeurs numériques ou le string "Random"'''
         # Choix aléatoire de l'arme
         if arme == "Random_weapon" :
             arme = random.choice(weapon_spawn_chance)
         # Choix, en fonction de l'arme, du nombre de munitions
         if munitions == "Base_ammo" :
             munitions = random.randint(all_weapons[arme][2][1][0], all_weapons[arme][2][1][1])
-        # Génération aléatoire de la position x
-        if pos_x == "Random" :
-            pos_x = random.randint(round(x*0.75), x) * random.choice([-1, 1]) + x/2
-        # Génération aléatoire de la position y
-        if pos_y == "Random" :
-            pos_y = random.randint(round(y*0.75), y) * random.choice([-1, 1]) + y/2
+        # Génération aléatoire de la position x et y
+        if pos_x == "Random" and pos_y == "Random" :
+            position = random.randint(1,4)
+            if position == 1 :
+                pos_x, pos_y = -x, random.randint(-y, 2*y)
+            elif position == 2 :
+                pos_x, pos_y = random.randint(-x, 2*x), -y
+            elif position == 3 :
+                pos_x, pos_y = 2*x, random.randint(-y, 2*y)
+            else :
+                pos_x, pos_y = random.randint(-x, 2*x), 2*y
+        # Création de la boite
         self.all_boites.append(Boite(arme, munitions, pos_x, pos_y))
     
     # déplacement des boites par rapport aux déplacements du joueur
