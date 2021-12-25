@@ -29,12 +29,18 @@ frame3 = pygame.image.load('./images/intro/armurerie.png').convert()
 # Initialisation du son.
 pygame.mixer.init()
 clic = pygame.mixer.Sound("./sons/clic_clavier.wav") # son du clavier
-#music = pygame.mixer.Sound("./contents/punch.wav") # music de fond
 
 # Les différents textes d'intro, regroupés par slides contenant des lignes
-text_intro1 = ["Vous travailliez comme d'habitude dans votre boutique de machines à laver, quand votre ", "collègue ouvre le frigo assoiffé, et boit une bouteille de lessive, la confondant avec ", "du lait. "]
-text_intro2 = ["Vous le voyez se transformer sous vos yeux en zombie, et très vite il contamine toute ", "la ville. Étant le seul survivant, vous décidez de quitter la ville. "]
-text_intro3 = ["Dans votre fuite, vous passez devant l'armurerie désertée, et vous prenez quelques ", "armes au cas où. La nuit commence à tomber et vous êtes presque arrivé à la forêt, ", "avec une seule idée en tête, survire… "]
+text_intro1 = ["Vous travailliez comme d'habitude dans votre boutique de machines à laver, quand votre ",
+"collègue ouvre le frigo assoiffé, et boit une bouteille de lessive, la confondant avec ",
+"du lait. "]
+
+text_intro2 = ["Vous le voyez se transformer sous vos yeux en zombie, et très vite il contamine toute ",
+"la ville. Étant le seul survivant, vous décidez de quitter la ville. "]
+
+text_intro3 = ["Dans votre fuite, vous passez devant l'armurerie désertée, et vous prenez quelques ",
+"armes au cas où. La nuit commence à tomber et vous êtes presque arrivé à la forêt, ",
+"avec une seule idée en tête, survire… "]
 
 class Intro() :
     """Classe de l'intro"""

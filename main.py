@@ -1049,7 +1049,14 @@ def main(score=save.get()["best_score"]) :
 
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
-        screen.fill(WHITE)
+        #screen.fill(GREEN) # pour si l'herbe bug, ça se voit moins que WHITE
+        # Pourquoi avoir supprimé la ligne du dessus :
+        # Si l'herbe s'actualise mal suite à un problème (peut être saturation
+        # des calculs du jeu), on voit des parties de l'écran couvertes de
+        # blanc. Donc arrêter de remplir l'écran de blanc à chaque frame a déjà 
+        # l'avantage de faire des calculs en moins à l'ordinateur, mais aussi,
+        # si l'herbe bug, alors même si elle est mal actualisée, on voit de 
+        # l'herbe partout et ça fait beau.
 
         if score.score > save.get()["best_score"] :
             # Enregistrer le score si on a battu le meilleur score

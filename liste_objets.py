@@ -1,5 +1,5 @@
 '''
-Ce script est là exclusivement pour créer des objets personnlisés.
+Ce script est là exclusivement pour créer des objets personnalisés.
 
 Pour ce faire, suivez les instructions suivantes :
   -  Cette liste étant en réalité un dictionaire, il vous faudra écrire en clé le nom de votre objet.

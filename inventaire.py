@@ -23,14 +23,16 @@ import sys
 from functions import text
 from liste_objets import definition_de_tous_les_objets, stats_de_base
 
-pygame.init()
+# Constantes des couleurs
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+BLUE = (0, 0, 255)
 
-
+# Initialisation de pygame
+pygame.init()
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
@@ -220,7 +222,7 @@ class Inventaire() :
             self.equiper()
 
     def suprimer(self) :
-        '''Permet de suprimer un objet depuis l'inventaire grâce à un bouton'''
+        '''Permet de supprimer un objet depuis l'inventaire grâce à un bouton'''
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
             screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
@@ -261,7 +263,7 @@ def main() :
     '''Fonction principale'''
     inventaire = Inventaire()
     while True : # False = le jeu s'arrête
-        screen.fill(WHITE)
+        screen.fill(BLUE) # Pas WITE pour mieux voir pour les textes
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
                 pygame.quit()
