@@ -47,7 +47,7 @@ YELLOW = (255, 255, 0)
 # Les règlages de base (vitesse du joueur + temps auquel on commence)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
 
-start_to = 0 # Temps auquel on débute la partie (en secondes)
+start_to = 100 # Temps auquel on débute la partie (en secondes)
 
 # Initialisation de Pygame
 x, y = 1080, 720 # dimensions de l'écran, en pixels
@@ -768,15 +768,24 @@ class Construct_munitions() :
         '''Affichage d'un indicateur pour la dispersion'''
         # Calcul des valeurs ainsi que des couleurs
         # Valeur1
-        if (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats) != 0 :
-            valeur1 = self.spread/((self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats))
+        if (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats) <= 90 :
+            if (self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats) != 0 :
+                valeur1 = self.spread/((self.arme[1][2][2]-self.arme[1][2][1])*(0.99**self.stats))
+                if 0 <= 255*valeur1 <= 255 :
+                    couleur1 = (255, 150*(1-valeur1), 0)
+                else :
+                    couleur1 = (255, 0, 0)
+            else :
+                valeur1 = 0
+                couleur1 = (255, 0, 0)
+        else :
+            valeur1 = self.spread/90
             if 0 <= 255*valeur1 <= 255 :
                 couleur1 = (255, 150*(1-valeur1), 0)
             else :
                 couleur1 = (255, 0, 0)
-        else :
-            valeur1 = 0
-            couleur1 = (255, 0, 0)
+        if valeur1 > 1 :
+            valeur1 = 1
         # Valeur2
         if self.arme[1][2][5] != 0 :
             valeur2 = self.spread_reduction_cooldown/self.arme[1][2][5]
@@ -1022,6 +1031,64 @@ class FPS() :
                 self.frame_nb = 0
         text(screen, "./FreeSansBold.ttf", 15, f'FPS : {self.FPS}', BLACK, (x-150, y-50))
 
+class Objectif(deplace) :
+    '''Les objectifs'''
+
+    def __init__(self, size=(0, 0)) :
+        self.size = size
+        self.x, self.y = 0, 0
+        while -self.size[0] <= self.x <= x and -self.size[1] <= self.y <= y :
+            self.x = random.randint(-2*x, 3*x)
+            self.y = random.randint(-2*y, 3*y)
+
+class Objectifs_construct() :
+    '''Classe gérant les objectifs'''
+
+    def __init__(self) :
+        # Création des sprites (chemin relatif de l'image, ses dimensions)
+        self.images = {
+            "zone" : ["./images/objectif/Zone_objectif.png", (300, 225)], # Format 4:3
+            "jerrican" : ["./images/objectif/Jerrican.png", (60, 80)], # Format 3:4
+            "générateur" : ["./images/objectif/Generateur.png", (150, 100)], # Format 3:2
+            "radio" : ["./images/objectif/Radio.png", (180, 140)], # Format 9:7
+            "hélicoptère" : ["./images/objectif/Helicoptere.png", (500, 200)] # Format 5:2
+        }
+        for i in self.images :
+            self.images[i][0] = pygame.transform.scale(pygame.image.load(self.images[i][0]), self.images[i][1])
+        # Dictionnaire contenant tous les objets
+        self.objectifs = {"jerrican" : [], "générateur" : [], "radio" : [], "hélicoptère" : []}
+
+    def display(self) :
+        '''Affichage de tous les objectifs'''
+        for type_objectif in self.objectifs :
+            for objet in self.objectifs[type_objectif] :
+                screen.blit(self.images[type_objectif][0], (objet.x, objet.y))
+
+    def add(self, type_objectif) :
+        '''Permet d'ajouter un objectif'''
+        self.objectifs[type_objectif].append(Objectif(self.images[type_objectif][1])) # L'argument dans Objectif() représente la taille de celui-ci
+
+    # déplacements des objectifs
+    def haut(self, dt) :
+        for type_objectif in self.objectifs :
+            for objet in self.objectifs[type_objectif] :
+                objet.haut(dt)
+
+    def bas(self, dt) :
+        for type_objectif in self.objectifs :
+            for objet in self.objectifs[type_objectif] :
+                objet.bas(dt)
+
+    def gauche(self, dt) :
+        for type_objectif in self.objectifs :
+            for objet in self.objectifs[type_objectif] :
+                objet.gauche(dt)
+
+    def droite(self, dt) :
+        for type_objectif in self.objectifs :
+            for objet in self.objectifs[type_objectif] :
+                objet.droite(dt)
+
 
 def main(score=save.get()["best_score"]) :
     '''Fonction principale'''
@@ -1043,6 +1110,10 @@ def main(score=save.get()["best_score"]) :
     power_up = Power_up_construct()
     boite = Construct_boite()
     fps = FPS()
+    objectifs = Objectifs_construct()
+
+    # Liste des objets se déplaçant lorsque le joueur se "déplace"
+    deplacement = [grass, balles, zombies, soin, power_up, boite, objectifs]
 
     game_over = False
     sons.play(0)
@@ -1125,83 +1196,51 @@ def main(score=save.get()["best_score"]) :
 
             # Déplacement vers le haut
             if pressed[pygame.K_UP] or pressed[pygame.K_z] :
-                grass.bas(speed_hero)
-                soin.bas(speed_hero)
-                zombies.bas(speed_hero)
-                balles.bas(speed_hero)
-                power_up.bas(speed_hero)
-                boite.bas(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect(), False)
+                for objet in deplacement :
+                    objet.bas(speed_hero)
+                touche = zombies.touch_balle(speed_hero, hero.get_rect(), False)
                 if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
-                    grass.haut(speed_hero)
-                    soin.haut(speed_hero)
-                    zombies.haut(speed_hero)
-                    balles.haut(speed_hero)
-                    power_up.haut(speed_hero)
-                    boite.haut(speed_hero)
+                    for objet in deplacement :
+                        objet.haut(speed_hero)
 
             # Déplacement vers le bas
             if pressed[pygame.K_DOWN] or pressed[pygame.K_s] :
-                grass.haut(speed_hero)
-                soin.haut(speed_hero)
-                zombies.haut(speed_hero)
-                balles.haut(speed_hero)
-                power_up.haut(speed_hero)
-                boite.haut(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect(), False)
+                for objet in deplacement :
+                    objet.haut(speed_hero)
+                touche = zombies.touch_balle(speed_hero, hero.get_rect(), False)
                 if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
-                    grass.bas(speed_hero)
-                    soin.bas(speed_hero)
-                    zombies.bas(speed_hero)
-                    balles.bas(speed_hero)
-                    power_up.bas(speed_hero)
-                    boite.bas(speed_hero)
+                    for objet in deplacement :
+                        objet.bas(speed_hero)
 
             # Déplacement vers la gauche
             if pressed[pygame.K_LEFT] or pressed[pygame.K_q] :
-                grass.gauche(speed_hero)
-                soin.gauche(speed_hero)
-                zombies.gauche(speed_hero)
-                balles.gauche(speed_hero)
-                power_up.gauche(speed_hero)
-                boite.gauche(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect(), False)
+                for objet in deplacement :
+                    objet.gauche(speed_hero)
+                touche = zombies.touch_balle(speed_hero, hero.get_rect(), False)
                 if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
-                    grass.droite(speed_hero)
-                    soin.droite(speed_hero)
-                    zombies.droite(speed_hero)
-                    balles.droite(speed_hero)
-                    power_up.droite(speed_hero)
-                    boite.droite(speed_hero)
+                    for objet in deplacement :
+                        objet.droite(speed_hero)
 
             # Déplacement vers la droite
             if pressed[pygame.K_RIGHT] or pressed[pygame.K_d] :
-                grass.droite(speed_hero)
-                soin.droite(speed_hero)
-                zombies.droite(speed_hero)
-                balles.droite(speed_hero)
-                power_up.droite(speed_hero)
-                boite.droite(speed_hero)
-                touche = zombies.touch_balle(dt, hero.get_rect(), False)
+                for objet in deplacement :
+                    objet.droite(speed_hero)
+                touche = zombies.touch_balle(speed_hero, hero.get_rect(), False)
                 if touche[0] : # Si touche un zombie
                     if can_be_hit :
                         hero.pv -= (zombies.all_zombies[touche[2]][1][2])*0.99**(inventaire.stats["Def"] + 150*power_up.effet_actif("armure"))
                         can_be_hit = False
-                    grass.gauche(speed_hero)
-                    soin.gauche(speed_hero)
-                    zombies.gauche(speed_hero)
-                    balles.gauche(speed_hero)
-                    power_up.gauche(speed_hero)
-                    boite.gauche(speed_hero)
+                    for objet in deplacement :
+                        objet.gauche(speed_hero)
 
             # Test pour voir si le héro touche un zombie
             touche = zombies.touch_balle(dt, hero.get_rect())
@@ -1239,6 +1278,7 @@ def main(score=save.get()["best_score"]) :
 
         '''Tous les affichages de sprites'''
         grass.display() # Affichage de l'herbe
+        objectifs.display()
         soin.display(hero) # Ineterraction avec la trousse de premiers secours
 
         if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
@@ -1262,13 +1302,15 @@ def main(score=save.get()["best_score"]) :
                 arme.munitions[arme.weapon_equiped], the_boite.munitions = the_boite.munitions, arme.munitions[arme.weapon_equiped]
                 arme.can_switch = False
                 arme.previous_weapon_equiped = None # Petite astuce pour actualiser l'arme
-            # Si l'arme équipée est le pistolet, on essaye d'ajouter l'arme dans un espace vide de l'inventaire d'arme s'il y en a un
+            # Si l'arme équipée est le pistolet, on essaye d'ajouter l'arme dans un espace vide de l'inventaire d'arme s'il y en a un ou de remplacer une arme n'ayant plus de munitions
             else :
                 for i in range(len(arme.weapon_inventory)-1) :
-                    if arme.weapon_inventory[i] == "No weapon" :
+                    if arme.weapon_inventory[i] == "No weapon" or arme.munitions[i] <= 0 :
                         arme.weapon_inventory[i], the_boite.arme = the_boite.arme, arme.weapon_inventory[i]
                         arme.munitions[i], the_boite.munitions = the_boite.munitions, arme.munitions[i]
                         arme.can_switch = False
+                        break
+
         # Permet de limiter le nombre d'interaction à une par touche " e " pressée
         elif not pressed[pygame.K_e] :
             arme.can_switch = True

@@ -196,15 +196,25 @@ class Projectiles_zombie(deplace) :
     def __init__(self, type="ZD", angle=0, vecteur=[1, 0], x=0, y=0) :
         '''Initialisation de l'objet. Le type est un zombie deymon (type de zombie qui tire).'''
         self.type = type
+        # On créer l'image du projectile
         self.image = pygame.image.load('./images/armes/Projectiles/feu.png')
+        # Taille du projectile
         self.size = 50
+        # Redimentionnement de l'image du projectile
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        # Angle du projectile (sert pour tourner le projectile dans le bon sens)
         self.angle = (angle + 180) % 360
+        # On tourne l'image du projectile
         self.image = pygame.transform.rotate(self.image, self.angle)
+        # Direction du projectile (en vecteur)
         self.vecteur = vecteur
-        self.speed = 0.8
+        # Vitesse du projectile
+        self.speed = 1.1
+        # Durée de vie du projectile
         self.life_time = 100
-        self.attaque = 15
+        # Dégat que le projectile inflige au joueur
+        self.attaque = 10
+        # Position d'apparition du projectile + création de sa zone de collision
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
