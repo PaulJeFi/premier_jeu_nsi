@@ -47,7 +47,7 @@ YELLOW = (255, 255, 0)
 # Les règlages de base (vitesse du joueur + temps auquel on commence)
 SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
 
-start_to = 100 # Temps auquel on débute la partie (en secondes)
+start_to = 0 # Temps auquel on débute la partie (en secondes)
 
 # Initialisation de Pygame
 x, y = 1080, 720 # dimensions de l'écran, en pixels
@@ -567,7 +567,7 @@ class Construct_boite() :
         '''Création de boites tous les certains intervalles de temps'''
         if self.cooldown <= 0 :
             self.add()
-            self.cooldown = 1500
+            self.cooldown = 1250
         self.cooldown -= 1
 
     def display(self, marche) :
@@ -1034,12 +1034,15 @@ class FPS() :
 class Objectif(deplace) :
     '''Les objectifs'''
 
-    def __init__(self, size=(0, 0)) :
-        self.size = size
+    def __init__(self,type_objectif, image, rayon_min=1, rayon_max=2) :
+        self.type = type_objectif
+        self.image = image[0] # L'image est déjà créée
+        self.size = image[1] # a taille est utilisé pour l'apparition de l'objectif
         self.x, self.y = 0, 0
-        while -self.size[0] <= self.x <= x and -self.size[1] <= self.y <= y :
-            self.x = random.randint(-2*x, 3*x)
-            self.y = random.randint(-2*y, 3*y)
+        # Le rayon représente le rayon d'apparition de l'objectif
+        while -rayon_min*x-self.size[0] <= self.x <= x*rayon_min and -rayon_min*y-self.size[1] <= self.y <= y*rayon_min :
+            self.x = random.randint(-rayon_max*x-self.size[0], (rayon_max+1)*x)
+            self.y = random.randint(-rayon_max*y-self.size[1], (rayon_max+1)*y)
 
 class Objectifs_construct() :
     '''Classe gérant les objectifs'''
@@ -1058,36 +1061,280 @@ class Objectifs_construct() :
         # Dictionnaire contenant tous les objets
         self.objectifs = {"jerrican" : [], "générateur" : [], "radio" : [], "hélicoptère" : []}
 
+        # Temps nécessaire à l'interraction avec un objectif :
+        self.temps_interaction = {"jerrican" : 100, "générateur" : 350, "radio" : 500, "hélicoptère" : 2000}
+        self.temps_interagit = 0
+
+        # Les objectifs avec lesquels les héro peut interagir
+        self.objectif_proche = "Pas d'objectif proche"
+
+        self.etape_actuelle = 1 # Permet a la classe de déterminer ce qu'elle doit faire en fonction du nombre d'objectifs réalisés pas le joueur (de 1 à 5)
+        '''
+        Les étapes (objectifs) :
+
+        Etape 1 : Le joueur doit trouver un générateur.
+                Plusieur générateur vont apparaitre au fur et à mesure du jeu (sinon ça serait trop dur de le trouver).
+        Etape 2 : Le joueur doit remplir le générateur avec 5 jerrican d'essence.
+                5 jerrican apparaissent, le joueur doit aller les récupérer puis les rammener au générateur.
+                Une flêche indique au joueur la position du générateur trouvé.
+                Tous les autres générateur seront suprimés (pour des raison de performances et simplicités).
+                Tant qu'aucun jerrican n'est récupéré, la flèche indique les position des jerricans.
+        Etape 3 : Le joueur doit trouver un poste radio.
+                Plusieurs postes radios apparraissent au fur et à mesure du jeu.
+                La flèche ne pointe plus vers le générateur.
+        Etape 4 : Le joueur doit survivre 2min 30s avant l'arrivé des secours.
+        Etape 5 : Le joueur doit se rendre à l'hélicoptère.
+                L'hélicoptère apparraitra très long du joueur.
+                Une flèche indiquera sa position.
+        '''
+
+        # Le cooldown permet de faire apparaitre un objectif tous les certains intervalles de temps
+        self.cooldown = 0
+
+        # Image de la flèche :
+        self.fleche_size = [330, 330]
+        self.image_fleche = pygame.transform.scale(pygame.image.load("./images/objectif/Fleche.png"), self.fleche_size)
+
+        # Le joueur a-t-il un jerrican sur lui ?
+        self.jerrican = False
+        # Nombre de jerrican récupéré
+        self.nb_jerrican = 0
+
+        # Variable utilisé por la fonction display_indicateur()
+        self.temps_interaction_requis = 0
+
+        # Valeur temporaire pour faire un timer (Etape 4)
+        self.time = 0
+
+    def actualiser_objectif(self, marche, hero) :
+        '''Permet la création des prochains objectifs'''
+
+        # Permet de réinitialiser l'objectif proche :
+        self.objectif_proche = "Pas d'objectif proche"
+
+        # Etape 1
+        if self.etape_actuelle == 1 :
+            # Création des objectifs
+            if self.cooldown > 1000 :
+                self.add("générateur", 2, 3)
+                self.cooldown = 0
+            elif marche :
+                self.cooldown += 1
+            # Affichage des zones + détection des collision entre objectif et héro
+            for objectif in self.objectifs["générateur"] :
+                if self.affichage_zone(hero, (objectif.x, objectif.y), objectif.size, (240, 180), False) :
+                    self.objectif_proche = objectif
+            # Lorsque le héro finit d'interagir avec un générateur, on suprimme tous les autres générateurs et fait apparaitre 5 jerricans
+            if self.interagir_avec_objectif(marche) :
+                self.objectifs["générateur"] = [self.objectif_proche]
+                # Création de 5 jerricans
+                for _ in range(5) :
+                    self.add("jerrican", 3, 6)
+                # Objectif suivant !
+                self.etape_actuelle = 2
+
+        # Etape 2
+        elif self.etape_actuelle == 2 :
+            # On fait 2 choses différentes en fonction de si le héro a un jerrican sur lui ou non
+            if self.jerrican :
+                # Affichage
+                for objectif in self.objectifs["générateur"] :
+                    if self.affichage_zone(hero, (objectif.x, objectif.y), objectif.size, (240, 180)) :
+                        self.objectif_proche = objectif
+                # Interaction
+                if self.interagir_avec_objectif(marche) :
+                    self.jerrican = False
+                    self.nb_jerrican += 1
+            else :
+                # Affichage
+                for objectif in self.objectifs["jerrican"] :
+                    if self.affichage_zone(hero, (objectif.x, objectif.y), objectif.size, (120, 90)) :
+                        self.objectif_proche = objectif
+                # Interaction
+                if self.interagir_avec_objectif(marche) :
+                    self.jerrican = True
+                    self.objectifs["jerrican"].remove(self.objectif_proche)
+            # Lorsque le joueur collecte et ramène les 5 jerricans au générateur, on passe à l'étape suivante
+            if self.nb_jerrican == 5 :
+                self.etape_actuelle = 3
+        
+        # Etape 3
+        elif self.etape_actuelle == 3 :
+            # Affichage
+            for objectif in self.objectifs["radio"] :
+                if self.affichage_zone(hero, (objectif.x, objectif.y), objectif.size, (240, 180), False) :
+                    self.objectif_proche = objectif
+            # Interaction
+            if self.interagir_avec_objectif(marche) :
+                # On suprimme les autres radios
+                self.objectifs["radio"] = [self.objectif_proche]
+                # Objectif suivant !
+                self.etape_actuelle = 4
+                # Timer :
+                self.time = time.time()
+        
+        # Etape 4
+        elif self.etape_actuelle == 4 :
+            # Après 2min 30s :
+            if time.time() - self.time >= 150 :
+                # L'hélicoptère arrive
+                self.add("hélicoptère", 12, 15)
+                # Dernière étape
+                self.etape_actuelle = 5
+
+        # Etape 5
+        else :
+            # Affichage
+            for objectif in self.objectifs["hélicoptère"] :
+                if self.affichage_zone(hero, (objectif.x, objectif.y), objectif.size, (720, 540)) :
+                    self.objectif_proche = objectif
+            # Interaction
+            if self.interagir_avec_objectif(marche) :
+                '''Si on finit cette objectif on a gagné !'''
+                self.etape_actuelle = 6
+
+        # Génération des postes radios entre les étapes 2 et 3
+        if 2 <= self.etape_actuelle <= 3 :
+            # Création des objectifs
+            if self.cooldown > 3500 :
+                self.add("radio", 1, 3)
+                self.cooldown = 0
+            elif marche :
+                self.cooldown += 1*self.etape_actuelle
+
+    def interagir_avec_objectif(self, marche) :
+        '''Permet l'interaction avec l'objectif'''
+        if marche :
+            # Si "objectif" est de type str, cela veut dire que ça valeur est "Pas d'objectif proche" et donc qu'il n'y a pas d'objectif proche
+            if type(self.objectif_proche) == str :
+                if self.temps_interagit > 2 :
+                    self.temps_interagit -= 2
+                else :
+                    self.temps_interagit = 0
+            else :
+                self.temps_interagit += 1
+                # Si le héro interagit assez longtemps avec l'objectif, on retourne True
+                self.temps_interaction_requis = self.temps_interaction[self.objectif_proche.type]
+                if self.temps_interagit >= self.temps_interaction_requis :
+                    self.temps_interagit = 0
+                    return True
+            # Cas où le héro n'a pas interagit assez longtemps avec l'objectif (ou n'est pas près de l'objectif)
+            return False
+
     def display(self) :
         '''Affichage de tous les objectifs'''
         for type_objectif in self.objectifs :
-            for objet in self.objectifs[type_objectif] :
-                screen.blit(self.images[type_objectif][0], (objet.x, objet.y))
+            for objectif in self.objectifs[type_objectif] :
+                screen.blit(self.images[type_objectif][0], (objectif.x, objectif.y))
 
-    def add(self, type_objectif) :
+    def display_indicateur(self) :
+        '''Affichage d'un indicateur au dessus du joueur (pour le temps d'interaction)'''
+        if self.temps_interagit > 0 and self.temps_interaction_requis != 0 :
+            draw_rect(screen, (x/2-49, y/2-79), (98, 18), BLACK)
+            draw_rect(screen, (x/2-46, y/2-76), (92*(self.temps_interagit/self.temps_interaction_requis), 12), YELLOW)
+
+    def display_objectif(self) :
+        '''Permet d'afficher l'objectif'''
+
+        # Objectif n°1
+        if self.etape_actuelle == 1 :
+            self.texte = "Trouvez un générateur."
+        
+        # Objectif n°2
+        elif self.etape_actuelle == 2 :
+            if self.jerrican :
+                self.texte = f"Alimentez le générateur avec le jerrican. {5-self.nb_jerrican} restant."
+            else :
+                self.texte = f"Allez récupérer un jerrican. {5-self.nb_jerrican} restant."
+        
+        # Objectif n°3
+        elif self.etape_actuelle == 3 :
+            self.texte = "Trouvez un poste radio pour appeler des secours."
+        
+        # Objectif n°4
+        elif self.etape_actuelle == 4 :
+            self.texte = f"Les secours arrivent dans {round(150-(time.time()-self.time))} secondes. Survivez !"
+        
+        # Objectif n°5
+        elif self.etape_actuelle == 5 :
+            self.texte = "Les secours sont là ! Embarquez dans l'hélicoptère."
+        
+        if 1 <= self.etape_actuelle <= 5 :
+            # Affichage du texte
+            text(screen, "./FreeSansBold.ttf", 16, "Objectif : " + self.texte, WHITE, (30, 100))
+
+    def add(self, type_objectif, rayon_apparition_minimal=1, rayon_apparition_maximal=2) :
         '''Permet d'ajouter un objectif'''
-        self.objectifs[type_objectif].append(Objectif(self.images[type_objectif][1])) # L'argument dans Objectif() représente la taille de celui-ci
+        # Condition d'apparition afin de ne pas obtenir d'erreur.
+        if type_objectif in list(self.objectifs.keys()) :
+            if rayon_apparition_maximal > rayon_apparition_minimal :
+                # Création de l'objectif
+                self.objectifs[type_objectif].append(Objectif(type_objectif, self.images[type_objectif], rayon_apparition_minimal, rayon_apparition_maximal))
+            else :
+                # Message d'erreur
+                print(f"L'objectif \"{type_objectif}\" possède un rayon d'apparition maximal ({rayon_apparition_maximal}) inférieur à son rayon d'apparition minimal ({rayon_apparition_minimal}).")
+        else :
+            # Message d'erreur
+            print(f"L'objectif \"{type_objectif}\" n'exite pas.")
+
+    def affichage_zone(self, hero, position_objectif, taille_objectif, taille_zone="taille_objectif", afficher_la_fleche=True) :
+        '''Affichage des zones d'interaction avec les objectifs'''
+        if taille_zone == "taille_objectif" :
+            taille_zone = taille_objectif
+        self.image = pygame.transform.scale(self.images["zone"][0], (taille_zone))
+        self.pos_zone = (position_objectif[0]+(taille_objectif[0]-taille_zone[0])/2, position_objectif[1]+taille_objectif[1]+10)
+        screen.blit(self.image, self.pos_zone)
+
+        # Affichage de l'endroit où est l'objectif
+        if afficher_la_fleche :
+            self.affichage_fleche(position_objectif, taille_objectif)
+
+        # Partie détection de collision
+        rect = pygame.Rect(self.pos_zone[0], self.pos_zone[1], taille_zone[0], taille_zone[1])
+        if rect.colliderect(hero.get_rect()) :
+            return True
+        else :
+            return False
+
+    def affichage_fleche(self, pos_pointer, size) :
+        '''Affichage de la flèche indicant la position de l'objectif'''
+        # L'affichage se fait seulement si l'objectif est hors de l'écran
+        if not (-size[0]+x/4 < pos_pointer[0] < x*3/4 and -size[1]+y/4 < pos_pointer[1] < y*3/4) :
+            # Calcul de la position du centre de l'objectif
+            pos_pointer = (pos_pointer[0]+size[0]/2, pos_pointer[1]+size[1]/2)
+            # Partie calcul de l'angle
+            if pos_pointer[0]-x/2 != 0 :
+                self.angle = math.atan((pos_pointer[1]-y/2)/(pos_pointer[0]-x/2))
+                self.angle = convert_degrees(self.angle)
+                if pos_pointer[0] < x/2 :
+                    self.angle = 180-self.angle
+                else :
+                    self.angle = -self.angle
+            # Partie affichage
+            rotated_image = pygame.transform.rotate(self.image_fleche, self.angle)
+            new_rect = rotated_image.get_rect(center = self.image_fleche.get_rect(topleft = ((x-self.fleche_size[0])/2, (y-self.fleche_size[1])/2)).center)
+            screen.blit(rotated_image, new_rect.topleft)
 
     # déplacements des objectifs
     def haut(self, dt) :
         for type_objectif in self.objectifs :
-            for objet in self.objectifs[type_objectif] :
-                objet.haut(dt)
+            for objectif in self.objectifs[type_objectif] :
+                objectif.haut(dt)
 
     def bas(self, dt) :
         for type_objectif in self.objectifs :
-            for objet in self.objectifs[type_objectif] :
-                objet.bas(dt)
+            for objectif in self.objectifs[type_objectif] :
+                objectif.bas(dt)
 
     def gauche(self, dt) :
         for type_objectif in self.objectifs :
-            for objet in self.objectifs[type_objectif] :
-                objet.gauche(dt)
+            for objectif in self.objectifs[type_objectif] :
+                objectif.gauche(dt)
 
     def droite(self, dt) :
         for type_objectif in self.objectifs :
-            for objet in self.objectifs[type_objectif] :
-                objet.droite(dt)
+            for objectif in self.objectifs[type_objectif] :
+                objectif.droite(dt)
 
 
 def main(score=save.get()["best_score"]) :
@@ -1120,6 +1367,7 @@ def main(score=save.get()["best_score"]) :
 
     while True : # False = le jeu s'arrête
         dt = clock.tick(144) # IMPORTANT : FPS du jeu
+
         #screen.fill(GREEN) # pour si l'herbe bug, ça se voit moins que WHITE
         # Pourquoi avoir supprimé la ligne du dessus :
         # Si l'herbe s'actualise mal suite à un problème (peut être saturation
@@ -1278,11 +1526,12 @@ def main(score=save.get()["best_score"]) :
 
         '''Tous les affichages de sprites'''
         grass.display() # Affichage de l'herbe
+        objectifs.actualiser_objectif((marche_arret.game_state() and not inventaire.ouvert), hero)
         objectifs.display()
         soin.display(hero) # Ineterraction avec la trousse de premiers secours
 
         if "[REDACTED]" in inventaire.objets : # Easter egg lorsque tu équipe la lessive...
-            zombie_temps = temps.time * 2 # Plus de zombies lessive, et ils sont plus forts
+            zombie_temps = temps.time * 3 # Plus de zombies lessive, et ils sont plus forts
         else : # Cas où tu n'as pas de lessive équipée
             zombie_temps = temps.time
         
@@ -1325,6 +1574,8 @@ def main(score=save.get()["best_score"]) :
         arme.display() # Affichage de l'arme
         fps.display(temps.time) # Affichage des FPS
         hero.GUI_display() # Affichage de la bare de vie
+        objectifs.display_indicateur()
+        objectifs.display_objectif()
         if not inventaire.ouvert : # On cache l'affichage quand l'inventaire est ouvert (pour rendre le tout plus lisible)
             arme.display_cases() # Affichage de l'inventaire pour les armes
         score.display() # Affichage du score
