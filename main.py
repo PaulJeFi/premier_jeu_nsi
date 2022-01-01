@@ -54,8 +54,8 @@ x, y = 1080, 720 # dimensions de l'écran, en pixels
 pygame.init()
 pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((x, y))
-pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
+pygame.display.set_caption("The lessived")
+pygame.display.set_icon(pygame.image.load('./images/Icone.png'))
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
