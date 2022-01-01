@@ -467,7 +467,7 @@ class Soin_construct() :
     def __init__(self) :
         self.all_soins = [] # Liste contenant tous les objets soins
         self.max_soins = 10 # Nombre maximum d'objet de soins dans un rayon de 3*taille de l'écran
-        self.max_cooldown = 200 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
+        self.max_cooldown = 325 # Intervalle entre chaque réaparition de trousses de soin (plus cette valeur est grande, plus l'intervalle de temps est important)
         self.cooldown = self.max_cooldown
     
     def spawn_soin(self) :
