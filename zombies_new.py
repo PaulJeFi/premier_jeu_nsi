@@ -213,7 +213,7 @@ class Projectiles_zombie(deplace) :
         # Durée de vie du projectile
         self.life_time = 100
         # Dégat que le projectile inflige au joueur
-        self.attaque = 10
+        self.attaque = 20
         # Position d'apparition du projectile + création de sa zone de collision
         self.rect = self.image.get_rect()
         self.x = x
