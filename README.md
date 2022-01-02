@@ -1,4 +1,5 @@
-# premier_jeu_nsi
+# The lessived
+https://github.com/PaulJeFi/premier_jeu_nsi/blob/main/trailer.mp4
 
 ---
 
