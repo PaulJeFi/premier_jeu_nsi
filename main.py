@@ -1604,7 +1604,7 @@ def main(score=save.get()["best_score"]) :
             if inventaire.can_switch :
                 inventaire.ouvert = not inventaire.ouvert
                 inventaire.can_switch = False
-        elif pressed[pygame.K_r] :
+        elif pressed[pygame.K_r] and developpement :
             if inventaire.can_switch :
                 inventaire.can_switch = False
                 inventaire.add_item(random.choice(inventaire.all_items_name))
