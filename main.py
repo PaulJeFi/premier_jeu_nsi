@@ -442,7 +442,8 @@ class Soin(deplace) :
 
     def display(self) :
         '''Affichage de soi-même'''
-        screen.blit(self.image, (self.x, self.y))
+        if -self.size[0] < self.x < x and -self.size[1] < self.y < y :
+            screen.blit(self.image, (self.x, self.y))
 
     def get_rect(self) :
         # Donne les infos du rectangle de la trousse de premiers secours (abscisse, ordonnée, longueur)
@@ -529,11 +530,12 @@ class Boite(deplace) :
 
     def display(self) :
         '''Affichage de la boite'''
-        if self.life_time > 1000 or not((self.life_time)%10 == 0 or (self.life_time+1)%10 == 0 or (self.life_time+2)%10 == 0):
-            screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
-        if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
-            self.display_bulle()
-            return self
+        if -self.boite_size[0] < self.x < x and -self.boite_size[1] < self.y < y : # Economie de ressources d'affichage
+            if self.life_time > 1000 or not((self.life_time)%10 == 0 or (self.life_time+1)%10 == 0 or (self.life_time+2)%10 == 0):
+                screen.blit(self.image_boite, (self.x-self.boite_size[0]//2, self.y-self.boite_size[1]//2))
+            if x/3 < self.x < 2*x/3 and y/4 < self.y < 3*y/4 :
+                self.display_bulle()
+                return self
         return ""
     
     def display_bulle(self) :
@@ -861,6 +863,8 @@ class Arme() :
         self.can_switch = True
         # Angle d'affichage
         self.angle = 0
+        # Définitions des sprites d'arme dans l'inventaire
+        self.images_armes_inventaire = {key : pygame.transform.scale(pygame.image.load(self.all_weapons[key][2][0]), (round(self.case_size[0]*0.7), round(self.case_size[0]*0.7))) for key in list(self.all_weapons.keys())}
 
     def actualiser(self) :
         '''On actualise le sprite de l'arme en main'''
@@ -902,7 +906,7 @@ class Arme() :
             else :
                 screen.blit(self.case_image[0], (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i, y-self.case_size[1]-10))
             # Affichage des armes (en fait tout en une ligne)
-            screen.blit(pygame.transform.scale(pygame.image.load(self.all_weapons[self.weapon_inventory[i]][2][0]), (round(self.case_size[0]*0.7), round(self.case_size[0]*0.7))), (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i + 10, y-self.case_size[1]-10 - round(self.case_size[0]*0.3)//2))
+            screen.blit(self.images_armes_inventaire[self.weapon_inventory[i]], (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i + 10, y-self.case_size[1]-10 - round(self.case_size[0]*0.3)//2))
             # Affichage du nombre de munitions
             valeur = self.munitions[i]
             if self.weapon_inventory[i] != "No weapon" : # On affiche le nombre de munitions seulement si l'on a une arme

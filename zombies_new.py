@@ -141,8 +141,9 @@ class Zombies(deplace) :
             self.change()
             self.regen(dt)
             #self.pv -= random.randrange(0, 2, 1)/10
-        screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
-        self.barreVie()
+        if -self.size - x*0.1 < self.x < 1.1*x and -self.size - y*0.1 < self.y < y*1.1 : # Permet d'afficher le zombie seulement s'il peut être vu par le joueur (économie de performance)
+            screen.blit(self.rotated, (self.x-self.size/2, self.y-self.size/2))
+            self.barreVie()
 
     def regen(self, dt) :
         '''Régénération naturelle des pv du zombie'''
