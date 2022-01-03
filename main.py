@@ -1381,7 +1381,7 @@ def main(score=save.get()["best_score"]) :
             # Enregistrer le score si on a battu le meilleur score
             save.set_score(score.score)
 
-        if time.time() - Time > 235 :
+        if time.time() - Time > 154 :
             # Pour rejouer la musique si elle s'arrête 
             sons.play(0)
             Time = time.time()
