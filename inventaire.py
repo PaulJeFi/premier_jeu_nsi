@@ -64,6 +64,8 @@ class Inventaire() :
     def actualiser_pos(self) :
         '''Actualise l'agencement de l'inventaire'''
         self.size = 50
+        # Ligne ci-dessous : on défit une fois toutes les images pour les objets, afin de ne plus avoir à le faire ensuite
+        self.all_images = {key : pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[key][0]}.png'), (self.size, self.size)) for key in list(self.all_items.keys())}
         self.image1 = pygame.transform.scale(self.o_image1, (self.size, self.size))
         self.image2 = pygame.transform.scale(self.o_image2, (self.size, self.size))
         self.image3 = pygame.transform.scale(self.o_image3, (self.size, self.size))
@@ -105,11 +107,11 @@ class Inventaire() :
         for index in range(len(self.objets)) :
             if self.objets[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets[index]][0]}.png'), (self.size, self.size)), (self.positions1[index*2], self.positions1[index*2+1]))
+                    screen.blit(self.all_images[self.objets[index]], (self.positions1[index*2], self.positions1[index*2+1]))
         for index in range(len(self.objets_inventaire)) :
             if self.objets_inventaire[index] != "" : # Si nom de l'objet == "", ça veut dire que ce n'est pas un objet, et ça permet d'éviter de laisser le script prendre du temps à le chercher
                 if self.objets_inventaire[index] in self.all_items :
-                    screen.blit(pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[self.objets_inventaire[index]][0]}.png'), (self.size, self.size)), (self.positions2[index*2], self.positions2[index*2+1]))
+                    screen.blit(self.all_images[self.objets_inventaire[index]], (self.positions2[index*2], self.positions2[index*2+1]))
 
     def overlay(self) :
         '''Permet de faire une petite surbrillance sur la case que l'on touche avec le curseur, ainsi que renvoyer les informations de cette case'''
