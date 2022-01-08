@@ -1522,9 +1522,15 @@ def main(score=save.get()["best_score"]) :
             marche_arret.status = False
             marche_arret.can_switch = False
         pressed = (pygame.key.get_pressed(), game_over)
-        if pressed[0][pygame.K_n] and pressed[1] :
+        if pressed[0][pygame.K_SPACE] and pressed[1] : # Rejouer
             sons.pause(1)
-            return score.score
+            return True
+        elif pressed[0][pygame.K_ESCAPE] and pressed[1] : # Revenir au menu principal
+            sons.pause(1)
+            sons.pause(0)
+            return False
+        # Je ne sais pas si le return score.score était utile donc je l'ai retiré... Le return est utilisé à la toute fin de ce script. [Térence]
+        # Juste, que fait la commande ci-dessous ? [Térence]
         elif pressed[1] and time.time()-Time > 300:
             Time = time.time()
 
@@ -1629,11 +1635,13 @@ def main(score=save.get()["best_score"]) :
             Time = 0
             sons.pause(0)
             text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
-            text(screen, "./FreeSansBold.ttf", 20, 'Tapez \'n\' pour commencer une nouvelle partie.', BLACK, (250, 400))
+            text(screen, "./FreeSansBold.ttf", 20, 'Appuyez sur la touche ESPACE pour commencer une nouvelle partie.', BLACK, (200, 400))
+            text(screen, "./FreeSansBold.ttf", 20, 'Appuyez sur la touche ECHAP pour revenir au menu principal.', BLACK, (200, 440))
 
         pygame.display.flip() # Affichage / actualisation de l'écran
 
 # Si main.py est exécuté, on lance la boucle main()
 if __name__ == '__main__' :
-    while True : # Le while True permet de relancer le jeu sans avoir à quiter et revenir
-        main()
+    play = True
+    while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
+        play = main()
