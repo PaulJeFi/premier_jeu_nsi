@@ -4,7 +4,6 @@ Les autre fichiers sont des éléments externes au gameplay principal ou des scr
 '''
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
-from typing import is_typeddict
 import intro    # L'introduction se lance toute seule
 import outro
 import loadding  # L'écran de chargement se charge tout seul
