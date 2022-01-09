@@ -10,6 +10,9 @@ pygame.display.set_caption("The lessived")
 pygame.display.set_icon(pygame.image.load('./images/Icone.png'))
 screen.fill((255, 255, 255))
 
+lessived = pygame.image.load('./images/lessived.png')
+lessived = pygame.transform.scale(lessived, (x, y))
+
 
 class Bouton() :
     '''Les boutons affichés à l'écran'''
@@ -68,6 +71,7 @@ def menu() :
         bouton = Bouton()
 
         screen.fill((255, 255, 255)) # Background
+        screen.blit(lessived, (0, 0))
 
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
