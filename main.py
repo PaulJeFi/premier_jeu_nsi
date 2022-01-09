@@ -4,6 +4,7 @@ Les autre fichiers sont des éléments externes au gameplay principal ou des scr
 '''
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
+from typing import is_typeddict
 import intro    # L'introduction se lance toute seule
 import outro
 import loadding  # L'écran de chargement se charge tout seul
@@ -1410,14 +1411,18 @@ def main(score=save.get()["best_score"]) :
                 # Arrêt du jeu
                 pygame.quit()
                 sys.exit()
-            
-            # Système de tir
-            if event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 and not marche_arret.highlight() :
-                balles.add(inventaire.stats["Agi"]) # Création de l'objet (du projectile)
-                arme.munitions[arme.weapon_equiped] -= 1 # On retire une munition (car on vient de tirer)
-                # Changement automatique de l'arme équipée si elle n'a plus de munitions
-                if arme.munitions[arme.weapon_equiped] <= 0 :
-                    arme.weapon_equiped = len(arme.weapon_inventory) - 1 # On équipe la dernière arme (le pistolet normalement)
+
+            # tricher pour tirer si devloppment
+            elif event.type == pygame.MOUSEBUTTONDOWN and not game_over and marche_arret.game_state() and not inventaire.ouvert and arme.munitions[arme.weapon_equiped] > 0 and not marche_arret.highlight() :
+                mouse = pygame.mouse.get_pressed()
+                valid = (mouse[0] or mouse[2] or (developpement))
+                if valid :
+                    balles.add(inventaire.stats["Agi"]) # Création de l'objet (du projectile)
+                    arme.munitions[arme.weapon_equiped] -= 1 # On retire une munition (car on vient de tirer)
+                    # Changement automatique de l'arme équipée si elle n'a plus de munitions
+                    if arme.munitions[arme.weapon_equiped] <= 0 :
+                        arme.weapon_equiped = len(arme.weapon_inventory) - 1 # On équipe la dernière arme (le pistolet normalement)
+
 
         marche_arret.on_off(game_over, sons) # Permet de savoir si le jeu est OUI ou NON en PAUSE
         if marche_arret.game_state() and not inventaire.ouvert : # Exécute seulement si le jeu est en marche
