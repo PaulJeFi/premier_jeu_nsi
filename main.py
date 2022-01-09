@@ -1246,10 +1246,14 @@ class Objectifs_construct() :
         
         # Objectif n°2
         elif self.etape_actuelle == 2 :
-            if self.jerrican :
-                self.texte = f"Alimentez le générateur avec le jerrican. {5-self.nb_jerrican} restant."
+            if 5-self.nb_jerrican <= 1 :
+                restant = 'restant'
             else :
-                self.texte = f"Allez récupérer un jerrican. {5-self.nb_jerrican} restant."
+                restant = 'restants'
+            if self.jerrican :
+                self.texte = f"Alimentez le générateur avec le jerrican. {5-self.nb_jerrican} {restant}."
+            else :
+                self.texte = f"Allez récupérer un jerrican. {5-self.nb_jerrican} {restant}."
         
         # Objectif n°3
         elif self.etape_actuelle == 3 :
