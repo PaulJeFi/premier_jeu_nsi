@@ -32,9 +32,9 @@ clic = pygame.mixer.Sound("./sons/clic_clavier.wav") # son du clavier
 #music = pygame.mixer.Sound("./contents/punch.wav") # music de fond
 
 # Les différents textes d'Outro, regroupés par slides contenant des lignes
-text_Outro1 = ["Apres cette grande période de chaos que vous venez de traverser, vous êtes quelque","peut fatigué et vous décidez de prendre un moment pour réfléchir à votre avenir","dans ce monde désormais si propre. "]
-text_Outro2 = ["Qu'allez vous faire de tout votre temps maintenant que vous êtes sans emploi ?","Mais vous vous souvenez tout à coup de vos cours de SES en seconde et décider de ","créer un produit révolutionnaire qui n'existe pas dans le monde des machines à laver"]
-text_Outro3 = ["Vous devenez l'un des patrons les plus en vogue et les plus respecté de la silicone ","vallée et votre start-up de liquide vaisselle génère des milliards de dollards.","Vous êtes maintenant le roi du monde"]
+text_Outro1 = ["Après cette grande période de chaos que vous venez de traverser, vous êtes quelque","peu fatigué et vous décidez de prendre un moment pour réfléchir à votre avenir","dans ce monde désormais si propre. "]
+text_Outro2 = ["Qu'allez vous faire de tout votre temps maintenant que vous êtes sans emploi ?","Mais vous vous souvenez tout à coup de vos cours de SES en seconde et décidez de ","créer un produit révolutionnaire qui n'existe pas dans le monde des machines à laver. "]
+text_Outro3 = ["Vous devenez l'un des patrons les plus en vogue et les plus respectés de la Silicon ","Valley et votre start-up de liquide vaisselle génère des milliards de dollards.","Vous êtes maintenant le roi du monde. "]
 
 class Outro() :
     """Classe de l'Outro"""
@@ -76,7 +76,7 @@ class Outro() :
             text(screen, "./courriernewbold.ttf", 20, self.text[0][0:self.char], WHITE, (30, 720-150+30))
             text(screen, "./courriernewbold.ttf", 20, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
             self.sound()
-        elif self.text == text_Outro1 or self.text == text_Outro3 : # sinon, si on est à la troisième ligne
+        elif self.text == text_Outro1 or self.text == text_Outro3 or self.text == text_Outro2 : # sinon, si on est à la troisième ligne
             if self.char-len(self.text[0])-len(self.text[1]) < len(self.text[2]) :
                 text(screen, "./courriernewbold.ttf", 20, self.text[0], WHITE, (30, 720-150+30))
                 text(screen, "./courriernewbold.ttf", 20, self.text[1], WHITE, (30, 720-150+60))
