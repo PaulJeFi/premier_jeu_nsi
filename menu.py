@@ -1,6 +1,7 @@
 import pygame
 import sys
-import main, intro, tuto # Les scripts à importer
+import main, tuto, outro # Les scripts à importer
+intro = main.intro
 
 x, y = 1080, 720 # dimensions de l'écran, en pixels
 pygame.init()
@@ -49,9 +50,11 @@ def jeu() :
     pygame.mouse.set_visible(False)
     intro.main()
     play = True
-    while play :
+    while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
         play = main.main()
+    outro.main()
     pygame.mouse.set_visible(True)
+    menu()
 
 def menu() :
     '''Le menu principal du jeu'''

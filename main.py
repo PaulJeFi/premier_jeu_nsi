@@ -5,6 +5,7 @@ Les autre fichiers sont des éléments externes au gameplay principal ou des scr
 
 # Tous les imports du script, certains ne sont pas encore utilisés mais le seront très prochainement
 import intro    # L'introduction se lance toute seule
+import outro
 import loadding  # L'écran de chargement se charge tout seul
 from pygame import mouse
 from pygame.constants import MOUSEBUTTONDOWN, MOUSEBUTTONUP
@@ -34,6 +35,7 @@ if __name__ == '__main__' :
     # enregistrer si on exécute le notebook, qui doit être l'interface finale
     # pour l'utilisateur.
     developpement = True
+    import menu
 
 # Définition de certaines couleurs
 BLACK = (0, 0, 0)
@@ -1393,6 +1395,9 @@ def main(score=save.get()["best_score"]) :
             # Pour rejouer la musique si elle s'arrête 
             sons.play(0)
             Time = time.time()
+
+        if objectifs.etape_actuelle >= 6 :
+            return False
         
         for event in pygame.event.get() :
             # Pour quitter le jeu ou tirer
@@ -1440,7 +1445,7 @@ def main(score=save.get()["best_score"]) :
                 balles.spread = (balles.arme[1][2][2]-balles.arme[1][2][1])*(0.99**inventaire.stats["Agi"])
                 balles.spread_reduction_cooldown = 0
 
-            '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héro (illusion de mouvement)'''
+            '''Les lignes suivantes permettent le déplacement de tous les objets, sauf du héros (illusion de mouvement)'''
             pressed = pygame.key.get_pressed()
             # Ajustement de la valleur de la vitesse du joueur afin qu'il se déplace aussi vite en diagonal qu'en ligne droite
             if pressed[pygame.K_z] and pressed[pygame.K_q] or pressed[pygame.K_z] and pressed[pygame.K_d] or pressed[pygame.K_s] and pressed[pygame.K_q] or pressed[pygame.K_s] and pressed[pygame.K_d] or pressed[pygame.K_UP] and pressed[pygame.K_LEFT] or pressed[pygame.K_UP] and pressed[pygame.K_RIGHT] or pressed[pygame.K_DOWN] and pressed[pygame.K_LEFT] or pressed[pygame.K_DOWN] and pressed[pygame.K_RIGHT] :
@@ -1649,3 +1654,5 @@ if __name__ == '__main__' :
     play = True
     while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
         play = main()
+    outro.main()
+    menu.menu()
