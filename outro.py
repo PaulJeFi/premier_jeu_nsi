@@ -22,9 +22,9 @@ screen.fill(WHITE)
 
 # Initialisation du texte
 pygame.font.init()
-frame1 = pygame.image.load('./images/intro/lessive.png').convert()
-frame2 = pygame.image.load('./images/intro/zombie1.png').convert()
-frame3 = pygame.image.load('./images/intro/armurerie.png').convert()
+frame1 = pygame.image.load('./images/intro/zombie1.png').convert()
+frame2 = pygame.image.load('./images/intro/entrepreneur.jpg').convert()
+frame3 = pygame.image.load('./images/intro/paicCitron.jpg').convert()
 
 # Initialisation du son.
 pygame.mixer.init()
@@ -32,9 +32,9 @@ clic = pygame.mixer.Sound("./sons/clic_clavier.wav") # son du clavier
 #music = pygame.mixer.Sound("./contents/punch.wav") # music de fond
 
 # Les différents textes d'Outro, regroupés par slides contenant des lignes
-text_Outro1 = ["Vous travailliez comme d'habitude dans votre boutique de machines à laver, quand votre ", "collègue ouvre le frigo assoiffé, et boit une bouteille de lessive, la confondant avec ", "du lait. "]
-text_Outro2 = ["Vous le voyez se transformer sous vos yeux en zombie, et très vite il contamine toute ", "la ville. Étant le seul survivant, vous décidez de quitter la ville. "]
-text_Outro3 = ["Dans votre fuite, vous passez devant l'armurerie désertée, et vous prenez quelques ", "armes au cas où. La nuit commence à tomber et vous êtes presque arrivé à la forêt, ", "avec une seule idée en tête, survire… "]
+text_Outro1 = ["Apres cette grande période de chaos que vous venez de traverser, vous êtes quelque","peut fatigué et vous décidez de prendre un moment pour réfléchir à votre avenir","dans ce monde désormais si propre. "]
+text_Outro2 = ["Qu'allez vous faire de tout votre temps maintenant que vous êtes sans emploi ?","Mais vous vous souvenez tout à coup de vos cours de SES en seconde et décider de ","créer un produit révolutionnaire qui n'existe pas dans le monde des machines à laver"]
+text_Outro3 = ["Vous devenez l'un des patrons les plus en vogue et les plus respecté de la silicone ","vallée et votre start-up de liquide vaisselle génère des milliards de dollards.","Vous êtes maintenant le roi du monde"]
 
 class Outro() :
     """Classe de l'Outro"""
