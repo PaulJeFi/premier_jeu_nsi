@@ -1397,7 +1397,7 @@ def main(score=save.get()["best_score"]) :
             Time = time.time()
 
         if objectifs.etape_actuelle >= 6 :
-            return False
+            return 'outro'
         
         for event in pygame.event.get() :
             # Pour quitter le jeu ou tirer
@@ -1658,5 +1658,6 @@ if __name__ == '__main__' :
     play = True
     while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
         play = main()
-    outro.main()
+    if play == 'outro' :
+        outro.main()
     menu.menu()
