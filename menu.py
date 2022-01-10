@@ -50,7 +50,7 @@ def jeu() :
     pygame.mouse.set_visible(False)
     intro.main()
     play = True
-    while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
+    while play == True : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
         play = main.main()
     if play == 'outro' :
         outro.main()

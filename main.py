@@ -1656,7 +1656,7 @@ def main(score=save.get()["best_score"]) :
 # Si main.py est exécuté, on lance la boucle main()
 if __name__ == '__main__' :
     play = True
-    while play : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
+    while play == True : # Le while "play" permet de relancer le jeu sans avoir à quiter et revenir et permet aussi d'interompre le jeu lorsque le joueur ne veux plus jouer
         play = main()
     if play == 'outro' :
         outro.main()
