@@ -17,4 +17,8 @@ else : # Windoxs ou Linux
 
 command2 = f'{python} {file_to_run}' # Commande d'exécution du fichier
 
-os.system(f'{command2}')
+def main() :
+    os.system(f'{command2}')
+
+if __name__ == '__main__' :
+    main()

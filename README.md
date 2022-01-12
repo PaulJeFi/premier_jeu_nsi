@@ -7,7 +7,7 @@
 
 Vérifiez pour lancer le jeu que vous ayier une version de [Python](https:/python.org) supérieure ou égale à la *3.6.0*.
 
-Si vous n'avez pas [```Pygame```](https://www.pygame.org/news) avec, ouvrez le dossier du jeu dans un terminal et exécuter la commande suivante :
+Si vous n'avez pas [```Pygame```](https://www.pygame.org/news) avec, ouvrez le dossier du jeu dans un terminal et exécutez la commande suivante :
 
 ```
 premier_jeu_nsi $ pip install -r requirements.txt
@@ -16,7 +16,7 @@ premier_jeu_nsi $ pip install -r requirements.txt
 
 ## Instruction pour lancer le jeu.
 
-Il existe plusieurs moyens pour lancer notre eju. Cette section est importante, car prendre un fichier et l'exécuter n'est pas forcément la meilleure chose que vous ayiez à faire.
+Il existe plusieurs moyens pour lancer notre jeu. Cette section est importante, car prendre un fichier et l'exécuter n'est pas forcément la meilleure chose que vous ayiez à faire.
 
 **Il ne faut en aucun cas exécuter directement des fichiers du dossier ```src``` !**
 
@@ -26,7 +26,7 @@ Il existe plusieurs moyens pour lancer notre eju. Cette section est importante, 
 premier_jeu_nsi $ python src/menu.py
 ```
 
-- Vous pouvez aussi ouvrir ```premier_jeu_nsi``` dans l'IDE de votre choix (nous conseillons fortement [VS Code](https://code.visualstudio.com)), puis chercher ```menu.py``` dans ```src```, et de l'exécuter.
+- Vous pouvez aussi ouvrir ```premier_jeu_nsi``` dans l'IDE de votre choix (nous conseillons fortement [VS Code](https://code.visualstudio.com)), puis chercher ```menu.py``` dans ```src```, et l'exécuter.
 
 - Tout simplement, vous n'avez qu'à double-cliquer sur le fichier correspondant à votre système d'exploitation dans le dossier ```binaries```.
 
