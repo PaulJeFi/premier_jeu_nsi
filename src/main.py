@@ -1639,7 +1639,7 @@ def main(score=save.get()["best_score"]) :
         if inventaire.ouvert :
             inventaire.display() # Affichage
         if inventaire.affichage > 0 :
-            inventaire.objet_trouve() # Message indiquant que l'on à trouvé un objet
+            inventaire.objet_trouve() # Message indiquant que l'on a trouvé un objet
         inventaire.stats_display() # Affichage des stats du héro
 
         curseur(screen) # Affichage du curseur (customisé)
