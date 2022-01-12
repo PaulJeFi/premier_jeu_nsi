@@ -5,7 +5,7 @@
 
 ## Prérequis
 
-Vérifiez pour lancer le jeu que vous ayier une version de [Python](https:/python.org) supérieure ou égale à la *3.6.0*.
+Vérifiez pour lancer le jeu que vous ayier une version de [Python](https://python.org) supérieure ou égale à la *3.6.0*.
 
 Si vous n'avez pas [```Pygame```](https://www.pygame.org/news) avec, ouvrez le dossier du jeu dans un terminal et exécutez la commande suivante :
 
