@@ -45,7 +45,7 @@ def curseur(screen) :
     # On définit une taille pour la nouvelle image du curseur
     size = (30, 30)
     # Attribution et ajustement de la taille de l'image en une étape
-    image = pygame.transform.scale(pygame.image.load('./images/curseur/Croix_avec_carre.png'),(size[0], size[1]))
+    image = pygame.transform.scale(pygame.image.load('./src/images/curseur/Croix_avec_carre.png'),(size[0], size[1]))
     # Affichage du nouveau curseur
     screen.blit(image, (int(pos[0]-size[0]/2), int(pos[1]-size[1]/2)))
 

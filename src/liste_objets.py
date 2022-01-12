@@ -6,7 +6,7 @@ Pour ce faire, suivez les instructions suivantes :
      Ce nom sera affiché au joueur, et sera utilisé dans l'inventaire non-visuel (la liste contenant tous les objets).
   -  Après avoir mis le symbole " : ", il faudra que vous mettez une liste [].
      -  En premier élément de cette liste, vous mettrez les nom du fichier png du sprite de votre objet (sans mettre le .png).
-        Votre image doit avoir pour chemin " ./images/inventaire/objets ".
+        Votre image doit avoir pour chemin " ./src/images/inventaire/objets ".
      -  En deuxième élément vous pouvez entrer une description de votre objet que pourra lire le joueur.
         Vous pouvez simplement entrer "" si vous ne voulez pas en mettre.
         Pour afficher le texte sur plusieurs lignes tapez "|" sans espaces.

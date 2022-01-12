@@ -8,10 +8,10 @@ pygame.init()
 pygame.mouse.set_visible(True)
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("The lessived")
-pygame.display.set_icon(pygame.image.load('./images/Icone.png'))
+pygame.display.set_icon(pygame.image.load('./src/images/Icone.png'))
 screen.fill((255, 255, 255))
 
-lessived = pygame.image.load('./images/lessived.png')
+lessived = pygame.image.load('./src/images/lessived.png')
 lessived = pygame.transform.scale(lessived, (x, y))
 
 
@@ -31,7 +31,7 @@ class Bouton() :
         # Chargement des images
         for cle in list(self.all_boutons.keys()) :
             for image in self.all_boutons[cle][0] :
-                self.all_boutons[cle][0][self.all_boutons[cle][0].index(image)] = pygame.transform.scale(pygame.image.load(f"./images/menu/{image}.png"), self.size)
+                self.all_boutons[cle][0][self.all_boutons[cle][0].index(image)] = pygame.transform.scale(pygame.image.load(f"./src/images/menu/{image}.png"), self.size)
 
     def display(self) :
         '''Affichage'''

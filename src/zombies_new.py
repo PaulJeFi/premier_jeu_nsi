@@ -25,12 +25,12 @@ BLUE = (0, 0, 255)
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
+pygame.display.set_icon(pygame.image.load('./src/images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 pygame.font.init()
 #myfont = pygame.font.SysFont('couriernewbold', 15)
-myfont = pygame.font.Font("./FreeSansBold.ttf", 15)
+myfont = pygame.font.Font("./src/FreeSansBold.ttf", 15)
 
 class Zombies(deplace) :
     '''Classe des zombies : gestion d'UN SEUL zombie'''
@@ -48,7 +48,7 @@ class Zombies(deplace) :
         self.size = 100
         self.SPEED = self.all_zombies[self.type][1][1]
         self.regen_pv = self.all_zombies[self.type][1][3]
-        self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
+        self.image = pygame.image.load(f'./src/images/personages/{self.all_zombies[self.type][0]}.png') 
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.image = pygame.transform.rotate(self.image, 180)
         self.spawn()
@@ -63,7 +63,7 @@ class Zombies(deplace) :
     def change_to_type(self, type) :
         '''Petite méthode qui fut utile pour changer rapidement le type d'un Zombies. N'est plus utilisée il me semble.'''
         if type in list(self.all_zombies.keys()) :
-            self.image = pygame.image.load(f'./images/personages/{self.all_zombies[self.type][0]}.png') 
+            self.image = pygame.image.load(f'./src/images/personages/{self.all_zombies[self.type][0]}.png') 
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.image = pygame.transform.rotate(self.image, 180)
 
@@ -180,7 +180,7 @@ class Zombies(deplace) :
         draw_rect(screen, (self.x-(32), self.y-(32)), (94, 14), BLACK)
         draw_rect(screen, (self.x-(32), self.y-(42)), (round(len(valeur_pv)*6)-5, 11), BLACK) # Barre noire suplémentaire
         draw_rect(screen, (self.x-(30), self.y-(30)), (self.pv*(100-10)/self.pv_maxi, 20-10), couleur_pv)
-        text(screen, "./FreeSansBold.ttf", 10, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
+        text(screen, "./src/FreeSansBold.ttf", 10, valeur_pv, WHITE, (self.x-(30), self.y-(41)))
         # Test de la barre de vie en foction des pv restants
 
     def touch_hero(self, dt, hero: pygame.Rect) -> bool :
@@ -198,7 +198,7 @@ class Projectiles_zombie(deplace) :
         '''Initialisation de l'objet. Le type est un zombie deymon (type de zombie qui tire).'''
         self.type = type
         # On créer l'image du projectile
-        self.image = pygame.image.load('./images/armes/Projectiles/feu.png')
+        self.image = pygame.image.load('./src/images/armes/Projectiles/feu.png')
         # Taille du projectile
         self.size = 50
         # Redimentionnement de l'image du projectile

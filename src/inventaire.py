@@ -36,7 +36,7 @@ pygame.init()
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
+pygame.display.set_icon(pygame.image.load('./src/images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 pygame.font.init()
 
@@ -54,18 +54,18 @@ class Inventaire() :
         self.inventaire_done = False # NE PAS TOUCHER : permet d'attribuer des espaces d'inventaire vide
         self.ouvert = False # False = inventaire invisible ; True = inventaire visible
         self.can_switch = True # Si True on peut ouvrir/fermer l'inventaire
-        self.o_image1 = pygame.image.load('./images/inventaire/case_doree.png') # Case jaune (objets équipés)
-        self.o_image2 = pygame.image.load('./images/inventaire/case_sombre.png') # Case noire (inventaire)
-        self.o_image3 = pygame.image.load('./images/inventaire/case_overlay.png') # Surbrillance
-        self.o_image4 = pygame.image.load('./images/inventaire/case_selection.png') # Sélection (contour orange)
-        self.o_image5 = pygame.image.load('./images/inventaire/case_description.png') # Panel sur lequel on affiche les informations de l'objet
+        self.o_image1 = pygame.image.load('./src/images/inventaire/case_doree.png') # Case jaune (objets équipés)
+        self.o_image2 = pygame.image.load('./src/images/inventaire/case_sombre.png') # Case noire (inventaire)
+        self.o_image3 = pygame.image.load('./src/images/inventaire/case_overlay.png') # Surbrillance
+        self.o_image4 = pygame.image.load('./src/images/inventaire/case_selection.png') # Sélection (contour orange)
+        self.o_image5 = pygame.image.load('./src/images/inventaire/case_description.png') # Panel sur lequel on affiche les informations de l'objet
         self.actualiser_pos()
 
     def actualiser_pos(self) :
         '''Actualise l'agencement de l'inventaire'''
         self.size = 50
         # Ligne ci-dessous : on défit une fois toutes les images pour les objets, afin de ne plus avoir à le faire ensuite
-        self.all_images = {key : pygame.transform.scale(pygame.image.load(f'./images/inventaire/objets/{self.all_items[key][0]}.png'), (self.size, self.size)) for key in list(self.all_items.keys())}
+        self.all_images = {key : pygame.transform.scale(pygame.image.load(f'./src/images/inventaire/objets/{self.all_items[key][0]}.png'), (self.size, self.size)) for key in list(self.all_items.keys())}
         self.image1 = pygame.transform.scale(self.o_image1, (self.size, self.size))
         self.image2 = pygame.transform.scale(self.o_image2, (self.size, self.size))
         self.image3 = pygame.transform.scale(self.o_image3, (self.size, self.size))
@@ -172,9 +172,9 @@ class Inventaire() :
     def objet_trouve(self) :
         self.affichage -= 2
         if not self.inventaire_plein :
-            self.text2(screen, "./FreeSansBold.ttf", 20, f'Vous avez obtenu {self.item} !', (255, 255, 255-self.affichage), (x/2-len(f'Vous avez obtenu {self.item} !')*5, 500+self.affichage))
+            self.text2(screen, "./src/FreeSansBold.ttf", 20, f'Vous avez obtenu {self.item} !', (255, 255, 255-self.affichage), (x/2-len(f'Vous avez obtenu {self.item} !')*5, 500+self.affichage))
         else :
-            self.text2(screen, "./FreeSansBold.ttf", 20, 'Votre inventaire est plein !', (255, 155-self.affichage/2, 155-self.affichage/2), (x/2-len('Votre inventaire est plein !')*5, 500+self.affichage))
+            self.text2(screen, "./src/FreeSansBold.ttf", 20, 'Votre inventaire est plein !', (255, 155-self.affichage/2, 155-self.affichage/2), (x/2-len('Votre inventaire est plein !')*5, 500+self.affichage))
 
     def objets_stats(self) :
         '''Réactualise les stats données par les objets équipés'''
@@ -196,7 +196,7 @@ class Inventaire() :
         '''Affiche les stats totales'''
         x, y, size = 10, 500, 20
         for i in self.stats :
-            self.text2(screen, "./FreeSansBold.ttf", size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
+            self.text2(screen, "./src/FreeSansBold.ttf", size, f'{i} : {round(self.stats[i], 2)}', BLACK, (x, y))
             y += size*1.2
 
     def description(self) :
@@ -205,19 +205,19 @@ class Inventaire() :
             pos = [x - size[0] + 14, y - size[1] + 14]
             self.image5 = pygame.transform.scale(self.o_image5, size)
             screen.blit(self.image5, (x-size[0], y-size[1]))
-            self.text2(screen, "./FreeSansBold.ttf", 18, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
+            self.text2(screen, "./src/FreeSansBold.ttf", 18, self.objet_selection[2], YELLOW, (pos[0], pos[1])) # Nom de l'objet
             pos[1] += 40
             if self.all_items[self.objet_selection[2]][1] != "" :
                 texte = self.all_items[self.objet_selection[2]][1].split('|')
                 for i in texte :
-                    self.text2(screen, "./FreeSansBold.ttf", 15, i, WHITE, (pos[0], pos[1]))
+                    self.text2(screen, "./src/FreeSansBold.ttf", 15, i, WHITE, (pos[0], pos[1]))
                     pos[1] += 20
                 pos[1] += 15
             for i in range(len(self.all_items[self.objet_selection[2]][2])) : # Statistiques de l'objet
                 if float((self.all_items[self.objet_selection[2]][2][i].split())[1]) < 0 :
-                    self.text2(screen, "./FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
+                    self.text2(screen, "./src/FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], RED, (pos[0], pos[1]))
                 else :
-                    self.text2(screen, "./FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
+                    self.text2(screen, "./src/FreeSansBold.ttf", 18, self.all_items[self.objet_selection[2]][2][i], GREEN, (pos[0], pos[1]))
                 pos[1] += 25
             self.mouse = pygame.mouse.get_pos()
             self.suprimer()
@@ -226,7 +226,7 @@ class Inventaire() :
     def suprimer(self) :
         '''Permet de supprimer un objet depuis l'inventaire grâce à un bouton'''
         if self.mouse[0] < x-14 and self.mouse[0] > x-self.size_del-14 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
+            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_suprimer_rouge.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
                 if type(self.objet_selection) == tuple :
                     if self.objet_selection[4] == "equipement" :
@@ -237,11 +237,11 @@ class Inventaire() :
                         self.objets_inventaire[self.objet_selection[3]] = ""
                         self.objet_selection = ""
         else :
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
+            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_suprimer.png'), (self.size_del, self.size_del)), (x-self.size_del-14, y-self.size_del-14)) # Cas négatif
 
     def equiper(self) :
         if self.mouse[0] < x-self.size_del-20 and self.mouse[0] > x-2*self.size_del-20 and self.mouse[1] < y-14 and self.mouse[1] > y-self.size_del-14 : # Permet de savoir si la souris survole le bouton
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_verte.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas positif
+            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_equiper_verte.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas positif
             if pygame.mouse.get_pressed()[0] : # Si le bouton est cliqué on suprime l'objet
                 if type(self.objet_selection) == tuple :
                     if self.objet_selection[4] == "equipement" :
@@ -250,16 +250,16 @@ class Inventaire() :
                             self.objet_selection = ""
                             self.objets_stats() # On actualise les stats
                         else : # Cas inventaire plein
-                            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
+                            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
                     elif self.objet_selection[4] == "inventaire" :
                         if "" in self.objets :
                             self.objets_inventaire[self.objet_selection[3]], self.objets[self.objets.index("")] = "", self.objets_inventaire[self.objet_selection[3]]
                             self.objet_selection = ""
                             self.objets_stats() # On actualise les stats
                         else : # Cas équipement plein
-                            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
+                            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_equiper_rouge.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14))
         else :
-            screen.blit(pygame.transform.scale(pygame.image.load('./images/inventaire/icone_equiper.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas négatif
+            screen.blit(pygame.transform.scale(pygame.image.load('./src/images/inventaire/icone_equiper.png'), (self.size_del, self.size_del)), (x-2*self.size_del-20, y-self.size_del-14)) # Cas négatif
 
 def main() :
     '''Fonction principale'''

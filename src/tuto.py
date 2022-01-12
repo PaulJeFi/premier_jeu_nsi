@@ -20,11 +20,11 @@ pygame.init()
 pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("The lessived")
-pygame.display.set_icon(pygame.image.load('./images/Icone.png').convert())
+pygame.display.set_icon(pygame.image.load('./src/images/Icone.png').convert())
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 pygame.font.init()
-img = pygame.image.load('./images/tuto.png').convert()
+img = pygame.image.load('./src/images/tuto.png').convert()
 
 def text(screen, font, size, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
@@ -52,12 +52,12 @@ def etape_1(Time=time.time()) :
         arme.display()
         hero.GUI_display()
         if time.time()-Time <= 5 :
-            text(screen, './courriernewbold.ttf', 30, 'Bienvenue dans le camp d\'entrainement du jeu.', WHITE, (x/2-400, 100))
+            text(screen, './src/courriernewbold.ttf', 30, 'Bienvenue dans le camp d\'entrainement du jeu.', WHITE, (x/2-400, 100))
         else :
             if time.time()-Time >= 15 :
                 return None
-            text(screen, './courriernewbold.ttf', 30, 'Ici, vous apprendrez comment survivre efficacement', WHITE, (x/2-450, 100))
-            text(screen, './courriernewbold.ttf', 30, 'face aux zombies.', WHITE, (x/2-150, 150))
+            text(screen, './src/courriernewbold.ttf', 30, 'Ici, vous apprendrez comment survivre efficacement', WHITE, (x/2-450, 100))
+            text(screen, './src/courriernewbold.ttf', 30, 'face aux zombies.', WHITE, (x/2-150, 150))
         pygame.display.flip()
 
 def etape_2(Time=time.time()) :
@@ -93,15 +93,15 @@ def etape_2(Time=time.time()) :
         arme.display()
         hero.GUI_display()
         if time.time()-Time <= 5 :
-            text(screen, './courriernewbold.ttf', 30, 'Voici le premier zombie du jeu. Attention !', WHITE, (x/2-400, 100))
+            text(screen, './src/courriernewbold.ttf', 30, 'Voici le premier zombie du jeu. Attention !', WHITE, (x/2-400, 100))
             zombie.x = x-100
             zombie.y = y/2
         else :
             if time.time()-Time >= 12 :
                 return (zombie.x, zombie.y)
-            text(screen, './courriernewbold.ttf', 30, 'Comme vous le voyez, il a l\'air peu sympatique.', WHITE, (x/2-450, 100))
-            text(screen, './courriernewbold.ttf', 30, 'Attention, il se dirige vers vous.', WHITE, (x/2-300, 150))
-            text(screen, './courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', WHITE, (x/2-200, 200))
+            text(screen, './src/courriernewbold.ttf', 30, 'Comme vous le voyez, il a l\'air peu sympatique.', WHITE, (x/2-450, 100))
+            text(screen, './src/courriernewbold.ttf', 30, 'Attention, il se dirige vers vous.', WHITE, (x/2-300, 150))
+            text(screen, './src/courriernewbold.ttf', 30, 'Voyons ce qu\'il vous veut !', WHITE, (x/2-200, 200))
         pygame.display.flip()
 
 def etape3(zomb_coord, Time=time.time()) :
@@ -159,8 +159,8 @@ def etape3(zomb_coord, Time=time.time()) :
         arme.display()
         hero.GUI_display()
 
-        text(screen, './courriernewbold.ttf', 30, '         Utilisez ZQSD pour vous déplacer.', WHITE, (x/2-450, 100)) # oui, mettWHITEes espaces la technique de fou
-        text(screen, './courriernewbold.ttf', 30, 'Attention, le zombie vous attaque.', WHITE, (x/2-300, 150))
+        text(screen, './src/courriernewbold.ttf', 30, '         Utilisez ZQSD pour vous déplacer.', WHITE, (x/2-450, 100)) # oui, mettWHITEes espaces la technique de fou
+        text(screen, './src/courriernewbold.ttf', 30, 'Attention, le zombie vous attaque.', WHITE, (x/2-300, 150))
         functions.curseur(screen)
         pygame.display.flip()
         if time.time()-Time > 7 :
@@ -233,8 +233,8 @@ def etape4(zombie, pv) :
         arme.display()
         hero.GUI_display()
 
-        text(screen, './courriernewbold.ttf', 30, '              Tirez sur le zombie !', WHITE, (x/2-450, 100)) # oui, mettre des espaces la technique de fou
-        text(screen, './courriernewbold.ttf', 30, 'Visez-le puis cliquer pour tirer !', WHITE, (x/2-300, 150))
+        text(screen, './src/courriernewbold.ttf', 30, '              Tirez sur le zombie !', WHITE, (x/2-450, 100)) # oui, mettre des espaces la technique de fou
+        text(screen, './src/courriernewbold.ttf', 30, 'Visez-le puis cliquer pour tirer !', WHITE, (x/2-300, 150))
         functions.curseur(screen)
 
         pygame.display.flip()

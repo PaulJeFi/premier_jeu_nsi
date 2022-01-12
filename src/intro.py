@@ -17,18 +17,18 @@ BROWN = (100, 60, 15)
 x, y = 1080, 720
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("Friends Royal")
-pygame.display.set_icon(pygame.image.load('./images/personages/Humain_type_1.png').convert())
+pygame.display.set_icon(pygame.image.load('./src/images/personages/Humain_type_1.png').convert())
 screen.fill(WHITE)
 
 # Initialisation du texte
 pygame.font.init()
-frame1 = pygame.image.load('./images/intro/lessive.png').convert()
-frame2 = pygame.image.load('./images/intro/zombie1.png').convert()
-frame3 = pygame.image.load('./images/intro/armurerie.png').convert()
+frame1 = pygame.image.load('./src/images/intro/lessive.png').convert()
+frame2 = pygame.image.load('./src/images/intro/zombie1.png').convert()
+frame3 = pygame.image.load('./src/images/intro/armurerie.png').convert()
 
 # Initialisation du son.
 pygame.mixer.init()
-clic = pygame.mixer.Sound("./sons/clic_clavier.wav") # son du clavier
+clic = pygame.mixer.Sound("./src/sons/clic_clavier.wav") # son du clavier
 
 # Les différents textes d'intro, regroupés par slides contenant des lignes
 text_intro1 = ["Vous travailliez comme d'habitude dans votre boutique de machines à laver, quand votre ",
@@ -76,17 +76,17 @@ class Intro() :
         '''Comment écrire le texte'''
         self.char += 1  # On basera toutes les actions sur le nombre de carractères affichés jusqu'alors
         if self.char < len(self.text[0]) : # si on est à la première ligne
-            text(screen, "./courriernewbold.ttf", 20, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
+            text(screen, "./src/courriernewbold.ttf", 20, self.text[0][0:self.char]+'|', WHITE, (30, 720-150+30))
             self.sound()
         elif self.char-len(self.text[0]) < len(self.text[1]) : # sinon si on est à la deuxième ligne
-            text(screen, "./courriernewbold.ttf", 20, self.text[0][0:self.char], WHITE, (30, 720-150+30))
-            text(screen, "./courriernewbold.ttf", 20, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
+            text(screen, "./src/courriernewbold.ttf", 20, self.text[0][0:self.char], WHITE, (30, 720-150+30))
+            text(screen, "./src/courriernewbold.ttf", 20, self.text[1][0:self.char-len(self.text[0])]+'|', WHITE, (30, 720-150+60))
             self.sound()
         elif self.text == text_intro1 or self.text == text_intro3 : # sinon, si on est à la troisième ligne
             if self.char-len(self.text[0])-len(self.text[1]) < len(self.text[2]) :
-                text(screen, "./courriernewbold.ttf", 20, self.text[0], WHITE, (30, 720-150+30))
-                text(screen, "./courriernewbold.ttf", 20, self.text[1], WHITE, (30, 720-150+60))
-                text(screen, "./courriernewbold.ttf", 20, self.text[2][0:self.char-len(self.text[0])-len(self.text[1])]+'|', WHITE, (30, 720-150+90))
+                text(screen, "./src/courriernewbold.ttf", 20, self.text[0], WHITE, (30, 720-150+30))
+                text(screen, "./src/courriernewbold.ttf", 20, self.text[1], WHITE, (30, 720-150+60))
+                text(screen, "./src/courriernewbold.ttf", 20, self.text[2][0:self.char-len(self.text[0])-len(self.text[1])]+'|', WHITE, (30, 720-150+90))
                 self.sound()
             else :
                 time.sleep(5) # on attend 5 sec entre chaque slide
@@ -114,7 +114,7 @@ def main() :
         if pressed[pygame.K_SPACE] : # histoire qu'on puisse passer l'intro
             break
         intro.display()
-        text(screen, "./courriernewbold.ttf", 20, '[espace]: passer l\'intro', WHITE, (750, 720-150+90))
+        text(screen, "./src/courriernewbold.ttf", 20, '[espace]: passer l\'intro', WHITE, (750, 720-150+90))
         pygame.display.flip()
         if intro.is_finished :
             break

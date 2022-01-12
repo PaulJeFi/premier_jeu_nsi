@@ -58,7 +58,7 @@ pygame.init()
 pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((x, y))
 pygame.display.set_caption("The lessived")
-pygame.display.set_icon(pygame.image.load('./images/Icone.png'))
+pygame.display.set_icon(pygame.image.load('./src/images/Icone.png'))
 screen.fill(WHITE)
 clock = pygame.time.Clock()
 
@@ -70,19 +70,19 @@ pygame.mixer.init()
 pygame.mixer.get_num_channels()
 
 #import des musiques du jeu
-mus_mort = pygame.mixer.Sound("./musiques/gameOver.mp3")
-mus_victoire = pygame.mixer.Sound("./musiques/victoire.mp3")
-mus_jeu = pygame.mixer.Sound("./musiques/soundtrack.mp3")
+mus_mort = pygame.mixer.Sound("./src/musiques/gameOver.mp3")
+mus_victoire = pygame.mixer.Sound("./src/musiques/victoire.mp3")
+mus_jeu = pygame.mixer.Sound("./src/musiques/soundtrack.mp3")
 jouer_son = 0
 # import des sons additionels 
-tir_arme = pygame.mixer.Sound("./sons/sons armes/son arme 1.mp3")
-sMarche = pygame.mixer.Sound("./sons/sons marche herbe/bruit marche dans l'herbe.wav")
+tir_arme = pygame.mixer.Sound("./src/sons/sons armes/son arme 1.mp3")
+sMarche = pygame.mixer.Sound("./src/sons/sons marche herbe/bruit marche dans l'herbe.wav")
 
 # Police d'écriture ci-dessous
 # doc :
 #pygame.font.get_default_font()
 #pygame.font.get_fonts()
-'''  Les polices actuelles sont "./FreeSansBold.ttf" et "./courriernewbold.ttf".  '''
+'''  Les polices actuelles sont "./src/FreeSansBold.ttf" et "./src/courriernewbold.ttf".  '''
 
 def text(screen, font, size, string, color, pos) :
     '''Permet d'afficher un texte de façon simplifiée'''
@@ -96,7 +96,7 @@ class Marche_Arret() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.status = True # <-- True pour MARCHE ; False pour PAUSE
-        self.image = pygame.image.load('./images/interface/Bouton_pause_stop.png')
+        self.image = pygame.image.load('./src/images/interface/Bouton_pause_stop.png')
         self.size = 50
         self.image = pygame.transform.scale(self.image,(self.size,self.size))
         self.rect = self.image.get_rect()
@@ -115,15 +115,15 @@ class Marche_Arret() :
         pos = pygame.mouse.get_pos()
         if pos[0] > x - self.size*2 and pos[1] < self.size*2 :
             if self.status == True :
-                self.image = pygame.image.load('./images/interface/Bouton_pause_stop_lumineux.png')
+                self.image = pygame.image.load('./src/images/interface/Bouton_pause_stop_lumineux.png')
             else :
-                self.image = pygame.image.load('./images/interface/Bouton_pause_marche_lumineux.png')
+                self.image = pygame.image.load('./src/images/interface/Bouton_pause_marche_lumineux.png')
             return True
         else :
             if self.status == True :
-                self.image = pygame.image.load('./images/interface/Bouton_pause_stop.png')
+                self.image = pygame.image.load('./src/images/interface/Bouton_pause_stop.png')
             else :
-                self.image = pygame.image.load('./images/interface/Bouton_pause_marche.png')
+                self.image = pygame.image.load('./src/images/interface/Bouton_pause_marche.png')
             return False
 
     def game_state(self) :
@@ -224,7 +224,7 @@ class Temps() :
                 self.texte_temps.append("0" + str(self.h_min_s[i]))
             else :
                 self.texte_temps.append(str(self.h_min_s[i]))
-        text(screen, "./FreeSansBold.ttf", 20, ' : '.join(self.texte_temps), WHITE, (380, 20))
+        text(screen, "./src/FreeSansBold.ttf", 20, ' : '.join(self.texte_temps), WHITE, (380, 20))
 
 class Score_actuel() :
     '''Classe pour le score'''
@@ -249,9 +249,9 @@ class Score_actuel() :
 
     def display(self) :
         '''Affichage du score'''
-        text(screen, "./FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
+        text(screen, "./src/FreeSansBold.ttf", 20, f'Votre score : {self.score} points', WHITE, (500, 20))
         # Old système de score :
-        #text(screen, "./FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
+        #text(screen, "./src/FreeSansBold.ttf", 20, f'Difficuté actuelle: {self.nom_niveau[self.niveau]}', WHITE, (500, 40))
 
     def add(self, score) :
         '''Permet d'actualiser le score et la difficulté'''
@@ -273,7 +273,7 @@ class Grass() :
     def __init__(self) :
         '''Appel initial de la classe'''
         self.size = 1600
-        self.image = pygame.image.load('./images/tuilles_de_terrain/Herbe_V2.png')
+        self.image = pygame.image.load('./src/images/tuilles_de_terrain/Herbe_V2.png')
         self.image = self.image = pygame.transform.scale(self.image, (int(1.5*self.size+SPEED), int(1.5*self.size+SPEED)))
         # Placer tous les pavés de terrains à leurs emplacement initial
         self.image_1 = [0, 0]
@@ -334,7 +334,7 @@ class Hero() :
 
     def __init__(self) :
         '''Appel initial de la classe'''
-        self.image = pygame.image.load('./images/personages/Humain_type_1.png')
+        self.image = pygame.image.load('./src/images/personages/Humain_type_1.png')
         self.size = 100
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.x = x/2 - self.size//2
@@ -345,7 +345,7 @@ class Hero() :
         self.old_pv = self.pv # Utilisé pour la fonction regen
         self.pv_difference = 0 # Même chose
         self.angle = 90
-        self.rotated = pygame.image.load('./images/personages/Humain_type_1.png')
+        self.rotated = pygame.image.load('./src/images/personages/Humain_type_1.png')
     
     def regen(self, valeur, dt) :
         '''Régénération naturelle de la vie du héro'''
@@ -402,9 +402,9 @@ class Hero() :
         # Affichage de la valeur numérique des pv
         if self.max_pv != 0.001 :
             draw_rect(screen, (25, 50), ((len(f'{round(self.pv)} / {round(self.max_pv)}'))*7, 16), BLACK)
-            text(screen, "./FreeSansBold.ttf", 12, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (31, 50))
+            text(screen, "./src/FreeSansBold.ttf", 12, f'{round(self.pv)} / {round(self.max_pv)}', WHITE, (31, 50))
         else :
-            text(screen, "./FreeSansBold.ttf", 12, 'ERROR', RED, (140, 30)) # Easter egg pour avoir self.max_pv = 0
+            text(screen, "./src/FreeSansBold.ttf", 12, 'ERROR', RED, (140, 30)) # Easter egg pour avoir self.max_pv = 0
 
     def change(self, mousepos) :
         '''Tourne le personnage pour qu'il ragarde la souris'''
@@ -427,7 +427,7 @@ class Soin(deplace) :
     '''Classe de la trousse de premiers secours'''
 
     def __init__(self) :
-        self.image = pygame.image.load('./images/objets/Pack de soin.png')
+        self.image = pygame.image.load('./src/images/objets/Pack de soin.png')
         self.size = (50, 50)
         self.image = pygame.transform.scale(self.image, self.size)
         self.place()
@@ -524,8 +524,8 @@ class Boite(deplace) :
         self.global_size = 16 # Pour modifier la taille de la boite et de la bulle, modifiez CETTE valeur (pas celle en dessous)
         self.boite_size = (self.global_size*3, self.global_size*4) # Le sprite de la boite n'est pas un carré (24 x 32)
         self.bulle_size = (self.global_size*8, self.global_size*6) # Le sprite de la bulle n'est pas carré (39 x 30)
-        self.image_boite = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Boite.png'), self.boite_size)
-        self.image_bulle = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Bulle.png'), self.bulle_size)
+        self.image_boite = pygame.transform.scale(pygame.image.load('./src/images/armes/Armes_pour_inventaire/Boite.png'), self.boite_size)
+        self.image_bulle = pygame.transform.scale(pygame.image.load('./src/images/armes/Armes_pour_inventaire/Bulle.png'), self.bulle_size)
         self.x, self.y = pos_x, pos_y
         self.arme = arme
         self.munitions = munitions
@@ -557,7 +557,7 @@ class Boite(deplace) :
                 else :
                     couleur = (255, 0, 0)
                 # Affichage du nombre de munitions
-                text(screen, './FreeSansBold.ttf', 16, str(self.munitions), couleur, (self.x+self.bulle_size[0]*0.22, self.y+self.bulle_size[1]*0.19-64))
+                text(screen, './src/FreeSansBold.ttf', 16, str(self.munitions), couleur, (self.x+self.bulle_size[0]*0.22, self.y+self.bulle_size[1]*0.19-64))
 
 class Construct_boite() :
     '''Classe permettant de créer et gérer les boites ( la classe Boite() )'''
@@ -712,7 +712,7 @@ class Construct_munitions() :
         # Partie affichage de l'indicateur de dispersion
         self.size_facteur_indicateur = 32 # Facteur de taille de l'indicateur de dispersion
         self.size_indicateur = (self.size_facteur_indicateur, self.size_facteur_indicateur*4) # Taille de l'indicateur de dispersion
-        self.image_indicateur = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Indicateur.png'), self.size_indicateur) # Sprite
+        self.image_indicateur = pygame.transform.scale(pygame.image.load('./src/images/armes/Armes_pour_inventaire/Indicateur.png'), self.size_indicateur) # Sprite
         # Partie gestion des projectilles
         self.all_weapons = all_weapons
         self.spread = 0 # Dispersion des balles
@@ -855,7 +855,7 @@ class Arme() :
         # Partie affichage pour l'inventaire des armes
         self.case_size = 30 # Facteur de taille pour les cases
         self.case_size = (self.case_size*5, self.case_size*2) # Taille des cases (elles ont une taille de 40 x 16 ce qui revient à un ratio 5:2)
-        self.case_image = pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
+        self.case_image = pygame.transform.scale(pygame.image.load('./src/images/armes/Armes_pour_inventaire/Case_noire.png'), self.case_size), pygame.transform.scale(pygame.image.load('./src/images/armes/Armes_pour_inventaire/Case_orange.png'), self.case_size) # Création de l'image des cases (2 images contenues dans self.case_image)
         # Partie données de l'inventaire des armes
         self.all_weapons = all_weapons
         self.weapon_inventory = ["No weapon", "No weapon", "Pistolet"] # Liste des armes équipées (arme0, arme1, arme2) ; nom des armes = clés de all_weapons dans liste_arme.py
@@ -923,7 +923,7 @@ class Arme() :
                 else :
                     couleur = (255, 0, 0)
                 # Affichage
-                text(screen, './FreeSansBold.ttf', 16, str(valeur), couleur, (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i+self.case_size[0]*0.8, y-self.case_size[1]*0.65-10))
+                text(screen, './src/FreeSansBold.ttf', 16, str(valeur), couleur, (x/2-(self.case_size[0]+20)*len(self.weapon_inventory)/2 + (self.case_size[0]+20)*i+self.case_size[0]*0.8, y-self.case_size[1]*0.65-10))
 
 class Power_up(deplace) :
     '''Classe des powers up'''
@@ -938,8 +938,8 @@ class Power_up_construct() :
 
     def __init__(self) :
         self.all_power_up = []
-        self.image = {"armure" : "./images/power_up/armure.png", "vitesse" : "./images/power_up/vitesse.png", "gatling" : "./images/power_up/gatling.png"} # Tous les powers up et leur image
-        self.image_effet = {"gatling" : ["./images/Nothing.png", 0], "vitesse" : ["./images/power_up/vitesse_effet.png", 200], "armure" : ["./images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
+        self.image = {"armure" : "./src/images/power_up/armure.png", "vitesse" : "./src/images/power_up/vitesse.png", "gatling" : "./src/images/power_up/gatling.png"} # Tous les powers up et leur image
+        self.image_effet = {"gatling" : ["./src/images/Nothing.png", 0], "vitesse" : ["./src/images/power_up/vitesse_effet.png", 200], "armure" : ["./src/images/power_up/armure_effet.png", 110]} # Image effet visuel (mettre dans l'ordre d'affichage sur l'écran, càd du plan le plus bas au plus haut) avec la taille de l'effet visuel
         self.power_activated = {cle : 0 for cle in list(self.image.keys())} # En résumé, stocke les effets et si ils sont actifs (en frame restantes)
         self.size = 55 # Taille des powers up
         for cle in self.image : # Chargement et redimensionnement des images
@@ -1036,7 +1036,7 @@ class FPS() :
                 self.FPS = round(sum(self.FPS_recorded)/len(self.FPS_recorded), 1)
                 self.FPS_recorded = []
                 self.frame_nb = 0
-        text(screen, "./FreeSansBold.ttf", 15, f'FPS : {self.FPS}', BLACK, (x-150, y-50))
+        text(screen, "./src/FreeSansBold.ttf", 15, f'FPS : {self.FPS}', BLACK, (x-150, y-50))
 
 class Objectif(deplace) :
     '''Les objectifs'''
@@ -1057,11 +1057,11 @@ class Objectifs_construct() :
     def __init__(self) :
         # Création des sprites (chemin relatif de l'image, ses dimensions)
         self.images = {
-            "zone" : ["./images/objectif/Zone_objectif.png", (300, 225)], # Format 4:3
-            "jerrican" : ["./images/objectif/Jerrican.png", (60, 80)], # Format 3:4
-            "générateur" : ["./images/objectif/Generateur.png", (150, 100)], # Format 3:2
-            "radio" : ["./images/objectif/Radio.png", (180, 140)], # Format 9:7
-            "hélicoptère" : ["./images/objectif/Helicoptere.png", (500, 200)] # Format 5:2
+            "zone" : ["./src/images/objectif/Zone_objectif.png", (300, 225)], # Format 4:3
+            "jerrican" : ["./src/images/objectif/Jerrican.png", (60, 80)], # Format 3:4
+            "générateur" : ["./src/images/objectif/Generateur.png", (150, 100)], # Format 3:2
+            "radio" : ["./src/images/objectif/Radio.png", (180, 140)], # Format 9:7
+            "hélicoptère" : ["./src/images/objectif/Helicoptere.png", (500, 200)] # Format 5:2
         }
         for i in self.images :
             self.images[i][0] = pygame.transform.scale(pygame.image.load(self.images[i][0]), self.images[i][1])
@@ -1100,7 +1100,7 @@ class Objectifs_construct() :
 
         # Image de la flèche :
         self.fleche_size = [330, 330]
-        self.image_fleche = pygame.transform.scale(pygame.image.load("./images/objectif/Fleche.png"), self.fleche_size)
+        self.image_fleche = pygame.transform.scale(pygame.image.load("./src/images/objectif/Fleche.png"), self.fleche_size)
 
         # Le joueur a-t-il un jerrican sur lui ?
         self.jerrican = False
@@ -1272,7 +1272,7 @@ class Objectifs_construct() :
         
         if 1 <= self.etape_actuelle <= 5 :
             # Affichage du texte
-            text(screen, "./FreeSansBold.ttf", 16, "Objectif : " + self.texte, WHITE, (30, 100))
+            text(screen, "./src/FreeSansBold.ttf", 16, "Objectif : " + self.texte, WHITE, (30, 100))
 
     def add(self, type_objectif, rayon_apparition_minimal=1, rayon_apparition_maximal=2) :
         '''Permet d'ajouter un objectif'''
@@ -1648,9 +1648,9 @@ def main(score=save.get()["best_score"]) :
         if game_over :
             Time = 0
             sons.pause(0)
-            text(screen, "./FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
-            text(screen, "./FreeSansBold.ttf", 20, 'Appuyez sur la touche ESPACE pour commencer une nouvelle partie.', BLACK, (200, 400))
-            text(screen, "./FreeSansBold.ttf", 20, 'Appuyez sur la touche ECHAP pour revenir au menu principal.', BLACK, (200, 440))
+            text(screen, "./src/FreeSansBold.ttf", 50, 'GAME OVER', RED, (385, 350))
+            text(screen, "./src/FreeSansBold.ttf", 20, 'Appuyez sur la touche ESPACE pour commencer une nouvelle partie.', BLACK, (200, 400))
+            text(screen, "./src/FreeSansBold.ttf", 20, 'Appuyez sur la touche ECHAP pour revenir au menu principal.', BLACK, (200, 440))
 
         pygame.display.flip() # Affichage / actualisation de l'écran
 
