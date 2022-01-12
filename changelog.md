@@ -8,3 +8,4 @@
   - Dans la classe ```Score``` il faut oublier le consepte du brouillard car il cause beaucoup trop de ralentissements (genre sans le brouillard le jeu est ultra fluide)
   - Amélioration du jeu en général et correction de bugs
   - Méga ré-organisation des fichier. Veuillez me prévenir en cas de bug.
+  - La création des fichiers de lancement, et la présentation du jeu et les instructions de lancement on été réalisées.
