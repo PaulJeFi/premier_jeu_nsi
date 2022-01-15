@@ -33,7 +33,7 @@ clic = pygame.mixer.Sound("./src/sons/clic_clavier.wav") # son du clavier
 
 # Les différents textes d'Outro, regroupés par slides contenant des lignes
 text_Outro1 = ["Après cette grande période de chaos que vous venez de traverser, vous êtes quelque","peu fatigué et vous décidez de prendre un moment pour réfléchir à votre avenir","dans ce monde désormais si propre. "]
-text_Outro2 = ["Qu'allez vous faire de tout votre temps maintenant que vous êtes sans emploi ?","Mais vous vous souvenez tout à coup de vos cours de SES en seconde et décidez de ","créer un produit révolutionnaire qui n'existe pas dans le monde des machines à laver. "]
+text_Outro2 = ["Qu'allez vous faire de tout votre temps maintenant que vous êtes sans emploi ?","Mais vous vous souvenez tout à coup de vos cours de SES en seconde et décidez de ","créer un produit révolutionnaire : le liquide vaiselle."]
 text_Outro3 = ["Vous devenez l'un des patrons les plus en vogue et les plus respectés de la Silicon ","Valley et votre start-up de liquide vaisselle génère des milliards de dollards.","Vous êtes maintenant le roi du monde. "]
 
 class Outro() :
