@@ -349,7 +349,7 @@ class Hero() :
     
     def regen(self, valeur, dt) :
         '''Régénération naturelle de la vie du héro'''
-        # Si le héro a pris de gros dégat récemment, il regagnera plus lentement des pv
+        # Si le héro a pris de gros dégats récemment, il regagnera plus lentement des pv
         if self.old_pv > self.pv : # Calcul des dégats reçus
             self.pv_difference += (200*(self.old_pv - self.pv))/((1.005**(self.max_pv-100))*100)
         self.old_pv = self.pv
