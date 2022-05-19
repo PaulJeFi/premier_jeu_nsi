@@ -31,3 +31,11 @@ premier_jeu_nsi $ python src/menu.py
 - Tout simplement, vous n'avez qu'à double-cliquer sur le fichier correspondant à votre système d'exploitation dans le dossier ```binaries```.
 
 - Lancer ```run.py``` est aussi une bonne option.
+
+- Exécuter les commandes suivantes succèssivement dans un terminal sans avoir téléchargé notre jeu fonctionnera aussi (à supposer que vous ayiez Python et [Git](https://git-scm.com) :
+
+```
+git clone https://github.com/PaulJeFi/premier_jeu_nsi.git
+cd premier_jeu_nsi
+python3 run.py
+```
