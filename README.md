@@ -32,7 +32,7 @@ premier_jeu_nsi $ python src/menu.py
 
 - Lancer ```run.py``` est aussi une bonne option.
 
-- Exécuter les commandes suivantes succèssivement dans un terminal sans avoir téléchargé notre jeu fonctionnera aussi (à supposer que vous ayiez Python et [Git](https://git-scm.com) :
+- Exécuter les commandes suivantes succèssivement dans un terminal sans avoir téléchargé notre jeu fonctionnera aussi (à supposer que vous ayiez Python et [Git](https://git-scm.com)) :
 
 ```
 git clone https://github.com/PaulJeFi/premier_jeu_nsi.git
