@@ -48,7 +48,7 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
 # Les règlages de base (vitesse du joueur + temps auquel on commence)
-SPEED = 0.4 # Je pense qu'il faudrait le mêtre dans la classe héro dans   -->   def __init__(self):
+SPEED = 0.4 # Je pense qu'il faudrait le mettre dans la classe héro dans   -->   def __init__(self):
 
 start_to = 0 # Temps auquel on débute la partie (en secondes)
 
